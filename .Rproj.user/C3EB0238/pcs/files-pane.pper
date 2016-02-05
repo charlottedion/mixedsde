@@ -1,0 +1,9 @@
+{
+    "path" : "~/Documents/THESE/dossier_package/package",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

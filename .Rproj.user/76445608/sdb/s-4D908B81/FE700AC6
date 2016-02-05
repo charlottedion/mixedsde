@@ -1,0 +1,17 @@
+{
+    "contents" : "\\name{mixedsde-package}\n\\alias{mixedsde-package}\n\\alias{mixedsde}\n\\docType{package}\n\\title{\nDensity estimation in mixed stochastic differential models\n}\n\\description{\nThis package proposes 3 methods for density estimation in the special context of stochastic differential equation with linear random effects in the drift.\n}\n\\details{\n\\tabular{ll}{\nPackage: \\tab mixedsde\\cr\nType: \\tab Package\\cr\nVersion: \\tab 1.0\\cr\nDate: \\tab 2016-01-19\\cr\nLicense: \\tab What license is it under?\\cr\n}\n An overview of how to use the package, including the most important functions \n}\n\\author{\nCharlotte Dion, Simone Hermann, Adeline Samson\n\nMaintainer: Charlotte Dion <charlotte.dion@imag.fr>\n}\n\\references{\nSee Bidimensional random effect estimation in mixed stochastic differential model, C. Dion and V. Genon-Catalot, \\emph{Stochastic Inference for Stochastic Processes 2015, Springer Netherlands} \\bold{1--28}\n\nMaximum likelihood estimation for stochastic differential equations with random effects, M. Delattre, V. Genon-Catalot and A. Samson, \\emph{Scandinavian Journal of Statistics 2012}, Vol 40, \\bold{322--343}\n\nBayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  Hermann, S., Ickstadt, K. and C. M{\\\"u}ller (2015)\n\n}\n\\keyword{ package }\n\\seealso{\nOptional links to other man pages, e.g. \n \\code{\\link[mixedsde.fit]{misdesde.fit}} \n}\n\\examples{\nmodel = 'OU'; M <- 50;  T <- 100 ; delta <- 0.01; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'normalnormal';\nparam<- c(0.4, 0.5, 1, 0.2);\nsimu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,sigma=sigma, invariant = 1)\nX <- simu$X ; phi <- simu$phi; times <- simu$times\nestim.method<- 'nonparam'\nestim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')\n\n# maybe the examples from mixedsde.fit here ?!?\n}\n",
+    "created" : 1454491525474.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2251726624",
+    "id" : "FE700AC6",
+    "lastKnownWriteTime" : 1454491761,
+    "path" : "~/Documents/BitBucket/mixedsde/mixedsde/man/mixedsde-package.Rd",
+    "project_path" : "man/mixedsde-package.Rd",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_doc"
+}

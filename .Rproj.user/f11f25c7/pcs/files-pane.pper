@@ -1,0 +1,17 @@
+{
+    "path" : "~/Documents/THESE/dossier_package/package/mixedsde/R",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        },
+        {
+            "ascending" : false,
+            "columnIndex" : 3
+        },
+        {
+            "ascending" : false,
+            "columnIndex" : 4
+        }
+    ]
+}
