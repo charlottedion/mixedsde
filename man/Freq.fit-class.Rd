@@ -7,4 +7,37 @@
 \description{
 S4 class for the frequentist estimation results
 }
+\section{Slots}{
+
+\describe{
+\item{\code{model}}{character 'OU' or 'CIR'}
+
+\item{\code{random}}{numeric 1, 2, or c(1,2)}
+
+\item{\code{fixed}}{numeric value of the fixed effect if there is one}
+
+\item{\code{gridf}}{matrix of values on which the estimated is done}
+
+\item{\code{mu}}{numeric MLE estimator for parametric approach}
+
+\item{\code{omega}}{numeric  MLE estimator for parametric approach}
+
+\item{\code{cutoff}}{value of the cutoff if there is one}
+
+\item{\code{sigma2}}{numeric estimated value of \eqn{\sigma^2}}
+
+\item{\code{estimf_trunc}}{matrix estimator of the density of \eqn{\phi} for the truncated estimateur of the random effects}
+
+\item{\code{estimphi_trunc}}{matrix truncated estimator of the random effects}
+
+\item{\code{index}}{index of the used trajectories}
+
+\item{\code{estimphi}}{matrix of the estimator of the random effects}
+
+\item{\code{estimf}}{estimator of the density of \eqn{\phi}}
+
+\item{\code{bic}}{numeric bic}
+
+\item{\code{aic}}{numeric aic}
+}}
 

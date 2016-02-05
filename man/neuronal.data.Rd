@@ -43,11 +43,11 @@ estim_param <- mixedsde.fit(times=times, X=X, model=model, random= random, estim
 # plot(estim); print(estim); valid(estim)
 print(estim_param); plot(estim_param); # Freq.valid(estim_param)
 
-# validation <- Freq.valid(estim, X=X, model= model,  T=T)
+# validation <- Freq.valid(estim, X=X, times = times)
 # it produce the same method with estim_param
 
-test1 <- pred(estim, X, model= model, estim.method= 'nonparam',T=T) 
-test2 <- pred(estim_param, X, model= model, estim.method= 'paramML',T=T) 
+test1 <- pred(estim, X,  estim.method= 'nonparam',times = times)
+test2 <- pred(estim_param, X,estim.method= 'paramML', times = times) 
 
 #- Other possible plots
 par(mfrow=c(1,2))

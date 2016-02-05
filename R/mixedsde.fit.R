@@ -1,9 +1,8 @@
-#' Estimation Of The Random Effects In Mixed Stochastic Differential Equations
+ #' Estimation Of The Random Effects In Mixed Stochastic Differential Equations
 #' 
 #' @description Estimation of the random effects \eqn{(\alpha_j, \beta_j)} and of their density, parametrically or nonparametrically in the mixed SDE
 #'  \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma a(X_j(t)) dW_j(t)}.
 #' @param times vector of observation times
-#' blabla
 #' @param X matrix of the M trajectories (each row is a trajectory with as much columns as observations)
 #' @param model name of the SDE: 'OU' (Ornstein-Uhlenbeck) or 'CIR' (Cox-Ingersoll-Ross)
 #' @param random random effects in the drift: 1 if one additive random effect, 2 if one multiplicative random effect or c(1,2) if 2 random effects
@@ -18,7 +17,7 @@
 #' \item{index}{is the vector of subscript in \eqn{1,...,M} where the estimation of \eqn{phi} has been done,  most of the time \eqn{index= 1:M}}
 #' \item{estimphi}{matrix of estimators of \eqn{\phi=\alpha, or \beta, or (\alpha,\beta)} from the efficient statitics (see \code{\link{UV}}), matrix of two lines if random =c(1,2), numerical type otherwise}
 #' \item{gridf}{grid of values on which the estimated is done for the nonparametric method, otherwise, grid used for the plots, matrix form}
-#' \item{estimf}{estimator of the density of \eqn{\phi} from a kernel estimator from \code{\link[stats]{density}} or \code{\link[MASS]{kde2D}}, matrix form: one line if one random effect or square matrix otherwise}
+#' \item{estimf}{estimator of the density of \eqn{\phi} from a kernel estimator from package: stats, function: density, or package: MASS, function: kde2D. Matrix form: one line if one random effect or square matrix otherwise}
 #' If there is a truncation threshold in the estimator
 #' \item{cutoff}{the binary vector of cutoff, FALSE otherwise}
 #' \item{estimphi_trunc}{troncated estimator of \eqn{\phi}, vector or matrix of 0 if we do not use truncation, matrix of two lines if random =c(1,2), numerical type otherwise}
@@ -28,6 +27,9 @@
 #' \item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
 #' \item{bic}{BIC criterium, 0 if we do nonparametric estimation}
 #' \item{aic}{AIC criterium, 0 if we do nonparametric estimation}
+#' \item{model}{initial choice}
+#' \item{random}{initial choice}
+#' \item{fixed}{initial choice}
 #' 
 #' @details
 #' Estimation of the random effects density from M independent trajectories of the SDE (the Brownian motions \eqn{Wj} are independent), with linear drift. Two diffusions are implemented, with one or two random effects:
@@ -81,7 +83,7 @@
 #' #for each time \eqn{ti}. The outputs of the function are: a list of matrices \code{Xnew} length M, matrix of quantiles \code{quantiles} dimension MxN and the 
 #' #number of the trajectory for the plot \code{plotnumj} 
 #' 
-#' validation <- Freq.valid(estim, X, model= model,  times=times, random = random, fixed = fixed, numj=floor(runif(1,1,M)))
+#' validation <- Freq.valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
 #' 
 #' # Parametric estimation
 #' estim.method<-'paramML'
@@ -99,8 +101,8 @@
 #' # The function return on a list the prediction of phi \code{phipred}, the prediction of X \code{Xpred}, 
 #' # and the indexes of the corresponding true trajectories \code{indexpred} 
 #' 
-#' test1 <- pred(estim, X, model= model, random=random, fixed= fixed, estim.method= 'nonparam',T=T) 
-#' test2 <- pred(estim_param,  X, model= model, random=random, fixed= fixed, estim.method= 'paramML',T=T) 
+#' test1 <- pred(estim, X,  estim.method= 'nonparam', times=times)
+#' test2 <- pred(estim_param,  X,  estim.method= 'paramML', times=times)
 #' 
 #' # More graph
 #' fhat <- outputsNP$estimf  
@@ -575,16 +577,36 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             }
             
         }
-        return(new(Class = "Freq.fit", gridf = gridf, mu = mu, omega = omega, cutoff = cutoff, sigma2 = sigma2, estimf_trunc = estimf_trunc, estimphi_trunc = estimphi_trunc, 
+        return(new(Class = "Freq.fit", model = model, random = random, fixed = fixed, gridf = gridf, mu = mu, omega = omega, cutoff = cutoff, sigma2 = sigma2, estimf_trunc = estimf_trunc, estimphi_trunc = estimphi_trunc, 
             estimf = estimf, estimphi = estimphi, index = index, bic = bic, aic = aic))
         
     }
 }
 
 
-#' S4 class for the frequentist estimation results
-setClass(Class = "Freq.fit", representation = representation(gridf = "matrix", mu = "numeric", omega = "numeric", cutoff = "logical", sigma2 = "numeric", estimf_trunc = "matrix", 
-    estimphi_trunc = "matrix", index = "numeric", estimphi = "matrix", estimf = "matrix", bic = "numeric", aic = "numeric"))
+#' S4 class for the frequentist estimation results  
+#'  
+#' @slot model character 'OU' or 'CIR'
+#' @slot random numeric 1, 2, or c(1,2)
+#' @slot fixed numeric value of the fixed effect if there is one 
+#' @slot gridf matrix of values on which the estimated is done
+#' @slot mu numeric MLE estimator for parametric approach
+#' @slot omega numeric  MLE estimator for parametric approach
+#' @slot cutoff value of the cutoff if there is one
+#' @slot sigma2 numeric estimated value of \eqn{\sigma^2}
+#' @slot estimf_trunc matrix estimator of the density of \eqn{\phi} for the truncated estimateur of the random effects
+#' @slot estimphi_trunc matrix truncated estimator of the random effects
+#' @slot index index of the used trajectories
+#' @slot estimphi matrix of the estimator of the random effects
+#' @slot estimf estimator of the density of \eqn{\phi}
+#' @slot bic numeric bic 
+#' @slot aic numeric aic
+
+setClass(Class = "Freq.fit", representation = representation( model = "character", random = "numeric", fixed = "numeric", gridf = "matrix", mu = "numeric", 
+      omega = "numeric", cutoff = "logical", sigma2 = "numeric", estimf_trunc = "matrix", estimphi_trunc = "matrix", index = "numeric", estimphi = "matrix", 
+      estimf = "matrix", bic = "numeric", aic = "numeric"))
+
+
 
 #' S4 class for the Bayesian estimation results
 #' @slot sigma2 vector of posterior samples for \eqn{\sigma^2}
@@ -728,8 +750,9 @@ setMethod("summary", "Freq.fit", function(object) {
             }
         }
     }
-    
 })
+
+
 
 #' Short summary of the results of class object Bayes.fit
 #' @description Method for the S4 class Bayes.fit
@@ -1782,7 +1805,6 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
 #' and one the left the corresponding qq-plot for each time.
 #' @param x Freq.fit class
 #' @param Xtrue observed data
-#' @param model OU or CIR
 #' @param times observation times
 #' @param Mrep number of trajectories to be drawn
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
@@ -1792,7 +1814,7 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setGeneric("Freq.valid", function(x, Xtrue, model, times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
+setGeneric("Freq.valid", function(x, Xtrue,  times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
     standardGeneric("Freq.valid")
 })
 
@@ -1804,7 +1826,6 @@ setGeneric("Freq.valid", function(x, Xtrue, model, times, Mrep = 100, newwindow 
 #' and one the left the corresponding qq-plot for each time.
 #' @param x Freq.fit class
 #' @param Xtrue observed data
-#' @param model OU or CIR
 #' @param times observation times
 #' @param Mrep number of trajectories to be drawn
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
@@ -1814,7 +1835,7 @@ setGeneric("Freq.valid", function(x, Xtrue, model, times, Mrep = 100, newwindow 
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtrue, model, times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
+setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtrue,  times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
     if (newwindow) {
         x11(width = 10)
     }
@@ -1835,13 +1856,13 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
             
             Xnew <- as.list(1:M)  # for each phihat_j a new sample size Mrep
             
-            if (model == "OU") {
+            if (x@model == "OU") {
                 for (j in 1:M) {
                   Xnew[[j]] <- matrix(0, Mrep, N + 1)
                   Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat[, j], sig), model = "OU", M = Mrep))
                 }
             }
-            if (model == "CIR") {
+            if (x@model == "CIR") {
                 for (j in 1:M) {
                   Xnew[[j]] <- matrix(0, Mrep, N + 1)
                   Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat[, j], sig), model = "CIR", 
@@ -1878,40 +1899,40 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
             
             Xnew <- as.list(1:M)  # for each phihat_j a new sample size Mrep
             
-            if (sum(random) == 1) {
-                if (model == "OU") {
+            if (sum(x@random) == 1) {
+                if (x@model == "OU") {
                   
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
-                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat[j], fixed, sig), model = "OU", 
+                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat[j], x@fixed, sig), model = "OU", 
                       M = Mrep))
                   }
                 }
-                if (model == "CIR") {
+                if (x@model == "CIR") {
                   
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
-                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat[j], fixed, sig), model = "CIR", 
+                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat[j], x@xfixed, sig), model = "CIR", 
                       M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
                   }
                 }
             }
             
-            if (sum(random) == 2) {
+            if (sum(x@random) == 2) {
                 
-                if (model == "OU") {
+                if (x@model == "OU") {
                   
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
-                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(fixed, phihat[j], sig), model = "OU", 
+                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(x@fixed, phihat[j], sig), model = "OU", 
                       M = Mrep))
                   }
                 }
-                if (model == "CIR") {
+                if (x@model == "CIR") {
                   
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
-                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(fixed, phihat[j], sig), model = "CIR", 
+                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(x@fixed, phihat[j], sig), model = "CIR", 
                       M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
                     
                   }
@@ -1955,10 +1976,10 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
             
             phihat <- x@estimphi[, numj]
             
-            if (model == "OU") {
+            if (x@model == "OU") {
                 Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat, sig), model = "OU", M = Mrep))
             }
-            if (model == "CIR") {
+            if (x@model == "CIR") {
                 Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat, sig), model = "CIR", M = Mrep, 
                   sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
             }
@@ -1967,22 +1988,22 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
         if (dim(x@gridf)[1] == 1) {
             phihat <- x@estimphi[numj]
             
-            if (sum(random) == 1) {
-                if (model == "OU") {
-                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat, fixed, sig), model = "OU", M = Mrep))
+            if (sum(x@random) == 1) {
+                if (x@model == "OU") {
+                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat, x@fixed, sig), model = "OU", M = Mrep))
                 }
                 
-                if (model == "CIR") {
-                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat, fixed, sig), model = "CIR", 
+                if (x@model == "CIR") {
+                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat, x@fixed, sig), model = "CIR", 
                     M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
                 }
             }
-            if (sum(random) == 2) {
-                if (model == "OU") {
-                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(fixed, phihat, sig), model = "OU", M = Mrep))
+            if (sum(x@random) == 2) {
+                if (x@model == "OU") {
+                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(x@fixed, phihat, sig), model = "OU", M = Mrep))
                 }
-                if (model == "CIR") {
-                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(fixed, phihat, sig), model = "CIR", 
+                if (x@model == "CIR") {
+                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(x@fixed, phihat, sig), model = "CIR", 
                     M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
                 }
             }
@@ -2029,18 +2050,13 @@ setGeneric("pred", function(x, ...) {
 
 
 
-# setGeneric("Freq.pred", function(x, Xtrue, model, estim.method, T, level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
-#     standardGeneric("Freq.pred")
-# })
-
 #' Prediction method for the Freq.fit class object
 #' 
 #' @description Frequentist prediction
 #' @param x Freq.fit class
 #' @param Xtrue observed data
-#' @param model OU or CIR
 #' @param estim.method nonparam or paramML
-#' @param T last time point
+#' @param times observation times
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.pred logical(1), if TRUE, the results are depicted grafically
@@ -2048,10 +2064,12 @@ setGeneric("pred", function(x, ...) {
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, model, estim.method, T, level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
+setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, estim.method, times, level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
     if (newwindow) {
         x11(width = 10)
     }
+    timestrue <- times
+    T <- timestrue[length(timestrue)]
     
     if (dim(x@gridf)[1] == 1) {
         index <- x@index
@@ -2063,7 +2081,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
         Xpred <- matrix(0, M, N + 1)
         times <- seq(0, T, by = delta)
         
-        if (sum(random) == 1) {
+        if (sum(x@random) == 1) {
             phipred <- rep(0, M)
             if (estim.method == "nonparam") {
                 p <- x@estimf/sum(x@estimf)
@@ -2075,25 +2093,25 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
                 phipred <- rnorm(M, x@mu, x@omega)
             }
             
-            if (model == "OU") {
+            if (x@model == "OU") {
                 indexpred <- 1:M
                 for (j in 1:M) {
-                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(phipred[j], fixed, sig), model = "OU")
+                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(phipred[j], x@fixed, sig), model = "OU")
                 }
             }
-            if (model == "CIR") {
+            if (x@model == "CIR") {
                 indexpred <- which(phipred > 0)
                 phipred <- phipred[indexpred]
                 Mpred <- length(phipred)
                 Xpred <- matrix(0, Mpred, N + 1)
                 for (j in 1:Mpred) {
-                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", theta = c(phipred[j], fixed, sig), model = "CIR", 
+                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", theta = c(phipred[j], x@fixed, sig), model = "CIR", 
                     sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)))
                 }
             }
         }
         
-        if (sum(random) == 2) {
+        if (sum(x@random) == 2) {
             
             phipred <- rep(0, M)
             if (estim.method == "nonparam") {
@@ -2106,23 +2124,23 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
                 phipred <- rnorm(M, x@mu, x@omega)
             }
             
-            if (model == "OU") {
+            if (x@model == "OU") {
                 indexpred <- which(phipred > 0)
                 phipred <- phipred[indexpred]
                 Mpred <- length(indexpred)
                 Xpred <- matrix(0, Mpred, N + 1)
                 
                 for (j in 1:Mpred) {
-                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(fixed, phipred[j], sig), model = "OU")
+                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(x@fixed, phipred[j], sig), model = "OU")
                 }
             }
-            if (model == "CIR") {
+            if (x@model == "CIR") {
                 indexpred <- which(phipred > 0)
                 phipred <- phipred[indexpred]
                 Mpred <- length(phipred)
                 Xpred <- matrix(0, Mpred, N + 1)
                 for (j in 1:Mpred) {
-                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", theta = c(fixed, phipred[j], sig), model = "CIR", 
+                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", theta = c(x@fixed, phipred[j], sig), model = "CIR", 
                     sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)))
                 }
             }
@@ -2134,9 +2152,9 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
             plot(sort(x@estimphi[indexpred]), sort(phipred), pch = 18, xlim = c(min(x@estimphi, phipred) * 0.8, max(x@estimphi, phipred) * 1.2), ylim = c(min(x@estimphi, 
                 phipred) * 0.8, max(x@estimphi, phipred) * 1.2), ylab = "", xlab = "")
             abline(0, 1)
-            plot(times, Xtrue[indexpred[1], ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 1.5), main = "True trajectories")
+            plot(timestrue, Xtrue[indexpred[1], ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 1.5), main = "True trajectories")
             for (j in indexpred) {
-                lines(times, Xtrue[j, ], col = j)
+                lines(timestrue, Xtrue[j, ], col = j)
             }
             
             plot(times, Xpred[1, ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 1.5), main = "Predictive trajectories")
@@ -2196,7 +2214,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
             }
         }
         
-        if (model == "OU") {
+        if (x@model == "OU") {
             indexpred <- which(phipred[2, ] > 0)
             phipred <- phipred[, indexpred]
             Mpred <- length(indexpred)
@@ -2205,7 +2223,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
                 Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(phipred[, j], sig), model = "OU")
             }
         }
-        if (model == "CIR") {
+        if (x@model == "CIR") {
             indexpred <- which((phipred[1, ] > 0) & (phipred[2, ] > 0))
             phipred <- phipred[, indexpred]
             Mpred <- length(indexpred)
@@ -2232,9 +2250,9 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, mo
                 lines(times, Xtrue[j, ], col = j)
             }
             
-            plot(times, Xpred[1, ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 1.5), main = "Predictive trajectories")
+            plot(timestrue, Xpred[1, ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 1.5), main = "Predictive trajectories")
             for (j in 1:length(indexpred)) {
-                lines(times, Xpred[j, ], col = 1)
+                lines(timestrue, Xpred[j, ], col = 1)
             }
             
             l.bound = level/2

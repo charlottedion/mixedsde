@@ -32,7 +32,7 @@ then grid is chosen as a function of the estimated values of the random effects.
 \item{index}{is the vector of subscript in \eqn{1,...,M} where the estimation of \eqn{phi} has been done,  most of the time \eqn{index= 1:M}}
 \item{estimphi}{matrix of estimators of \eqn{\phi=\alpha, or \beta, or (\alpha,\beta)} from the efficient statitics (see \code{\link{UV}}), matrix of two lines if random =c(1,2), numerical type otherwise}
 \item{gridf}{grid of values on which the estimated is done for the nonparametric method, otherwise, grid used for the plots, matrix form}
-\item{estimf}{estimator of the density of \eqn{\phi} from a kernel estimator from \code{\link[stats]{density}} or \code{\link[MASS]{kde2D}}, matrix form: one line if one random effect or square matrix otherwise}
+\item{estimf}{estimator of the density of \eqn{\phi} from a kernel estimator from package: stats, function: density, or package: MASS, function: kde2D. Matrix form: one line if one random effect or square matrix otherwise}
 If there is a truncation threshold in the estimator
 \item{cutoff}{the binary vector of cutoff, FALSE otherwise}
 \item{estimphi_trunc}{troncated estimator of \eqn{\phi}, vector or matrix of 0 if we do not use truncation, matrix of two lines if random =c(1,2), numerical type otherwise}
@@ -42,6 +42,9 @@ For the parametric maximum likelihood estimation
 \item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
 \item{bic}{BIC criterium, 0 if we do nonparametric estimation}
 \item{aic}{AIC criterium, 0 if we do nonparametric estimation}
+\item{model}{initial choice}
+\item{random}{initial choice}
+\item{fixed}{initial choice}
 }
 \description{
 Estimation of the random effects \eqn{(\alpha_j, \beta_j)} and of their density, parametrically or nonparametrically in the mixed SDE
@@ -66,6 +69,9 @@ If random = c(1,2), \eqn{dXj(t)= (\alpha_j- \beta_j Xj(t))dt + \sigma \sqrt{Xj(t
 The nonparametric method estimates the density of the random effects with a kernel estimator (one-dimensional or two-dimensional density).
 The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects.
 }
+
+
+
 \examples{
 #Choices
 model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'gammainvgamma2';
@@ -99,7 +105,7 @@ print(estim)
 #for each time \\eqn{ti}. The outputs of the function are: a list of matrices \\code{Xnew} length M, matrix of quantiles \\code{quantiles} dimension MxN and the
 #number of the trajectory for the plot \\code{plotnumj}
 
-validation <- Freq.valid(estim, X, model= model,  times=times, random = random, fixed = fixed, numj=floor(runif(1,1,M)))
+validation <- Freq.valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
 
 # Parametric estimation
 estim.method<-'paramML'
@@ -117,8 +123,8 @@ summary(estim_param)
 # The function return on a list the prediction of phi \\code{phipred}, the prediction of X \\code{Xpred},
 # and the indexes of the corresponding true trajectories \\code{indexpred}
 
-test1 <- pred(estim, X, model= model, random=random, fixed= fixed, estim.method= 'nonparam',T=T)
-test2 <- pred(estim_param,  X, model= model, random=random, fixed= fixed, estim.method= 'paramML',T=T)
+test1 <- pred(estim, X,  estim.method= 'nonparam', times=times)
+test2 <- pred(estim_param,  X,  estim.method= 'paramML', times=times)
 
 # More graph
 fhat <- outputsNP$estimf

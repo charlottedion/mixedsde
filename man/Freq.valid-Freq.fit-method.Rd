@@ -5,15 +5,13 @@
 \alias{Freq.valid,Freq.fit-method}
 \title{Validation of the chosen model.}
 \usage{
-\S4method{Freq.valid}{Freq.fit}(x, Xtrue, model, times, Mrep = 100,
+\S4method{Freq.valid}{Freq.fit}(x, Xtrue, times, Mrep = 100,
   newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...)
 }
 \arguments{
 \item{x}{Freq.fit class}
 
 \item{Xtrue}{observed data}
-
-\item{model}{OU or CIR}
 
 \item{times}{observation times}
 

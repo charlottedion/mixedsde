@@ -5,7 +5,7 @@
 \alias{pred,Freq.fit-method}
 \title{Prediction method for the Freq.fit class object}
 \usage{
-\S4method{pred}{Freq.fit}(x, Xtrue, model, estim.method, T, level = 0.05,
+\S4method{pred}{Freq.fit}(x, Xtrue, estim.method, times, level = 0.05,
   newwindow = FALSE, plot.pred = TRUE, ...)
 }
 \arguments{
@@ -13,11 +13,9 @@
 
 \item{Xtrue}{observed data}
 
-\item{model}{OU or CIR}
-
 \item{estim.method}{nonparam or paramML}
 
-\item{T}{last time point}
+\item{times}{observation times}
 
 \item{level}{alpha for the predicion intervals, default 0.05}
 

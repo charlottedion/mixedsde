@@ -126,7 +126,7 @@ phi <- simuOU$phi
 hist(phi)
 }
 \references{
-This function mixedsde.sim is based on the sde.sim function of package sde, \code{\link[sde]{sde.sim}}. See Simulation and Inference for stochastic differential equation, S.Iacus, \emph{Springer Series in Statistics 2008}
+This function mixedsde.sim is based on the sde.sim function of package sde, function sde.sim. See Simulation and Inference for stochastic differential equation, S.Iacus, \emph{Springer Series in Statistics 2008}
 Chapter 2
 }
 \seealso{
