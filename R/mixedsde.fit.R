@@ -3,6 +3,7 @@
 #' @description Estimation of the random effects \eqn{(\alpha_j, \beta_j)} and of their density, parametrically or nonparametrically in the mixed SDE
 #'  \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma a(X_j(t)) dW_j(t)}.
 #' @param times vector of observation times
+#' blabla
 #' @param X matrix of the M trajectories (each row is a trajectory with as much columns as observations)
 #' @param model name of the SDE: 'OU' (Ornstein-Uhlenbeck) or 'CIR' (Cox-Ingersoll-Ross)
 #' @param random random effects in the drift: 1 if one additive random effect, 2 if one multiplicative random effect or c(1,2) if 2 random effects
