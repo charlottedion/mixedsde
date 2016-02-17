@@ -2040,11 +2040,19 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
 #' 
 #' @description Prediction
 #' @param x Freq.fit or Bayes.fit class
+#' @param Xtrue observed data
+#' @param estim.method nonparam or paramML
+#' @param times observation times
+#' @param level alpha for the predicion intervals, default 0.05
+#' @param newwindow logical(1), if TRUE, a new window is opened for the plot
+#' @param plot.pred logical(1), if TRUE, the results are depicted grafically
+
+
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setGeneric("pred", function(x, ...) {
+setGeneric("pred", function(x, Xtrue, estim.method, times, level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
   standardGeneric("pred")
 })
 
@@ -2070,12 +2078,12 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, es
     }
     timestrue <- times
     T <- timestrue[length(timestrue)]
+    sig <- sqrt(x@sigma2)
+    
     
     if (dim(x@gridf)[1] == 1) {
         index <- x@index
         M <- length(index)
-        sig <- sqrt(x@sigma2)
-        
         N <- dim(Xtrue)[2] - 1
         delta <- T/N
         Xpred <- matrix(0, M, N + 1)
@@ -2180,9 +2188,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, es
         
         index <- x@index
         M <- length(index)
-        
-        sig <- sqrt(x@sigma2)
-        
+
         N <- dim(Xtrue)[2] - 1
         delta <- T/N
         Xpred <- matrix(0, M, N + 1)
