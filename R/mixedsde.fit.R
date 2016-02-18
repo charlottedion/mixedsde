@@ -286,6 +286,14 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
     Tend <- times[length(times)]
     
     if (estim.method == "paramBayes") {
+      if(model == "CIR"){
+        if(any(X < 0 )){
+          Xold <- X; indices <- sapply(1:M, function(i) any(X[i,] < 0))
+          X <- X[!indices, ]
+          print("attention: series"); print(which(indices)); print("are skipped for estimation because of negative values")
+        }
+      }
+      
       if(missing(prior)){
         ind.4.prior <- 1:max(3, ceiling(M/10))
         X.4.prior <- X[ind.4.prior, ]
@@ -338,10 +346,11 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
       }else{
         ind.4.prior <- M + 1
       }
-        res <- BayesianNormal(times, X[-ind.4.prior,], model, prior, start = list(mu = prior$m, sigma = prior$beta.sigma/(prior$alpha.sigma - 1)), random, nMCMC)
-        he <- diagnostic(res, random)
-        return(new(Class = "Bayes.fit", prior = prior, alpha = as.matrix(res$alpha), beta = as.matrix(res$beta), random = random, mu = as.matrix(res$mu), omega = as.matrix(res$omega), 
-            sigma2 = res$sigma2, burnIn = he$burnIn, thinning = he$thinning, model = model, times = times, Xdata = X, ind.4.prior = ind.4.prior))
+      
+      res <- BayesianNormal(times, X[-ind.4.prior,], model, prior, start = list(mu = prior$m, sigma = prior$beta.sigma/(prior$alpha.sigma - 1)), random, nMCMC)
+      he <- diagnostic(res, random)
+      return(new(Class = "Bayes.fit", prior = prior, alpha = as.matrix(res$alpha), beta = as.matrix(res$beta), random = random, mu = as.matrix(res$mu), omega = as.matrix(res$omega), 
+          sigma2 = res$sigma2, burnIn = he$burnIn, thinning = he$thinning, model = model, times = times, Xdata = X, ind.4.prior = ind.4.prior))
         
     } else {
         
