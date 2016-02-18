@@ -31,6 +31,23 @@
 #' \item{random}{initial choice}
 #' \item{fixed}{initial choice}
 #' 
+#' For the parametric Bayesian estimation 
+#' \item{alpha}{posterior samples (Markov chain) of \eqn{\alpha}}
+#' \item{beta}{posterior samples (Markov chain) of \eqn{\beta}}
+#' \item{mu}{posterior samples (Markov chain) of \eqn{\mu}}
+#' \item{omega}{posterior samples (Markov chain) of \eqn{\Omega}}
+#' \item{sigma2}{posterior samples (Markov chain) of \eqn{\sigma^2}}
+
+#' \item{mu}{estimator of the mean of the random effects normal density, 0 if we do nonparametric estimation}
+#' \item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
+#' \item{model}{initial choice}
+#' \item{random}{initial choice}
+#' \item{burnIn}{proposal for burn-in period}
+#' \item{thinning}{proposal for thinning rate}
+#' \item{prior}{initial choice or calculated by the first 10\% of series}
+#' \item{times}{initial choice}
+#' \item{Xdata}{initial choice}
+#' \item{ind.4.prior}{in the case of calculation of prior parameters: the indices of used series}
 #' @details
 #' Estimation of the random effects density from M independent trajectories of the SDE (the Brownian motions \eqn{Wj} are independent), with linear drift. Two diffusions are implemented, with one or two random effects:
 #' \subsection{Ornstein-Uhlenbeck model (OU)}{
