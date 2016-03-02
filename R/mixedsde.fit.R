@@ -100,7 +100,7 @@
 #' #for each time \eqn{ti}. The outputs of the function are: a list of matrices \code{Xnew} length M, matrix of quantiles \code{quantiles} dimension MxN and the 
 #' #number of the trajectory for the plot \code{plotnumj} 
 #' 
-#' validation <- Freq.valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
+#' validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
 #' 
 #' # Parametric estimation
 #' estim.method<-'paramML'
@@ -174,6 +174,7 @@
 #' alpha.sigma=10, beta.sigma=sigma^2*9)
 #' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
 #' 
+#' validation <- valid(estim_Bayes, numj = 10)
 #' plot(estim_Bayes)
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
@@ -1829,19 +1830,13 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
 #' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
 #' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
 #' and one the left the corresponding qq-plot for each time.
-#' @param x Freq.fit class
-#' @param Xtrue observed data
-#' @param times observation times
-#' @param Mrep number of trajectories to be drawn
-#' @param newwindow logical(1), if TRUE, a new window is opened for the plot
-#' @param plot.valid logical(1), if TRUE default) a plot is given
-#' @param numj the number of the chosen trajectory for the validation
-#' @param ... optional plot parameters
+#' @param x Freq.fit or Bayes.fit class
+#' @param ... other optional parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setGeneric("Freq.valid", function(x, Xtrue,  times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
-    standardGeneric("Freq.valid")
+setGeneric("valid", function(x, ...) {
+    standardGeneric("valid")
 })
 
 
@@ -1861,7 +1856,7 @@ setGeneric("Freq.valid", function(x, Xtrue,  times, Mrep = 100, newwindow = FALS
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtrue,  times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
+setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue,  times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
     if (newwindow) {
         x11(width = 10)
     }
@@ -2060,23 +2055,7 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
     return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
 })
 
-#' Validation of the chosen model.
-#' 
-#' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
-#' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
-#' and one the left the corresponding qq-plot for each time.
-#' @param x Freq.fit class
-#' @param Mrep number of trajectories to be drawn
-#' @param newwindow logical(1), if TRUE, a new window is opened for the plot
-#' @param plot.valid logical(1), if TRUE default) a plot is given
-#' @param numj the number of the chosen trajectory for the validation
-#' @param ... optional plot parameters
-#' @references 
-#' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-#' 
-setGeneric("Bayes.valid", function(x, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
-  standardGeneric("Bayes.valid")
-})
+
 #' Validation of the chosen model.
 #' 
 #' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
@@ -2091,15 +2070,16 @@ setGeneric("Bayes.valid", function(x, Mrep = 100, newwindow = FALSE, plot.valid 
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "Bayes.valid", signature = "Bayes.fit", definition = function(x, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj, ...) {
+setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj, ...) {
   if (newwindow) {
     x11(width = 10)
   }
-  times <- x@times; N <- length(times) - 1
+  times <- round(x@times, 10); N <- length(times) - 1
   Xtrue <- x@X[-x@ind.4.prior,]
   Tend <- max(times)
   del <- round(min(diff(times)), 10)
   timessimu <- round(seq(del, Tend, by = del), 10)
+  vecttimes <- intersect(timessimu, times)
   
   M <- dim(Xtrue)[1]
   sigma <- sqrt(x@sigma2)
@@ -2135,7 +2115,6 @@ setMethod(f = "Bayes.valid", signature = "Bayes.fit", definition = function(x, M
       }
     }
 
-    vecttimes <- intersect(round(timessimu, 10), round(times, 10))
     N <- length(vecttimes)
     
     q <- matrix(0, M, N)
@@ -2188,7 +2167,6 @@ setMethod(f = "Bayes.valid", signature = "Bayes.fit", definition = function(x, M
       }
     }
 
-    vecttimes <- intersect(round(timessimu, 10), round(times, 10))
     N <- length(vecttimes)
     
     q <- rep(0, N)
