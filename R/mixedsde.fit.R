@@ -46,7 +46,7 @@
 #' \item{thinning}{proposal for thinning rate}
 #' \item{prior}{initial choice or calculated by the first 10\% of series}
 #' \item{times}{initial choice}
-#' \item{Xdata}{initial choice}
+#' \item{X}{initial choice}
 #' \item{ind.4.prior}{in the case of calculation of prior parameters: the indices of used series}
 #' @details
 #' Estimation of the random effects density from M independent trajectories of the SDE (the Brownian motions \eqn{Wj} are independent), with linear drift. Two diffusions are implemented, with one or two random effects:
@@ -367,7 +367,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
       res <- BayesianNormal(times, X[-ind.4.prior,], model, prior, start = list(mu = prior$m, sigma = prior$beta.sigma/(prior$alpha.sigma - 1)), random, nMCMC)
       he <- diagnostic(res, random)
       return(new(Class = "Bayes.fit", prior = prior, alpha = as.matrix(res$alpha), beta = as.matrix(res$beta), random = random, mu = as.matrix(res$mu), omega = as.matrix(res$omega), 
-          sigma2 = res$sigma2, burnIn = he$burnIn, thinning = he$thinning, model = model, times = times, Xdata = X, ind.4.prior = ind.4.prior))
+          sigma2 = res$sigma2, burnIn = he$burnIn, thinning = he$thinning, model = model, times = times, X = X, ind.4.prior = ind.4.prior))
         
     } else {
         
@@ -646,11 +646,11 @@ setClass(Class = "Freq.fit", representation = representation( model = "character
 #' @slot model 'OU' or 'CIR'
 #' @slot prior list of prior values, input variable or calculated by the first 10\% of series
 #' @slot times vector of observation times, storage of input variable
-#' @slot Xdata matrix of observations, storage of input variable
+#' @slot X matrix of observations, storage of input variable
 #' @slot ind.4.prior indices of series usaged for the prior parameter calculation, if prior knowledge is availabe, M+1
 #' 
 setClass(Class = "Bayes.fit", representation = representation(sigma2 = "numeric", mu = "matrix", omega = "matrix", alpha = "matrix", beta = "matrix", random = "numeric", 
-    burnIn = "numeric", thinning = "numeric", model = "character", prior = "list", times = "numeric", Xdata = "matrix", ind.4.prior = "numeric"))
+    burnIn = "numeric", thinning = "numeric", model = "character", prior = "list", times = "numeric", X = "matrix", ind.4.prior = "numeric"))
 
 #' S4 class for the Bayesian prediction results
 #' @slot phi.pred matrix of predictive samples for the random effect
@@ -698,7 +698,7 @@ setMethod(f = "out", signature = "Freq.fit", definition = function(x) {
 #'
 setMethod(f = "out", signature = "Bayes.fit", definition = function(x) {
     list(sigma2 = x@sigma2, mu = x@mu, omega = x@omega, alpha = x@alpha, beta = x@beta, random = x@random, model = x@model, prior = x@prior, burnIn = x@burnIn, thinning = x@thinning, 
-        times = x@times, Xdata = x@Xdata, ind.4.prior = x@ind.4.prior)
+        times = x@times, X = x@X, ind.4.prior = x@ind.4.prior)
 })
 ######## 
 #' Transfers the class object Bayes.pred to a list
@@ -1458,9 +1458,9 @@ setMethod(f = "plot", signature = "Bayes.pred", definition = function(x, newwind
     
     if(length(x@qu.u) == 0){
       op <- par(mfrow = c(1, 1), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-      plot(estim$times, x@Xpred[1,], type = "l", ylim = range(c(range(x@Xpred), range(estim$Xdata))), xlab = xlab, ylab = ylab, col = col, lwd = lwd)
+      plot(estim$times, x@Xpred[1,], type = "l", ylim = range(c(range(x@Xpred), range(estim$X))), xlab = xlab, ylab = ylab, col = col, lwd = lwd)
       for(i in 2:nrow(x@Xpred[i,])) lines(estim$times, x@Xpred[1,], col=col, lwd=lwd)
-      for(i in 1:nrow(estim$Xdata)) lines(estim$times, estim$Xdata[i,])
+      for(i in 1:nrow(estim$X)) lines(estim$times, estim$X[i,])
       
       if (plot.legend) 
         legend("bottomright", c("data", "drawn trajectories"), lty = 1, col = c(1, col), lwd = c(1, lwd), box.lty = 0, inset = 0.01)
@@ -1472,12 +1472,12 @@ setMethod(f = "plot", signature = "Bayes.pred", definition = function(x, newwind
       
       op <- par(mfrow = c(1, 2), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
       if (missing(ylim)) 
-        ylim <- range(c(min(qu.l), max(qu.u), range(estim$Xdata)))
+        ylim <- range(c(min(qu.l), max(qu.u), range(estim$X)))
       
       plot(estim$times[-1], qu.l, type = "l", ylim = ylim, xlab = xlab, ylab = ylab, col = col, lwd = lwd, ...)
       lines(estim$times[-1], qu.u, col = col, lwd = lwd, ...)
       
-      for (i in 1:nrow(estim$Xdata)) lines(estim$times, estim$Xdata[i, ])
+      for (i in 1:nrow(estim$X)) lines(estim$times, estim$X[i, ])
       lines(estim$times[-1], qu.l, col = col, lwd = lwd, ...)
       lines(estim$times[-1], qu.u, col = col, lwd = lwd, ...)
       
@@ -1760,7 +1760,7 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
   
   l.li <- length(list.classes)
 
-  Xdata <- lapply(1:l.li, function(i) list.classes[[i]]@estim$Xdata)
+  X <- lapply(1:l.li, function(i) list.classes[[i]]@estim$X)
   times <- lapply(1:l.li, function(i) list.classes[[i]]@estim$times)
   
   if(any(sapply(1:l.li, function(i) length(list.classes[[i]]@qu.u)) == 0)){
@@ -1769,7 +1769,7 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
       for(i in 1:l.li){
         plot(times[[i]], list.classes[[i]]@Xpred[1,], type = "l", ylim = range(list.classes[[i]]@Xpred), xlab = xlab, ylab = ylab, col=2, lwd = 2, ...)
         for(j in 1:nrow(list.classes[[i]]@Xpred)) lines(times[[i]], list.classes[[i]]@Xpred[j,], lwd=2, col=2)
-        for(j in 1:nrow(Xdata[[i]])) lines(times[[i]], Xdata[[i]][j,])
+        for(j in 1:nrow(X[[i]])) lines(times[[i]], X[[i]][j,])
         if (plot.legend) 
           legend("bottomright", c("data", "drawn trajectories"), lty = 1, col = c(1, 2), lwd = c(1, 2), cex=0.7, box.lty = 0, inset = 0.01)
       }
@@ -1777,7 +1777,7 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
       for(i in 1:l.li){
         plot(times[[i]], list.classes[[i]]@Xpred[1,], type = "l", ylim = range(list.classes[[i]]@Xpred), main=names[i], xlab = xlab, ylab = ylab, col=2, lwd = 2, ...)
         for(j in 1:nrow(list.classes[[i]]@Xpred)) lines(times[[i]], list.classes[[i]]@Xpred[j,], lwd=2, col=2)
-        for(j in 1:nrow(Xdata[[i]])) lines(times[[i]], Xdata[[i]][j,])
+        for(j in 1:nrow(X[[i]])) lines(times[[i]], X[[i]][j,])
         if (plot.legend) 
           legend("bottomright", c("data", "drawn trajectories"), lty = 1, col = c(1, 2), lwd = c(1, 2), cex=0.7, box.lty = 0, inset = 0.01)
       }
@@ -1794,7 +1794,7 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
     plot(times[[1]][-1], qu.l[[1]], type = "l", ylim = ylim, xlab = xlab, ylab = ylab, lwd = 2, ...)
     lines(times[[1]][-1], qu.u[[1]], lwd = 2, ...)
     
-    for(j in 1:l.li) for (i in 1:nrow(Xdata[[1]])) lines(times[[j]], Xdata[[j]][i, ], col="grey")
+    for(j in 1:l.li) for (i in 1:nrow(X[[1]])) lines(times[[j]], X[[j]][i, ], col="grey")
     for(i in 2:l.li) lines(times[[i]][-1], qu.l[[i]], col = i, lwd = 2, ...)
     for(i in 2:l.li) lines(times[[i]][-1], qu.u[[i]], col = i, lwd = 2, ...)
     
@@ -1870,7 +1870,7 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
     Tend <- max(times)
     del <- round(min(diff(times)), 10)
     timessimu <- round(seq(del, Tend, by = del), 10)
-    Mrep <- 100
+#    Mrep <- 100
     M <- dim(Xtrue)[1]
     sig <- sqrt(x@sigma2)
     
@@ -2058,6 +2058,161 @@ setMethod(f = "Freq.valid", signature = "Freq.fit", definition = function(x, Xtr
         }
     }
     return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
+})
+
+#' Validation of the chosen model.
+#' 
+#' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
+#' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
+#' and one the left the corresponding qq-plot for each time.
+#' @param x Freq.fit class
+#' @param Mrep number of trajectories to be drawn
+#' @param newwindow logical(1), if TRUE, a new window is opened for the plot
+#' @param plot.valid logical(1), if TRUE default) a plot is given
+#' @param numj the number of the chosen trajectory for the validation
+#' @param ... optional plot parameters
+#' @references 
+#' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
+#' 
+setGeneric("Bayes.valid", function(x, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj = NULL, ...) {
+  standardGeneric("Bayes.valid")
+})
+#' Validation of the chosen model.
+#' 
+#' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
+#' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
+#' and one the left the corresponding qq-plot for each time.
+#' @param x Freq.fit class
+#' @param Mrep number of trajectories to be drawn
+#' @param newwindow logical(1), if TRUE, a new window is opened for the plot
+#' @param plot.valid to be added
+#' @param numj to be added
+#' @param ... optional plot parameters
+#' @references 
+#' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
+#' 
+setMethod(f = "Bayes.valid", signature = "Bayes.fit", definition = function(x, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, numj, ...) {
+  if (newwindow) {
+    x11(width = 10)
+  }
+  times <- x@times; N <- length(times) - 1
+  Xtrue <- x@X[-x@ind.4.prior,]
+  Tend <- max(times)
+  del <- round(min(diff(times)), 10)
+  timessimu <- round(seq(del, Tend, by = del), 10)
+  
+  M <- dim(Xtrue)[1]
+  sigma <- sqrt(x@sigma2)
+  
+  if (missing(numj)) {
+    
+    Xnew <- as.list(1:M)  # for each phihat_j a new sample size Mrep
+    
+    if ( length(x@random) == 2 ) {
+      
+      phihat <- rbind( apply(x@alpha, 2, mean), apply(x@beta, 2, mean) )
+
+      for (j in 1:M) {
+        Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, density.phi = "normalnormal", 
+                                  param = c(phihat[1,j], 0, phihat[2,j], 0), sigma=sigma, X0 = Xtrue[j, 1], op.plot=0)$X
+      }
+    } else{
+      if(x@random == 1){
+        alphahat <- apply(x@alpha, 2, mean); betahat <- mean(x@beta)
+        
+        for (j in 1:M) {
+          Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = betahat, density.phi = "normal", 
+                                    param = c(alphahat[j], 0), sigma=sigma, X0 = Xtrue[j, 1], op.plot=0)$X
+        }
+      }
+      if(x@random == 2){
+        betahat <- apply(x@beta, 2, mean); alphahat <- mean(x@alpha)
+        
+        for (j in 1:M) {
+          Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = alphahat, density.phi = "normal", 
+                                    param = c(betahat[j], 0), sigma=sigma, X0 = Xtrue[j, 1], op.plot=0)$X
+        }
+      }
+    }
+
+    vecttimes <- intersect(round(timessimu, 10), round(times, 10))
+    N <- length(vecttimes)
+    
+    q <- matrix(0, M, N)
+    for (j in 1:M) {
+      for (i in 1:N) {
+        q[j, i] <- sum(Xtrue[j, i] > Xnew[[j]][, which(timessimu == vecttimes[i])[1]])/Mrep
+      }
+    }
+    if (plot.valid == 1) {
+      op <- par(mfrow = c(1, 2), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+      plotnumj <- sample(1:M, 1)
+      
+      plot(c(0, timessimu), Xnew[[plotnumj]][1, ], type = "l", ylim = range(c(range(Xnew[[plotnumj]]), Xtrue[plotnumj, ])), xlab = "t", ylab = expression(X[t]))
+      for (k in 1:Mrep) {
+        lines(c(0, timessimu), Xnew[[plotnumj]][k, ])
+      }
+      lines(times, Xtrue[plotnumj, ], col = "red", lwd = 2)
+      
+      plot(1:N/N, sort(q[plotnumj, ]), xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1))
+      abline(0, 1)
+    }
+
+  }
+  
+  
+  
+  if (!missing(numj)) {
+    
+
+    if ( length(x@random) == 2 ) {
+      
+      phihat <- c( mean(x@alpha[, numj]), mean(x@beta[, numj]) )
+      
+
+      Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, density.phi = "normalnormal", 
+                                param = c(phihat[1], 0, phihat[2], 0), sigma=sigma, X0 = Xtrue[numj, 1], op.plot=0)$X
+      
+    } else{
+      if(x@random == 1){
+        alphahat <- mean(x@alpha[, numj]); betahat <- mean(x@beta)
+        
+        Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = betahat, density.phi = "normal", 
+                                  param = c(alphahat, 0), sigma=sigma, X0 = Xtrue[numj, 1], op.plot=0)$X
+      }
+      if(x@random == 2){
+        betahat <- mean(x@beta[, numj]); alphahat <- mean(x@alpha)
+        
+        Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = alphahat, density.phi = "normal", 
+                                  param = c(betahat, 0), sigma=sigma, X0 = Xtrue[numj, 1], op.plot=0)$X
+      }
+    }
+
+    vecttimes <- intersect(round(timessimu, 10), round(times, 10))
+    N <- length(vecttimes)
+    
+    q <- rep(0, N)
+    for (i in 1:N) {
+      q[i] <- sum(Xtrue[numj, which(times == vecttimes[i])[1]] > Xnew[, which(timessimu == vecttimes[i])[1]])/Mrep
+    }
+    
+    if (plot.valid == 1) {
+      plotnumj <- numj
+      op <- par(mfrow = c(1, 2), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+      
+      plot(c(0, timessimu), Xnew[1, ], type = "l", ylim = range(c(range(Xnew), Xtrue[plotnumj, ])), xlab = "t", ylab = expression(X[t]))
+      for (k in 1:Mrep) {
+        lines(c(0, timessimu), Xnew[k, ])
+      }
+      lines(times, Xtrue[plotnumj, ], col = "red", lwd = 2)
+      
+      
+      plot(1:N/N, sort(q), xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1))
+      abline(0, 1)
+    }
+  }
+  
+  return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
 })
 
 ########################################################### PREDICTION
@@ -2347,7 +2502,7 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
     est <- chain2samples(x, burnIn, thinning)
     K <- length(est@sigma2)
     dens <- function(t, samples) mean(dnorm(t, samples$mu, sqrt(samples$omega)))
-    M <- nrow(x@Xdata)
+    M <- nrow(x@X)
 
 #####
     
@@ -2375,7 +2530,7 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
         
       }
 
-      X0 <- x@Xdata[1, ]
+      X0 <- x@X[1, ]
       
       Xpred <- matrix(0, M, length(x@times)); Xpred[1,] <- X0
       sigma2 <- mean(est@sigma2)
@@ -2413,7 +2568,7 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
         
         likeli.CIR <- function(x, t, phi, sigma2, Xn_1) dcCIR2(x, t, Xn_1, c(phi, sqrt(sigma2)))
         cand <- function(i) {
-          he <- x@Xdata[, i]
+          he <- x@X[, i]
           seq(min(he) - abs(min(he)) * 0.5, max(he) + abs(max(he)) * 0.5, length = cand.length)
         }
         
@@ -2452,13 +2607,13 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
         
         op <- par(mfrow = c(1, 1), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
         if (missing(ylim)) 
-          ylim <- range(c(range(x@Xdata), range(Xpred)))
+          ylim <- range(c(range(x@X), range(Xpred)))
         
-        plot(x@times, x@Xdata[1,], type = "l", ylim = ylim, xlab = xlab, ylab = ylab, ...)
-        for(i in 2:M) lines(x@times, x@Xdata[i,], ...)
+        plot(x@times, x@X[1,], type = "l", ylim = ylim, xlab = xlab, ylab = ylab, ...)
+        for(i in 2:M) lines(x@times, x@X[i,], ...)
         
         for(i in 1:M) lines(x@times, Xpred[i,], col = col, lwd = lwd, ...)
-        for(i in 2:M) lines(x@times, x@Xdata[i,], ...)
+        for(i in 2:M) lines(x@times, x@X[i,], ...)
         
         if (plot.legend) 
           legend("bottomright", c("data", "drawn trajectories"), lty = 1, col = c(1, col), lwd = c(1, lwd), cex = 0.7, box.lty = 0, inset = 0.01)
@@ -2487,7 +2642,7 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
         phi.pred <- replicate(K, discr(cand, prob))
         
       }
-      X0 <- x@Xdata[1, 1]
+      X0 <- x@X[1, 1]
       
       if (model == "OU") {
         m <- function(t, phi) phi[1]/phi[2] + (X0 - phi[1]/phi[2]) * exp(-phi[2] * t)
@@ -2500,7 +2655,7 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
       K <- length(est@sigma2)
       
       cand <- function(i) {
-        he <- x@Xdata[, i + 1]
+        he <- x@X[, i + 1]
         seq(min(he) - abs(min(he)) * 0.5, max(he) + abs(max(he)) * 0.5, length = cand.length)
       }
       lt <- length(x@times) - 1
@@ -2575,18 +2730,18 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, level = 
         qu.l[i] <- he$qu.l
       }
       
-      cr <- apply(qu.l <= t(x@Xdata[, -1]) & qu.u >= t(x@Xdata[, -1]), 1, mean)
+      cr <- apply(qu.l <= t(x@X[, -1]) & qu.u >= t(x@X[, -1]), 1, mean)
       
       if (plot.pred == TRUE) {
         
         op <- par(mfrow = c(1, 2), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
         if (missing(ylim)) 
-          ylim <- range(c(min(qu.l), max(qu.u), range(x@Xdata)))
+          ylim <- range(c(min(qu.l), max(qu.u), range(x@X)))
         
         plot(x@times[-1], qu.l, type = "l", ylim = ylim, xlab = xlab, ylab = ylab, col = col, lwd = lwd, ...)
         lines(x@times[-1], qu.u, col = col, lwd = lwd, ...)
         
-        for (i in 1:nrow(x@Xdata)) lines(x@times, x@Xdata[i, ])
+        for (i in 1:nrow(x@X)) lines(x@times, x@X[i, ])
         lines(x@times[-1], qu.l, col = col, lwd = lwd, ...)
         lines(x@times[-1], qu.u, col = col, lwd = lwd, ...)
         
