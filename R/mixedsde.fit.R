@@ -1741,12 +1741,14 @@ setMethod(f = "plot.compare", signature = "Bayes.fit", definition = function(x, 
 #' @param ylim optional
 #' @param xlab optional, default "times"
 #' @param ylab optional, default "X"
+#' @param colors optional, default 1:3
+#' @param linetypes optional, default rep(1, 3)
 #' @param ... optional plot parameters
 #' 
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x, y, z, newwindow = FALSE, plot.legend = TRUE, names, ylim, xlab = "times", ylab = "X", ...) {
+setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x, y, z, newwindow = FALSE, plot.legend = TRUE, names, ylim, xlab = "times", ylab = "X", colors = 1:3, linetypes = rep(1, 3), ...) {
   if (newwindow) {
     x11(width = 10)
   }
@@ -1793,24 +1795,24 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
       ylim <- c(min(unlist(qu.l)), max(unlist(qu.u)))
     
     plot(times[[1]], X[[1]][1, ], type = "l", ylim = ylim, xlab = xlab, ylab = ylab, col="grey", ...)
-    for(j in 1:l.li) for (i in 1:nrow(X[[1]])) lines(times[[j]], X[[j]][i, ], col="grey")
-    for(i in 1:l.li) lines(times[[i]][-1], qu.l[[i]], col = i, lwd = 2, ...)
-    for(i in 1:l.li) lines(times[[i]][-1], qu.u[[i]], col = i, lwd = 2, ...)
+    for(j in 1:l.li) for (i in 1:nrow(X[[1]])) lines(times[[j]], X[[j]][i, ], col="grey", ...)
+    for(i in 1:l.li) lines(times[[i]][-1], qu.l[[i]], col = colors[i], lty = linetypes[i], lwd = 2, ...)
+    for(i in 1:l.li) lines(times[[i]][-1], qu.u[[i]], col = colors[i], lty = linetypes[i], lwd = 2, ...)
     
     if (plot.legend){
       if(!missing(names)){
-        legend("bottomright", c("data", names), lty = 1, col = c("grey", 1:l.li), lwd = c(1, rep(2, l.li)), cex = 0.7, box.lty = 0, inset = 0.01)
+        legend("bottomright", c("data", names), lty = c(1, linetypes), col = c("grey", colors), lwd = c(1, rep(2, l.li)), cex = 0.7, box.lty = 0, inset = 0.01)
       }else{
-        legend("bottomright", c("data", "prediction intervals"), lty = 1, col = c("grey", 1:l.li), lwd = c(1, rep(2, l.li)), cex = 0.7, box.lty = 0, inset = 0.01)
+        legend("bottomright", c("data", "prediction intervals"), lty = c(1, linetypes), col = c("grey", colors), lwd = c(1, rep(2, l.li)), cex = 0.7, box.lty = 0, inset = 0.01)
       } 
     } 
     
-    plot(times[[1]][-1], cr[[1]], ylim = c(min(unlist(cr)) * 0.9, max(unlist(cr), 1)), lwd=2, type = "l", xlab = xlab, ylab = "coverage rates")
-    for(i in 2:l.li) lines(times[[i]][-1], cr[[i]], col=i, lwd=2)
+    plot(times[[1]][-1], cr[[1]], ylim = c(min(unlist(cr)) * 0.9, max(unlist(cr), 1)), lwd = 2, col = colors[1], lty = linetypes[1], type = "l", xlab = xlab, ylab = "coverage rates")
+    for(i in 2:l.li) lines(times[[i]][-1], cr[[i]], col = colors[i], lty = linetypes[i], lwd = 2)
     abline(h = 0.95, lty = 2)
     if (plot.legend){
       if(!missing(names)){
-        legend("bottomright", c("95%", names), lty = c(2, rep(1, l.li)), col = c(1, 1:l.li), lwd = c(1, rep(2, l.li)), cex = 0.7, box.lty = 0, inset = 0.01)
+        legend("bottomright", c("95%", names), lty = c(2, linetypes), col = c(1, colors), lwd = c(1, rep(2, l.li)), cex = 0.7, box.lty = 0, inset = 0.01)
       }else{
         legend("bottomright", "95%", lty = 2, cex = 0.7, box.lty = 0, inset = 0.01)
       } 
