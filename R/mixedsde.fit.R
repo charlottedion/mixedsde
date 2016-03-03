@@ -1792,12 +1792,10 @@ setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x,
     if (missing(ylim)) 
       ylim <- c(min(unlist(qu.l)), max(unlist(qu.u)))
     
-    plot(times[[1]][-1], qu.l[[1]], type = "l", ylim = ylim, xlab = xlab, ylab = ylab, lwd = 2, ...)
-    lines(times[[1]][-1], qu.u[[1]], lwd = 2, ...)
-    
+    plot(times[[1]], X[[1]][1, ], type = "l", ylim = ylim, xlab = xlab, ylab = ylab, col="grey", ...)
     for(j in 1:l.li) for (i in 1:nrow(X[[1]])) lines(times[[j]], X[[j]][i, ], col="grey")
-    for(i in 2:l.li) lines(times[[i]][-1], qu.l[[i]], col = i, lwd = 2, ...)
-    for(i in 2:l.li) lines(times[[i]][-1], qu.u[[i]], col = i, lwd = 2, ...)
+    for(i in 1:l.li) lines(times[[i]][-1], qu.l[[i]], col = i, lwd = 2, ...)
+    for(i in 1:l.li) lines(times[[i]][-1], qu.u[[i]], col = i, lwd = 2, ...)
     
     if (plot.legend){
       if(!missing(names)){
