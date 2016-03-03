@@ -49,7 +49,7 @@ plot(estim)
 summary(estim)
 print(estim)
 
-validation <- Freq.valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
+validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
 
 estim.method<-'paramML'
 estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, estim.method = 'paramML')
