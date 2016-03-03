@@ -37,9 +37,6 @@
 #' \item{mu}{posterior samples (Markov chain) of \eqn{\mu}}
 #' \item{omega}{posterior samples (Markov chain) of \eqn{\Omega}}
 #' \item{sigma2}{posterior samples (Markov chain) of \eqn{\sigma^2}}
-
-#' \item{mu}{estimator of the mean of the random effects normal density, 0 if we do nonparametric estimation}
-#' \item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
 #' \item{model}{initial choice}
 #' \item{random}{initial choice}
 #' \item{burnIn}{proposal for burn-in period}
@@ -159,28 +156,27 @@
 #' 
 #' # Parametric Bayesian estimation 
 #' # one random effect
-#' model = 'OU'; random <- 1; sigma <- 0.1 ;fixed <- 5
-#' M <- 50 ; T <- 1; N <- 100
-#' density.phi <- 'normal' ; param <- c(3, 0.5)
+#' model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
+#' M <- 50 ; T <- 1; N <- 100; param <- c(3, 0.5)
 #' 
-#' simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0, op.plot=0)
-#' X <- simu$X ; phi <- simu$phi; times <- simu$times
-#' plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+#' simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0, op.plot = 0)
+#' X <- simu$X; phi <- simu$phi; times <- simu$times
+#' plot(times, X[1,], ylim = range(X), type='l'); for(i in 2:M) lines(times, X[i,])
 #' 
-#' estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000) 
+#' estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', nMCMC = 1000) 
 #' plot(estim_Bayes_withoutprior)
 #' 
-#' prior <- list( m=c(param[1], fixed), v=c(param[1], fixed), alpha.omega=11, beta.omega=param[2]^2*10,
-#' alpha.sigma=10, beta.sigma=sigma^2*9)
-#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
+#' prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, beta.omega = param[2]^2*10,
+#' alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' 
 #' validation <- valid(estim_Bayes, numj = 10)
 #' plot(estim_Bayes)
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' (results_Bayes <- summary(estim_Bayes))
-#' plot(estim_Bayes, style='cred.int', true.phi=phi)
-#' plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
+#' plot(estim_Bayes, style = 'cred.int', true.phi = phi)
+#' plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
 #' 
 #' plot.compare(estim_Bayes, estim_Bayes_withoutprior, names=c("with prior", "without prior"))
 #' 
@@ -194,23 +190,22 @@
 #' 
 #' # second example
 #' 
-#' model = 'CIR'; random <- 2; sigma <- 0.2 ;fixed <- 5
-#' M <- 20 ; T <- 1; N <- 100
-#' density.phi <- 'normal' ; param <- c(3, 0.5)
+#' model <- 'CIR'; random <- 2; sigma <- 0.2; fixed <- 5
+#' M <- 20 ; T <- 1; N <- 100; param <- c(3, 0.5)
 #' 
-#' simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0.1, op.plot=0)
-#' X <- simu$X ; phi <- simu$phi; times <- simu$times
-#' plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+#' simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0.1, op.plot = 0)
+#' X <- simu$X; phi <- simu$phi; times <- simu$times
+#' plot(times, X[1,], ylim = range(X), type='l'); for(i in 2:M) lines(times, X[i,])
 #' 
-#' prior <- list( m=c(fixed, param[1]), v=c(fixed, param[1]), alpha.omega=11, beta.omega=param[2]^2*10,
-#' alpha.sigma=10, beta.sigma=sigma^2*9)
+#' prior <- list( m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10,
+#' alpha.sigma = 10, beta.sigma = sigma^2*9)
 #'
-#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
+#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' plot(estim_Bayes)
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' (results_Bayes <- summary(estim_Bayes))
-#' plot(estim_Bayes, style='cred.int', true.phi=phi, reduced=TRUE)
+#' plot(estim_Bayes, style = 'cred.int', true.phi = phi, reduced = TRUE)
 #' 
 #' print(estim_Bayes)
 #' pred.result <- pred(estim_Bayes)
@@ -218,26 +213,25 @@
 #' plot(pred.result)
 #'
 #' # for two random effects
-#' model = 'OU'; random <- c(1,2); sigma <- 0.1 
-#' M <- 20 ; T <- 1; N <- 100
-#' density.phi <- 'normalnormal' ; param <- c(3, 0.5, 5, 0.2)
+#' model <- 'OU'; random <- c(1, 2); sigma <- 0.1 
+#' M <- 20 ; T <- 1; N <- 100; param <- c(3, 0.5, 5, 0.2)
 #' 
-#' simu <- mixedsde.sim(M,T=T,N=N,model,random, density.phi=density.phi, param=param, sigma=sigma, X0=0,op.plot=0)
-#' X <- simu$X ; phi <- simu$phi; times <- simu$times
-#' plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+#' simu <- mixedsde.sim(M, T = T, N = N, model, random, density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 0)
+#' X <- simu$X; phi <- simu$phi; times <- simu$times
+#' plot(times, X[1,], ylim = range(X), type='l'); for(i in 2:M) lines(times, X[i,])
 #' 
-#' estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000)
-#' plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
+#' estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', nMCMC = 1000)
+#' plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
 #'  
-#' prior <- list( m=param[c(1,3)], v=param[c(1,3)], alpha.omega=c(11,11), beta.omega=param[c(2,4)]^2*10,
-#' alpha.sigma=10, beta.sigma=sigma^2*9)
+#' prior <- list( m = param[c(1, 3)], v = param[c(1, 3)], alpha.omega = c(11, 11), beta.omega = param[c(2, 4)]^2*10,
+#' alpha.sigma = 10, beta.sigma = sigma^2*9)
 #'
-#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
+#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' summary(estim_Bayes)
 #' plot(estim_Bayes)
-#' plot(estim_Bayes, style='cred.int', true.phi=phi)
+#' plot(estim_Bayes, style = 'cred.int', true.phi = phi)
 #' print(estim_Bayes)
 #' 
 #' pred.result <- pred(estim_Bayes)
@@ -247,26 +241,26 @@
 #' X <- crack.data[[1]]
 #' times <- crack.data[[2]]
 #' 
-#' estim_Bayes_Virkler1 <- mixedsde.fit(times, X, model="OU", random=1, estim.method='paramBayes', nMCMC=2000)
-#' estim_Bayes_Virkler2 <- mixedsde.fit(times, X, model="OU", random=2, estim.method='paramBayes', nMCMC=2000) 
-#' estim_Bayes_Virkler12 <- mixedsde.fit(times, X, model="OU", random=c(1,2), estim.method='paramBayes', nMCMC=2000)
+#' estim_Bayes_Virkler1 <- mixedsde.fit(times, X, model = "OU", random = 1, estim.method = 'paramBayes', nMCMC = 2000)
+#' estim_Bayes_Virkler2 <- mixedsde.fit(times, X, model = "OU", random = 2, estim.method = 'paramBayes', nMCMC = 2000) 
+#' estim_Bayes_Virkler12 <- mixedsde.fit(times, X, model = "OU", random = c(1, 2), estim.method = 'paramBayes', nMCMC = 2000)
 #' 
 #' plot(estim_Bayes_Virkler1)
 #' plot(estim_Bayes_Virkler2, reduced = TRUE, plot.priorMean = FALSE)
 #' plot(estim_Bayes_Virkler12, reduced = TRUE, style = "density", plot.priorMean = FALSE)
-#' plot.compare(estim_Bayes_Virkler1, estim_Bayes_Virkler2, estim_Bayes_Virkler12, names=c("random=1", "random=2", "random=(1,2)"))
+#' plot.compare(estim_Bayes_Virkler1, estim_Bayes_Virkler2, estim_Bayes_Virkler12, names = c("random=1", "random=2", "random=(1,2)"))
 #' 
 #' pred.result1 <- pred(estim_Bayes_Virkler1)
 #' pred.result2 <- pred(estim_Bayes_Virkler2)
 #' pred.result12 <- pred(estim_Bayes_Virkler12)
 #' 
-#' plot.compare(pred.result1, pred.result2, pred.result12, names=c("random=1", "random=2", "random=(1,2)"))
+#' plot.compare(pred.result1, pred.result2, pred.result12, names = c("random=1", "random=2", "random=(1,2)"))
 #' 
-#' pred.result1_traj <- pred(estim_Bayes_Virkler1, trajectories=TRUE)
-#' pred.result2_traj <- pred(estim_Bayes_Virkler2, trajectories=TRUE)
-#' pred.result12_traj <- pred(estim_Bayes_Virkler12, trajectories=TRUE)
+#' pred.result1_traj <- pred(estim_Bayes_Virkler1, trajectories = TRUE)
+#' pred.result2_traj <- pred(estim_Bayes_Virkler2, trajectories = TRUE)
+#' pred.result12_traj <- pred(estim_Bayes_Virkler12, trajectories = TRUE)
 #' 
-#' plot.compare(pred.result1_traj, pred.result2_traj, pred.result12_traj, names=c("random=1", "random=2", "random=(1,2)"))
+#' plot.compare(pred.result1_traj, pred.result2_traj, pred.result12_traj, names = c("random=1", "random=2", "random=(1,2)"))
 
 
 
@@ -2061,11 +2055,11 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue,  
 #' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
 #' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
 #' and one the left the corresponding qq-plot for each time.
-#' @param x Freq.fit class
+#' @param x Bayes.fit class
 #' @param Mrep number of trajectories to be drawn
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
-#' @param plot.valid to be added
-#' @param numj to be added
+#' @param plot.valid if TRUE (default), the results are plotted
+#' @param numj optional a number between 1 and M: number of series for which the estimation is validated
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
@@ -2074,15 +2068,18 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
   if (newwindow) {
     x11(width = 10)
   }
+  original.settings <- par(no.readonly = TRUE)
+  
   times <- round(x@times, 10); N <- length(times) - 1
   Xtrue <- x@X[-x@ind.4.prior,]
   Tend <- max(times)
   del <- round(min(diff(times)), 10)
   timessimu <- round(seq(del, Tend, by = del), 10)
   vecttimes <- intersect(timessimu, times)
+  est <- chain2samples(x, x@burnIn, x@thinning)
   
   M <- dim(Xtrue)[1]
-  sigma <- sqrt(x@sigma2)
+  sigma <- sqrt(est@sigma2)
   
   if (missing(numj)) {
     
@@ -2090,7 +2087,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
     
     if ( length(x@random) == 2 ) {
       
-      phihat <- rbind( apply(x@alpha, 2, mean), apply(x@beta, 2, mean) )
+      phihat <- rbind( apply(est@alpha, 2, mean), apply(est@beta, 2, mean) )
 
       for (j in 1:M) {
         Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, density.phi = "normalnormal", 
@@ -2098,7 +2095,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
       }
     } else{
       if(x@random == 1){
-        alphahat <- apply(x@alpha, 2, mean); betahat <- mean(x@beta)
+        alphahat <- apply(est@alpha, 2, mean); betahat <- mean(est@beta)
         
         for (j in 1:M) {
           Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = betahat, density.phi = "normal", 
@@ -2106,7 +2103,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
         }
       }
       if(x@random == 2){
-        betahat <- apply(x@beta, 2, mean); alphahat <- mean(x@alpha)
+        betahat <- apply(est@beta, 2, mean); alphahat <- mean(est@alpha)
         
         for (j in 1:M) {
           Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = alphahat, density.phi = "normal", 
@@ -2146,7 +2143,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
 
     if ( length(x@random) == 2 ) {
       
-      phihat <- c( mean(x@alpha[, numj]), mean(x@beta[, numj]) )
+      phihat <- c( mean(est@alpha[, numj]), mean(est@beta[, numj]) )
       
 
       Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, density.phi = "normalnormal", 
@@ -2154,13 +2151,13 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
       
     } else{
       if(x@random == 1){
-        alphahat <- mean(x@alpha[, numj]); betahat <- mean(x@beta)
+        alphahat <- mean(est@alpha[, numj]); betahat <- mean(est@beta)
         
         Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = betahat, density.phi = "normal", 
                                   param = c(alphahat, 0), sigma=sigma, X0 = Xtrue[numj, 1], op.plot=0)$X
       }
       if(x@random == 2){
-        betahat <- mean(x@beta[, numj]); alphahat <- mean(x@alpha)
+        betahat <- mean(est@beta[, numj]); alphahat <- mean(est@alpha)
         
         Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = alphahat, density.phi = "normal", 
                                   param = c(betahat, 0), sigma=sigma, X0 = Xtrue[numj, 1], op.plot=0)$X
@@ -2191,6 +2188,10 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
   }
   
   return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
+  
+  # set plot settings back
+  par(original.settings)
+  
 })
 
 ########################################################### PREDICTION

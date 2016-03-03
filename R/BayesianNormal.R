@@ -346,7 +346,7 @@ chain2samples <- function(res, burnIn, thinning) {
     
     ind.chain <- seq(burnIn + 1, length(res@sigma2), by = thinning)
     return(new(Class = class(res), prior = res@prior, alpha = as.matrix(res@alpha[ind.chain, ]), beta = as.matrix(res@beta[ind.chain, ]), random = res@random, mu = as.matrix(res@mu[ind.chain, 
-        ]), omega = as.matrix(res@omega[ind.chain, ]), sigma2 = res@sigma2[ind.chain], model = res@model, times = res@times, Xdata = res@Xdata))
+        ]), omega = as.matrix(res@omega[ind.chain, ]), sigma2 = res@sigma2[ind.chain], model = res@model, times = res@times, X = res@X))
     
 }
 
