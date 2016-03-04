@@ -157,7 +157,7 @@
 #' # Parametric Bayesian estimation 
 #' # one random effect
 #' model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
-#' M <- 50 ; T <- 1; N <- 100; param <- c(3, 0.5)
+#' M <- 50; T <- 1; N <- 100; param <- c(3, 0.5)
 #' 
 #' simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0, op.plot = 0)
 #' X <- simu$X; phi <- simu$phi; times <- simu$times
@@ -191,7 +191,7 @@
 #' # second example
 #' 
 #' model <- 'CIR'; random <- 2; sigma <- 0.2; fixed <- 5
-#' M <- 20 ; T <- 1; N <- 100; param <- c(3, 0.5)
+#' M <- 20; T <- 1; N <- 100; param <- c(3, 0.5)
 #' 
 #' simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0.1, op.plot = 0)
 #' X <- simu$X; phi <- simu$phi; times <- simu$times
@@ -214,7 +214,7 @@
 #'
 #' # for two random effects
 #' model <- 'OU'; random <- c(1, 2); sigma <- 0.1 
-#' M <- 20 ; T <- 1; N <- 100; param <- c(3, 0.5, 5, 0.2)
+#' M <- 20; T <- 1; N <- 100; param <- c(3, 0.5, 5, 0.2)
 #' 
 #' simu <- mixedsde.sim(M, T = T, N = N, model, random, density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 0)
 #' X <- simu$X; phi <- simu$phi; times <- simu$times
