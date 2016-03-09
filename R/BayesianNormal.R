@@ -66,16 +66,16 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
     }
     if (length(random) == 2) {
 
-        postPhij <- function(lastPhi, mu, Omega, sigma, Xj, propSdPhi) {
+        postPhij <- function(lastPhi, mu, Omega, sigma2, Xj, propSdPhi) {
             phi_out <- lastPhi
             phi <- lastPhi
             for (k in 1:2) {
                 phi[k] <- phi_out[k] + rnorm(1, 0, propSdPhi[k])
                 ratio <- prod(dnorm(phi, mu, sqrt(Omega))/dnorm(phi_out, mu, sqrt(Omega)))
                 
-                ratio <- ratio * prod(likeli(Xj[-1], delta, Xj[-N], c(phi, sqrt(sigma)))/likeli(Xj[-1], delta, Xj[-N], c(phi_out, sqrt(sigma))))
-                # ratio <- ratio * prod(dnorm(Xj[-1], Xj[-N] + b(phi, times[-N], Xj[-N]) * delta, sqrt(sigma * Xj[-N] * delta))/ dnorm(Xj[-1],Xj[-N] + b(phi_out, times[-N], Xj[-N])
-                # * delta, sqrt(sigma * Xj[-N] * delta)))
+                ratio <- ratio * prod(likeli(Xj[-1], delta, Xj[-N], c(phi, sqrt(sigma2)))/likeli(Xj[-1], delta, Xj[-N], c(phi_out, sqrt(sigma2))))
+                # ratio <- ratio * prod(dnorm(Xj[-1], Xj[-N] + b(phi, times[-N], Xj[-N]) * delta, sqrt(sigma2 * Xj[-N] * delta))/ dnorm(Xj[-1],Xj[-N] + b(phi_out, times[-N], Xj[-N])
+                # * delta, sqrt(sigma2 * Xj[-N] * delta)))
                 if (is.na(ratio)) {
                   ratio <- 0
                 }
@@ -100,23 +100,29 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
             Dia
         }
         # storage and starting variables
+        if(is.null(start$phi)){
+          phi <- matrix(rep(start$mu, each = M), M)
+       }else{
+          phi <- start$phi
+        }
         alpha_out <- matrix(0, nMCMC, M)
         beta_out <- matrix(0, nMCMC, M)
-        mu_out <- matrix(0, nMCMC, length(start$m))
-        Omega_out <- matrix(0, nMCMC, length(start$m))
-        phi <- matrix(rep(start$mu, each = M), M)
+        
+        mu_out <- matrix(0, nMCMC, length(start$mu))
+        Omega_out <- matrix(0, nMCMC, length(start$mu))
+        
         mu <- start$mu
         Omega <- postOm(phi, mu) + 0.1
         
     } else {
-        postRandom <- function(lastPhi, mu, Omega, sigma, Xj, propSdRandom) {
+        postRandom <- function(lastPhi, mu, Omega, sigma2, Xj, propSdRandom) {
             phi_out <- lastPhi
             phi <- lastPhi
             phi[random] <- phi[random] + rnorm(1, 0, propSdRandom)
             ratio <- dnorm(phi[random], mu, sqrt(Omega))/dnorm(phi_out[random], mu, sqrt(Omega))
-            ratio <- ratio * prod(likeli(Xj[-1], delta, Xj[-N], c(phi, sqrt(sigma)))/likeli(Xj[-1], delta, Xj[-N], c(phi_out, sqrt(sigma))))
-            # ratio <- ratio * prod(dnorm(Xj[-1], Xj[-N] + b(phi, times[-N], Xj[-N]) * delta, sqrt(sigma * Xj[-N] * delta))/ dnorm(Xj[-1], Xj[-N] + b(phi_out, times[-N], Xj[-N])
-            # * delta, sqrt(sigma * Xj[-N] * delta)))
+            ratio <- ratio * prod(likeli(Xj[-1], delta, Xj[-N], c(phi, sqrt(sigma2)))/likeli(Xj[-1], delta, Xj[-N], c(phi_out, sqrt(sigma2))))
+            # ratio <- ratio * prod(dnorm(Xj[-1], Xj[-N] + b(phi, times[-N], Xj[-N]) * delta, sqrt(sigma2 * Xj[-N] * delta))/ dnorm(Xj[-1], Xj[-N] + b(phi_out, times[-N], Xj[-N])
+            # * delta, sqrt(sigma2 * Xj[-N] * delta)))
             if (is.na(ratio)) {
                 ratio <- 0
             }
@@ -141,13 +147,13 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
         Omega_out <- numeric(nMCMC)
         
         if (random == 1) {
-            postNonrandom <- function(lastRandom, lastNonrandom, sigma, propSdFixed) {
+            postNonrandom <- function(lastRandom, lastNonrandom, sigma2, propSdFixed) {
                 
                 beta <- lastNonrandom
                 beta_drawn <- beta + rnorm(1, 0, propSdFixed)
                 ratio <- dnorm(beta_drawn, prior$m[2], prior$v[2])/dnorm(beta, prior$m[2], prior$v[2])
                 he <- sapply(1:M, function(i) {
-                  prod(likeli(X[i, -1], delta, X[i, -N], c(lastRandom[i], beta_drawn, sqrt(sigma)))/likeli(X[i, -1], delta, X[i, -N], c(lastRandom[i], beta, sqrt(sigma))))
+                  prod(likeli(X[i, -1], delta, X[i, -N], c(lastRandom[i], beta_drawn, sqrt(sigma2)))/likeli(X[i, -1], delta, X[i, -N], c(lastRandom[i], beta, sqrt(sigma2))))
                 })
                 ratio <- ratio * prod(he)
                 if (is.na(ratio)) {
@@ -162,22 +168,27 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
             # storage and starting variables
             alpha_out <- matrix(0, nMCMC, M)
             beta_out <- numeric(nMCMC)
-            alpha <- rep(start$mu[1], M)
+            if(is.null(start$phi)){
+              alpha <- rep(start$mu[1], M)
+            }else{
+              alpha <- start$phi
+            }
+
             beta <- start$mu[2]
             mu <- start$mu[1]
             Omega <- postOm(alpha, mu) + 0.1
         }
         if (random == 2) {
-            postNonrandom <- function(lastRandom, lastNonrandom, sigma, propSdFixed) {
+            postNonrandom <- function(lastRandom, lastNonrandom, sigma2, propSdFixed) {
                 
                 alpha <- lastNonrandom
                 alpha_drawn <- alpha + rnorm(1, 0, propSdFixed)
                 ratio <- dnorm(alpha_drawn, prior$m[1], prior$v[1])/dnorm(alpha, prior$m[1], prior$v[1])
                 he <- sapply(1:M, function(i) {
-                  prod(likeli(X[i, -1], delta, X[i, -N], c(alpha_drawn, lastRandom[i], sqrt(sigma)))/likeli(X[i, -1], delta, X[i, -N], c(alpha, lastRandom[i], sqrt(sigma))))
+                  prod(likeli(X[i, -1], delta, X[i, -N], c(alpha_drawn, lastRandom[i], sqrt(sigma2)))/likeli(X[i, -1], delta, X[i, -N], c(alpha, lastRandom[i], sqrt(sigma2))))
                 })
-                # he <- sapply(1:M, function(i){ prod(dnorm(X[i,-1], X[i,-N] + b(c(alpha_drawn, lastRandom[i]), times[-N], X[i,-N]) * delta, sqrt(sigma * X[i,-N] * delta))/
-                # dnorm(X[i,-1], X[i,-N] + b(c(alpha, lastRandom[i]), times[-N], X[i,-N]) * delta, sqrt(sigma * X[i,-N] * delta))) } )
+                # he <- sapply(1:M, function(i){ prod(dnorm(X[i,-1], X[i,-N] + b(c(alpha_drawn, lastRandom[i]), times[-N], X[i,-N]) * delta, sqrt(sigma2 * X[i,-N] * delta))/
+                # dnorm(X[i,-1], X[i,-N] + b(c(alpha, lastRandom[i]), times[-N], X[i,-N]) * delta, sqrt(sigma2 * X[i,-N] * delta))) } )
                 ratio <- ratio * prod(he)
                 if (is.na(ratio)) {
                   ratio <- 0
@@ -191,33 +202,38 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
             # storage and starting variables
             alpha_out <- numeric(nMCMC)
             beta_out <- matrix(0, nMCMC, M)
+            if(is.null(start$phi)){
+              beta <- rep(start$mu[2], M)
+            }else{
+              beta <- start$phi
+            }
+            
             alpha <- start$mu[1]
-            beta <- rep(start$mu[2], M)
             mu <- start$mu[2]
             Omega <- postOm(beta, mu) + 0.1
         }
     }
     # storage and starting variables
     sigma_out <- numeric(nMCMC)
-    sigma <- start$sigma
+    sigma2 <- start$sigma2
     
     if (length(random) == 2) {
         
         for (count in 1:nMCMC) {
             for (i in 1:M) {
-                phi[i, ] <- postPhij(phi[i, ], mu, Omega, sigma, X[i, ], propSdPhi)
+                phi[i, ] <- postPhij(phi[i, ], mu, Omega, sigma2, X[i, ], propSdPhi)
             }
 
             mu <- postmu(phi, Omega)
             Omega <- postOm(phi, mu)
             
-            sigma <- postSigma(phi, sigma, propSdSigma2)
+            sigma2 <- postSigma(phi, sigma2, propSdSigma2)
 
             alpha_out[count, ] <- phi[, 1]
             beta_out[count, ] <- phi[, 2]
             mu_out[count, ] <- mu
             Omega_out[count, ] <- Omega
-            sigma_out[count] <- sigma
+            sigma_out[count] <- sigma2
             if (count%%1000 == 0) {
                 print(paste(count, "iterations done"))
             }
@@ -236,20 +252,20 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
         if (random == 1) {
             for (count in 1:nMCMC) {
                 for (i in 1:M) {
-                  alpha[i] <- postRandom(c(alpha[i], beta), mu, Omega, sigma, X[i, ], propSdPhi[random])
+                  alpha[i] <- postRandom(c(alpha[i], beta), mu, Omega, sigma2, X[i, ], propSdPhi[random])
                 }
-                beta <- postNonrandom(alpha, beta, sigma, propSdPhi[-random])
+                beta <- postNonrandom(alpha, beta, sigma2, propSdPhi[-random])
 
                 mu <- postmu(alpha, Omega)
                 Omega <- postOm(alpha, mu)
                 
-                sigma <- postSigma(cbind(alpha, beta), sigma, propSdSigma2)
+                sigma2 <- postSigma(cbind(alpha, beta), sigma2, propSdSigma2)
                
                 alpha_out[count, ] <- alpha
                 beta_out[count] <- beta
                 mu_out[count] <- mu
                 Omega_out[count] <- Omega
-                sigma_out[count] <- sigma
+                sigma_out[count] <- sigma2
                 if (count%%1000 == 0) {
                   print(paste(count, "iterations done"))
                 }
@@ -272,20 +288,20 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
             
             for (count in 1:nMCMC) {
                 for (i in 1:M) {
-                  beta[i] <- postRandom(c(alpha, beta[i]), mu, Omega, sigma, X[i, ], propSdPhi[random])
+                  beta[i] <- postRandom(c(alpha, beta[i]), mu, Omega, sigma2, X[i, ], propSdPhi[random])
                 }
-                alpha <- postNonrandom(beta, alpha, sigma, propSdPhi[-random])
+                alpha <- postNonrandom(beta, alpha, sigma2, propSdPhi[-random])
 
                 mu <- postmu(beta, Omega)
                 Omega <- postOm(beta, mu)
                 
-                sigma <- postSigma(cbind(alpha, beta), sigma, propSdSigma2)
+                sigma2 <- postSigma(cbind(alpha, beta), sigma2, propSdSigma2)
 
                 alpha_out[count] <- alpha
                 beta_out[count, ] <- beta
                 mu_out[count] <- mu
                 Omega_out[count] <- Omega
-                sigma_out[count] <- sigma
+                sigma_out[count] <- sigma2
                 if (count%%1000 == 0) {
                   print(paste(count, "iterations done"))
                 }
