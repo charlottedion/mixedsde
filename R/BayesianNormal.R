@@ -88,7 +88,7 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
         }
         postmu <- function(phi, Omega) {
             Vpost <- 1/(1/prior$v + M/Omega)
-            mpost <- Vpost * ((1/prior$v) %*% prior$m + apply((1/Omega) * t(phi), 1, sum))
+            mpost <- Vpost * ((1/prior$v) * prior$m + apply((1/Omega) * t(phi), 1, sum))
             
             rnorm(2, mpost, sqrt(Vpost))
         }
@@ -135,7 +135,7 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
         postmu <- function(phi, Omega) {
             n <- length(phi)
             Vpost <- 1/(1/prior$v[random] + n * 1/Omega)
-            mpost <- Vpost %*% ((1/prior$v[random]) * prior$m[random] + sum(1/Omega * phi))
+            mpost <- Vpost * ((1/prior$v[random]) * prior$m[random] + sum(1/Omega * phi))
             
             rnorm(1, mpost, sqrt(Vpost))
         }
