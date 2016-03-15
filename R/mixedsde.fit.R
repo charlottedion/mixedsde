@@ -296,7 +296,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
     K <- dim(X)[2]
     delta <- round(diff(times), 10)  #diff(times)[1]
     Tend <- times[length(times)]
-    
+    print('test')
     if (estim.method == "paramBayes") {
       if(model == "CIR"){
         if(any(X < 0 )){
@@ -912,8 +912,8 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
         if (sum(x@estimf_trunc) != 0 & sum(x@estimf_trunc == x@estimf) != length(x@gridf[1, ])^2) {
             op <- par(mfrow = c(2, 4), mar = c(2.8, 2.8, 2, 2), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
             
-            persp3D(x@gridf[1, ], x@gridf[2, ], x@estimf, main = "Estimation of the density", theta = 45, phi = 25, expand = 0.75, colkey = FALSE, bty = "b2")
-            persp3D(x@gridf[1, ], x@gridf[2, ], x@estimf_trunc, main = "Estimation of the density with cutoff", theta = 45, phi = 25, expand = 0.75, colkey = FALSE, 
+            persp3D(x@gridf[1, ], x@gridf[2, ], x@estimf, main = "Estimator", theta = 45, phi = 25, expand = 0.75, colkey = FALSE, bty = "b2")
+            persp3D(x@gridf[1, ], x@gridf[2, ], x@estimf_trunc, main = "Truncated estimator", theta = 45, phi = 25, expand = 0.75, colkey = FALSE, 
                 bty = "b2")
             
             gridf1 <- x@gridf[1, ]
@@ -921,7 +921,7 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
             marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf, 1, sum)
             marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
             
-            hist(x@estimphi[1, ], main = "Density of the first random effect", freq = FALSE, xlab = "", ylab = "", xlim = c(min(x@estimphi[1, ]) * 0.8, max(x@estimphi[1, 
+            hist(x@estimphi[1, ], main = "", freq = FALSE, xlab = "", ylab = "", xlim = c(min(x@estimphi[1, ]) * 0.8, max(x@estimphi[1, 
                 ]) * 1.2), ylim = c(0, max(marg1) * 1.5), breaks = 12)
             lines(gridf1, marg1, col = "red")
             if (sum(x@estimf_trunc) != 0 & sum(x@estimf_trunc == x@estimf) != length(gridf1)^2) {
@@ -929,7 +929,7 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
                 lines(gridf1, marg1_trunc, col = "red", lty = 2)
             }
             
-            hist(x@estimphi[2, ], main = "Density of the second random effect", freq = FALSE, xlab = "", ylab = "", xlim = c(min(x@estimphi[2, ]) * 0.8, max(x@estimphi[2, 
+            hist(x@estimphi[2, ], main = "", freq = FALSE, xlab = "", ylab = "", xlim = c(min(x@estimphi[2, ]) * 0.8, max(x@estimphi[2, 
                 ]) * 1.2), ylim = c(0, max(marg2) * 1.5), breaks = 12)
             lines(gridf2, marg2, col = "red")
             if (sum(x@estimf_trunc) != 0 & sum(x@estimf_trunc == x@estimf) != length(gridf1)^2) {
@@ -2225,6 +2225,7 @@ setGeneric("pred", function(x, Xtrue, estim.method, times, level = 0.05, newwind
 #' @param Xtrue observed data
 #' @param estim.method nonparam or paramML
 #' @param times observation times
+#' @param pred.trunc logical(0), if TRUE, the prediction is done from the truncated estimator 
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.pred logical(1), if TRUE, the results are depicted grafically
@@ -2232,8 +2233,8 @@ setGeneric("pred", function(x, Xtrue, estim.method, times, level = 0.05, newwind
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, estim.method, times, level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
-    if (newwindow) {
+setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, estim.method, times, pred.trunc = 0, level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
+    if (newwindow == TRUE) {
         x11(width = 10)
     }
     timestrue <- times
@@ -2335,8 +2336,8 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, es
             for (k in (1:N + 1)) {
                 PI[, k] <- quantile(Xpred[, k], c(l.bound, u.bound))
             }
-            lines(times, PI[1, ], col = "red", lwd = 2)
-            lines(times, PI[2, ], col = "red", lwd = 2)
+            lines(times, PI[1, ], col = "green", lwd = 2)
+            lines(times, PI[2, ], col = "green", lwd = 2)
             # if (plot.legend) { legend('topright', c('predictive trajectories', 'prediction intervals'), lty = 1, col = c(1, 'red'), lwd = c(1, 2), box.lty = 0, inset = 0.08)#,
             # text.width = 0.7) }
         }
@@ -2369,9 +2370,17 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, es
         if (estim.method == "nonparam") {
             gridf1 <- x@gridf[1, ]
             gridf2 <- x@gridf[2, ]
-            marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf, 1, sum)
-            marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
             
+            if (pred.trunc==1){
+            
+              marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf_trunc, 1, sum)
+              marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf_trunc, 2, sum)
+            }
+            if (pred.trunc==0){
+              
+              marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf, 1, sum)
+              marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
+            }
             p1 <- marg1/sum(marg1)
             p2 <- marg2/sum(marg2)
             for (i in 1:M) {
@@ -2408,7 +2417,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, es
                 1.2), ylim = c(min(x@estimphi[1, ], phipred[1, ]) * 0.8, max(x@estimphi[1, ], phipred[1, ]) * 1.2), ylab = "", xlab = "", main = "First random effect")
             abline(0, 1)
             plot(sort(x@estimphi[2, indexpred]), sort(phipred[2, ]), pch = 18, xlim = c(min(x@estimphi[2, ], phipred[2, ]) * 0.8, max(x@estimphi[2, ], phipred[2, ]) * 
-                1.2), ylim = c(min(x@estimphi, phipred) * 0.8, max(x@estimphi, phipred) * 1.2), ylab = "", xlab = "", main = "Second random effect")
+                1.2), ylim = c(min(x@estimphi[2, ], phipred[2, ]) * 0.8, max(x@estimphi[2, ], phipred[2, ]) * 1.2), ylab = "", xlab = "", main = "Second random effect")
             abline(0, 1)
             
             plot(times, Xtrue[indexpred[1], ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 1.5), main = "True trajectories")
@@ -2427,8 +2436,8 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, es
             for (k in (1:N + 1)) {
                 PI[, k] <- quantile(Xpred[, k], c(l.bound, u.bound))
             }
-            lines(times, PI[1, ], col = "red", lwd = 2)
-            lines(times, PI[2, ], col = "red", lwd = 2)
+            lines(times, PI[1, ], col = "green", lwd = 2)
+            lines(times, PI[2, ], col = "green", lwd = 2)
             # if (plot.legend) { legend('topright', c('predictive trajectories', 'prediction intervals'), lty = 1, col = c(1, 'red'), lwd = c(1, 2), box.lty = 0, inset = 0.01) }
         }
         return(list(phipred = phipred, Xpred = Xpred, indexpred = indexpred))
