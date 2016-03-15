@@ -57,8 +57,8 @@ outputsP <- out(estim_param)
 plot(estim_param)
 summary(estim_param)
 
-test1 <- pred(estim, X,  times=times, invariant = 1)
-test2 <- pred(estim_param,  X, times=times, invariant = 1)
+test1 <- pred(estim, X = X,  times=times, invariant = 1)
+test2 <- pred(estim_param,  X = X, times=times, invariant = 1)
 
 cutoff <- outputsNP$cutoff
 phihat <- outputsNP$estimphi
