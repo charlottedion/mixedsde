@@ -2707,8 +2707,8 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
                 marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
                 p1 <- marg1/sum(marg1)
                 p2 <- marg2/sum(marg2)
-                phipred <- matrix(0, 2, sum(x@cutoff))
-                for (i in 1:sum(x@cutoff)) {
+                phipred <- matrix(0, 2, sum(M))
+                for (i in 1:M) {
                   phipred[1, i] <- discr(gridf1, p1)
                   phipred[2, i] <- discr(gridf2, p2)
                 }
