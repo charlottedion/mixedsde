@@ -2,7 +2,7 @@
 % Please edit documentation in R/BayesianNormal.R
 \name{diagnostic}
 \alias{diagnostic}
-\title{Calcucation of burn-in phase and thin rate}
+\title{Calcucation Of Burn-in Phase And Thin Rate}
 \usage{
 diagnostic(results, random)
 }

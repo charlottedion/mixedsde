@@ -5,17 +5,19 @@
 \alias{pred,Freq.fit-method}
 \title{Prediction method for the Freq.fit class object}
 \usage{
-\S4method{pred}{Freq.fit}(x, Xtrue, estim.method, times, level = 0.05,
-  newwindow = FALSE, plot.pred = TRUE, ...)
+\S4method{pred}{Freq.fit}(x, Xtrue, times, invariant = 0, pred.trunc = 0,
+  level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...)
 }
 \arguments{
 \item{x}{Freq.fit class}
 
 \item{Xtrue}{observed data}
 
-\item{estim.method}{nonparam or paramML}
-
 \item{times}{observation times}
+
+\item{invariant}{1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue}
+
+\item{pred.trunc}{logical(0), if TRUE the prediction is done from the truncated estimator}
 
 \item{level}{alpha for the predicion intervals, default 0.05}
 

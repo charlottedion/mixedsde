@@ -17,9 +17,9 @@
 
 \item{ylim}{optional}
 
-\item{xlab}{optional, default "times"}
+\item{xlab}{optional, default 'times'}
 
-\item{ylab}{optional, default "X"}
+\item{ylab}{optional, default 'X'}
 
 \item{col}{color for the prediction intervals, default 2}
 

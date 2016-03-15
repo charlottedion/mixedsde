@@ -2,7 +2,7 @@
 % Please edit documentation in R/BayesianNormal.R
 \name{dcCIR2}
 \alias{dcCIR2}
-\title{Likelihood function for the CIR model}
+\title{Likelihood Function For The CIR Model}
 \usage{
 dcCIR2(x, t, x0, theta, log = FALSE)
 }

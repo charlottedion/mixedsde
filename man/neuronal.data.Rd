@@ -77,16 +77,18 @@ pred_Bayes <- pred(estim_Bayes, trajectories=TRUE)
 }
 
 \source{
-  Rune Berg, Lansky, Yu
-  \emph{?}
+  The parameters of the stochastic leaky integrate-and-fire neuronal model.
+  Lansky, P., Sanda, P. and He, J. (2006).
+  \emph{Journal of Computational Neuroscience} Vol 21, \bold{211--223}
 }
 \references{
- Rune Berg, Lansky, Yu
-  \emph{?}
+  The parameters of the stochastic leaky integrate-and-fire neuronal model.
+  Lansky, P., Sanda, P. and He, J. (2006).
+  \emph{Journal of Computational Neuroscience} Vol 21, \bold{211--223}
 }
 
 
 
 
 
-\keyword{datasets}
+\keyword{data}

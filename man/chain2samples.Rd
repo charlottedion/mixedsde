@@ -2,7 +2,7 @@
 % Please edit documentation in R/BayesianNormal.R
 \name{chain2samples}
 \alias{chain2samples}
-\title{Removing of burn-in phase and thinning}
+\title{Removing Of Burn-in Phase And Thinning}
 \usage{
 chain2samples(res, burnIn, thinning)
 }

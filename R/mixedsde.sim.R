@@ -14,7 +14,7 @@
 #' @param sigma diffusion parameter 
 #' @param t0 time origin, default 0.
 #' @param X0 initial value of the process, default X0=0.
-#' @param invariant 1 if the initial value is simulated from the invariant distribution, default 0 and X0 is fixed.
+#' @param invariant 1 if the initial value is simulated from the invariant distribution, default 0.01 and X0 is fixed.
 #' @param delta time step of the simulation (T/N).
 #' @param op.plot 1 if a plot of the trajectories is required, default 0. 
 #' @param add.plot 1 for add trajectories to an existing plot
@@ -105,7 +105,8 @@
 #' 
 #' 
 #' 
-mixedsde.sim <- function(M, T, N = T * 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0, invariant = 0, delta = T/N, op.plot = 0, add.plot = FALSE) {
+mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, invariant = 0, delta = T/N, 
+    op.plot = 0, add.plot = FALSE) {
     
     delta <- T/N
     times <- seq(t0, T, length = N + 1)
@@ -151,7 +152,7 @@ mixedsde.sim <- function(M, T, N = T * 100, model, random, fixed = 0, density.ph
         if (model == "OU") {
             for (j in 1:M) {
                 if (invariant == 1) {
-                  X0 <- phi[1, j]/phi[2, j] + (sigma/(sqrt(2 * phi[2, j]))) * rnorm(1)
+                  X0 <- phi[1, j]/phi[2, j] + (sig/(sqrt(2 * phi[2, j]))) * rnorm(1)
                   X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[, j], sig), model = "OU")
                 }
                 if (invariant == 0) {
@@ -165,12 +166,12 @@ mixedsde.sim <- function(M, T, N = T * 100, model, random, fixed = 0, density.ph
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- rgamma(1, 2 * phi[1, j]/sig^2, scale = sig^2/(2 * phi[2, j]))
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), model = "CIR", sigma.x = expression(sig/(2 * 
-                    sqrt(x))), sigma = expression(sig * sqrt(x)))
+                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), model = "CIR", 
+                    sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)))
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
-                    sqrt(x)), model = "CIR")
+                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), sigma.x = expression(sig/(2 * 
+                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
                 }
             }
             
@@ -221,13 +222,13 @@ mixedsde.sim <- function(M, T, N = T * 100, model, random, fixed = 0, density.ph
         if (model == "CIR") {
             for (j in 1:M) {
                 if (invariant == 1) {
-                  X0 <- rgamma(1, 2 * phi[j]/sig^2, scale = sigma^2/(2 * fixed))
-                  X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * sqrt(x))), 
-                    sigma = expression(sig * sqrt(x)), model = "CIR")
+                  X0 <- rgamma(1, 2 * phi[j]/sig^2, scale = sig^2/(2 * fixed))
+                  X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * 
+                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * sqrt(x))), 
-                    sigma = expression(sig * sqrt(x)), model = "CIR")
+                  X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * 
+                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
                 }
             }
         }
@@ -263,24 +264,22 @@ mixedsde.sim <- function(M, T, N = T * 100, model, random, fixed = 0, density.ph
         if (model == "CIR") {
             for (j in 1:M) {
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(t0, T, X0, N, delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
-                    sqrt(x)), model = "CIR")
+                  X[j, ] <- sde.sim(t0, T, X0, N, delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * 
+                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
                 }
                 if (invariant == 1) {
                   if (fixed == 0) {
-                    print("no invariant distribution, please fixe X0")
+                    print("no invariant distribution, please fix X0")
                   }
                   if (fixed != 0) {
                     X0 <- rgamma(1, 2 * fixed/sig^2, scale = sig^2/(2 * phi[j]))
-                    X[j, ] <- sde.sim(t0 = t0, T = T, X0 = X0, N, delta = delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * sqrt(x))), 
-                      sigma = expression(sig * sqrt(x)), model = "CIR")
+                    X[j, ] <- sde.sim(t0 = t0, T = T, X0 = X0, N, delta = delta, method = "milstein", theta = c(fixed, phi[j], sig), 
+                      sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
                   }
                 }
             }
             
         }
-        
-        
     }
     
     

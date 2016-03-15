@@ -4,9 +4,9 @@
 \alias{mixedsde.sim}
 \title{Simulation Of A Mixed Stochastic Differential Equation}
 \usage{
-mixedsde.sim(M, T, N = T * 100, model, random, fixed = 0, density.phi,
-  param, sigma, t0 = 0, X0 = 0, invariant = 0, delta = T/N,
-  op.plot = 0, add.plot = FALSE)
+mixedsde.sim(M, T, N = 100, model, random, fixed = 0, density.phi, param,
+  sigma, t0 = 0, X0 = 0.01, invariant = 0, delta = T/N, op.plot = 0,
+  add.plot = FALSE)
 }
 \arguments{
 \item{M}{number of trajectories}
@@ -32,7 +32,7 @@ If random =2, fixed can be 0 but \eqn{\beta} has to be a non negative random var
 
 \item{X0}{initial value of the process, default X0=0.}
 
-\item{invariant}{1 if the initial value is simulated from the invariant distribution, default 0 and X0 is fixed.}
+\item{invariant}{1 if the initial value is simulated from the invariant distribution, default 0.01 and X0 is fixed.}
 
 \item{delta}{time step of the simulation (T/N).}
 

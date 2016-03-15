@@ -4,19 +4,24 @@
 \alias{EstParamNormal}
 \title{Maximization Of The Log Likelihood In Mixed Stochastic Differential Equations}
 \usage{
-EstParamNormal(estimphi, V, random)
+EstParamNormal(U, V, K, random, estim.fix, fixed = 0)
 }
 \arguments{
-\item{estimphi}{vector or matrix of estimators of the random effects}
+\item{U}{matrix of M sufficient statistics U}
 
-\item{V}{vector of the M sufficient statistics V}
+\item{V}{list of the M sufficient statistics matrix V}
+
+\item{K}{number of times of observations}
 
 \item{random}{random effects in the drift: 1 if one additive random effect, 2 if one multiplicative random effect or c(1,2) if 2 random effects.}
+
+\item{estim.fix}{1 if the fixed parameter is estimated, when random 1 or 2 , 0 otherwise}
+
+\item{fixed}{value of the fixed parameter if known (not estimated)}
 }
 \value{
 \item{mu}{estimated value of the mean}
 \item{Omega}{estimated value of the variance}
-\item{cova}{estimated value of the covariance}
 \item{BIChere}{BIC indicator}
 \item{AIChere}{AIC indicator}
 }

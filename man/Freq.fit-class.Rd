@@ -26,15 +26,19 @@ S4 class for the frequentist estimation results
 
 \item{\code{sigma2}}{numeric estimated value of \eqn{\sigma^2}}
 
-\item{\code{estimf_trunc}}{matrix estimator of the density of \eqn{\phi} for the truncated estimateur of the random effects}
+\item{\code{estimf.trunc}}{matrix estimator of the density of \eqn{\phi} for the truncated estimateur of the random effects}
 
-\item{\code{estimphi_trunc}}{matrix truncated estimator of the random effects}
+\item{\code{estimphi.trunc}}{matrix truncated estimator of the random effects}
 
 \item{\code{index}}{index of the used trajectories}
 
 \item{\code{estimphi}}{matrix of the estimator of the random effects}
 
 \item{\code{estimf}}{estimator of the density of \eqn{\phi}}
+
+\item{\code{estim.fixed}}{estimator of the fixed parameter if option estim.fix = 1}
+
+\item{\code{estim.fix}}{1 if the user asked for the estimation of fixed parameter}
 
 \item{\code{bic}}{numeric bic}
 

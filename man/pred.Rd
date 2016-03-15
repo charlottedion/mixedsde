@@ -4,7 +4,7 @@
 \alias{pred}
 \title{Prediction method}
 \usage{
-pred(x, Xtrue, estim.method, times, level = 0.05, newwindow = FALSE,
+pred(x, Xtrue, times, invariant = 0, level = 0.05, newwindow = FALSE,
   plot.pred = TRUE, ...)
 }
 \arguments{
@@ -12,9 +12,9 @@ pred(x, Xtrue, estim.method, times, level = 0.05, newwindow = FALSE,
 
 \item{Xtrue}{observed data}
 
-\item{estim.method}{nonparam or paramML}
-
 \item{times}{observation times}
+
+\item{invariant}{1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue}
 
 \item{level}{alpha for the predicion intervals, default 0.05}
 

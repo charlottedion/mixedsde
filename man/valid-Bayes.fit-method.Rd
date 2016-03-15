@@ -9,15 +9,15 @@
   plot.valid = TRUE, numj, ...)
 }
 \arguments{
-\item{x}{Bayes.fit class}
+\item{x}{Freq.fit class}
 
 \item{Mrep}{number of trajectories to be drawn}
 
 \item{newwindow}{logical(1), if TRUE, a new window is opened for the plot}
 
-\item{plot.valid}{if TRUE (default), the results are plotted}
+\item{plot.valid}{to be added}
 
-\item{numj}{optional a number between 1 and M: number of series for which the estimation is validated}
+\item{numj}{to be added}
 
 \item{...}{optional plot parameters}
 }

@@ -5,14 +5,16 @@
 \alias{pred,Bayes.fit-method}
 \title{Bayesian prediction method for a class object Bayes.fit}
 \usage{
-\S4method{pred}{Bayes.fit}(x, level = 0.05, newwindow = FALSE,
-  plot.pred = TRUE, plot.legend = TRUE, burnIn, thinning,
-  only.interval = TRUE, sample.length = 500, cand.length = 100,
+\S4method{pred}{Bayes.fit}(x, invariant = 0, level = 0.05,
+  newwindow = FALSE, plot.pred = TRUE, plot.legend = TRUE, burnIn,
+  thinning, only.interval = TRUE, sample.length = 500, cand.length = 100,
   trajectories = FALSE, ylim, xlab = "times", ylab = "X", col = 2,
   lwd = 2, ...)
 }
 \arguments{
 \item{x}{Bayes.fit class}
+
+\item{invariant}{1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue}
 
 \item{level}{alpha for the predicion intervals, default 0.05}
 
@@ -36,9 +38,9 @@
 
 \item{ylim}{optional}
 
-\item{xlab}{optional, default "times"}
+\item{xlab}{optional, default 'times'}
 
-\item{ylab}{optional, default "X"}
+\item{ylab}{optional, default 'X'}
 
 \item{col}{color for the prediction intervals, default 2}
 

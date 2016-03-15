@@ -49,7 +49,7 @@ plot(estim)
 summary(estim)
 print(estim)
 
-validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
+validation <- valid(estim, Xtrue= X, times=times, numj=floor(runif(1,1,M)))
 
 estim.method<-'paramML'
 estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, estim.method = 'paramML')
@@ -104,13 +104,6 @@ plot(pred.result)
 
 pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
-
-
-
-
-
-
-
-
+validbayes <- valid(estim_Bayes)
 
 }

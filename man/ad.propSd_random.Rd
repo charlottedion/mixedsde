@@ -2,7 +2,7 @@
 % Please edit documentation in R/BayesianNormal.R
 \name{ad.propSd_random}
 \alias{ad.propSd_random}
-\title{Adaptation for the proposal variance}
+\title{Adaptation For The Proposal Variance}
 \usage{
 ad.propSd_random(chain, propSd, iteration, lower = 0.3, upper = 0.6,
   delta.n = function(n) min(0.1, 1/sqrt(n)))

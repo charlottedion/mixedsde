@@ -5,8 +5,8 @@
 \title{Estimation Of The Random Effects In Mixed Stochastic Differential Equations}
 \usage{
 mixedsde.fit(times, X, model = c("OU", "CIR"), random, fixed = 0,
-  estim.method = c("nonparam", "paramML", "paramBayes"), gridf = NULL,
-  prior, nMCMC = NULL)
+  estim.fix = 0, estim.method = c("nonparam", "paramML", "paramBayes"),
+  gridf = NULL, prior, nMCMC = NULL)
 }
 \arguments{
 \item{times}{vector of observation times}
@@ -17,7 +17,9 @@ mixedsde.fit(times, X, model = c("OU", "CIR"), random, fixed = 0,
 
 \item{random}{random effects in the drift: 1 if one additive random effect, 2 if one multiplicative random effect or c(1,2) if 2 random effects}
 
-\item{fixed}{fixed effect in the drift: value of the fixed effect when there is only one random effect, 0 otherwise}
+\item{fixed}{fixed effect in the drift: value of the fixed effect when there is only one random effect and it is not estimated, 0 otherwise}
+
+\item{estim.fix}{default 0, 1 if random = 1 or 2, method = 'paramML' and an estimator of the fixed parameter is needed (to lead the nonparametric estimation after for example)}
 
 \item{estim.method}{estimation method: 'paramML' for a Gaussian parametric estimation by maximum likelihood, 'paramBayes' for a Gaussian parametric Bayesian estimation or 'nonparam' for a non-parametric estimation}
 
@@ -35,8 +37,8 @@ then grid is chosen as a function of the estimated values of the random effects.
 \item{estimf}{estimator of the density of \eqn{\phi} from a kernel estimator from package: stats, function: density, or package: MASS, function: kde2D. Matrix form: one line if one random effect or square matrix otherwise}
 If there is a truncation threshold in the estimator
 \item{cutoff}{the binary vector of cutoff, FALSE otherwise}
-\item{estimphi_trunc}{troncated estimator of \eqn{\phi}, vector or matrix of 0 if we do not use truncation, matrix of two lines if random =c(1,2), numerical type otherwise}
-\item{estimf_trunc}{troncated estimator of the density of \eqn{\phi}, vector or matrix of 0 if we do not use truncation, matrix if random =c(1,2), numerical type otherwise}
+\item{estimphi.trunc}{troncated estimator of \eqn{\phi}, vector or matrix of 0 if we do not use truncation, matrix of two lines if random =c(1,2), numerical type otherwise}
+\item{estimf.trunc}{troncated estimator of the density of \eqn{\phi}, vector or matrix of 0 if we do not use truncation, matrix if random =c(1,2), numerical type otherwise}
 For the parametric maximum likelihood estimation
 \item{mu}{estimator of the mean of the random effects normal density, 0 if we do nonparametric estimation}
 \item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
@@ -52,6 +54,8 @@ For the parametric Bayesian estimation
 \item{mu}{posterior samples (Markov chain) of \eqn{\mu}}
 \item{omega}{posterior samples (Markov chain) of \eqn{\Omega}}
 \item{sigma2}{posterior samples (Markov chain) of \eqn{\sigma^2}}
+\item{mu}{estimator of the mean of the random effects normal density, 0 if we do nonparametric estimation}
+\item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
 \item{model}{initial choice}
 \item{random}{initial choice}
 \item{burnIn}{proposal for burn-in period}
@@ -85,10 +89,11 @@ The nonparametric method estimates the density of the random effects with a kern
 The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects.
 }
 \examples{
-#Choices
+# Frequentist estimation
+# Two random effects
 model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'gammainvgamma2';
 param<- c(1.8, 0.8, 8, 0.05);
-simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,sigma=sigma, invariant = 1)
+simu <- mixedsde.sim(M=M, T=T, N=N, model=model,random=random, density.phi=density.phi, param=param, sigma=sigma, invariant = 1)
 X <- simu$X ; phi <- simu$phi; times <- simu$times
 estim.method<- 'nonparam'
 estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
@@ -135,12 +140,12 @@ summary(estim_param)
 # The function return on a list the prediction of phi \\code{phipred}, the prediction of X \\code{Xpred},
 # and the indexes of the corresponding true trajectories \\code{indexpred}
 
-test1 <- pred(estim, X,  estim.method= 'nonparam', times=times)
-test2 <- pred(estim_param,  X,  estim.method= 'paramML', times=times)
+test1 <- pred(estim, X = X,   invariant  = 1, times = times)
+test2 <- pred(estim_param,  X = X,  invariant  = 1,  times = times)
 
 # More graph
 fhat <- outputsNP$estimf
-fhat_trunc <- outputsNP$estimf_trunc
+fhat_trunc <- outputsNP$estimf.trunc
 fhat_param <- outputsP$estimf
 
 gridf <- outputsNP$gridf; gridf1 <- gridf[1,]; gridf2 <- gridf[2,]
@@ -166,39 +171,78 @@ lines(gridf2,marg2_param,col='red', lwd=2, lty=2)
 
 cutoff <- outputsNP$cutoff
 phihat <- outputsNP$estimphi
-phihat_trunc <- outputsNP$estimphi_trunc
+phihat_trunc <- outputsNP$estimphi.trunc
 par(mfrow=c(1,2))
 plot.ts(phi[1,], phihat[1,], xlim=c(0, 15), ylim=c(0,15), pch=18); abline(0,1)
 points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); abline(0,1)
 plot.ts(phi[2,], phihat[2,], xlim=c(0, 15), ylim=c(0,15),pch=18); abline(0,1)
 points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); abline(0,1)
 
+# one ranfom effect:
 
+model <-'OU'
+random <- 1
+M <- 80; T <- 100  ; N <- 2000
+sigma <- 0.1 ; X0 <- 0
+density.phi <- 'normal'
+fixed <- 2 ; param <- c(1, 0.2)
+#-------------------
+#- simulation
+simu <- mixedsde.sim(M,T=T,N=N,model=model,random=random, fixed=fixed,density.phi=density.phi, param=param, sigma=sigma, X0=X0)
+X <- simu$X
+phi <- simu$phi
+times <-simu$times
+plot(times, X[10,], type='l')
+#- parametric estimation
+estim.method<-'paramML'
+estim_param <- mixedsde.fit(times, X=X, model=model, random=random, estim.fix= 1, estim.method=estim.method)
+outputsP <- out(estim_param)
+estim.fixed <- outputsP$estim.fixed #to compare with fixed
+#or
+estim_param2 <- mixedsde.fit(times, X=X, model=model, random=random, fixed = fixed, estim.method=estim.method)
+outputsP2 <- out(estim_param2)
+#- nonparametric estimation
+estim.method <- 'nonparam'
+estim <- mixedsde.fit(times, X, model=model, random=random, fixed = fixed, estim.method=estim.method)
+outputsNP <- out(estim)
+
+plot(estim)
+print(estim)
+summary(estim)
+
+plot(estim_param)
+print(estim_param)
+summary(estim_param)
+
+valid1 <- valid(estim, X,  times=times,  numj=floor(runif(1,1,M)))
+test1 <- pred(estim, X = X, times = times)
+test2 <- pred(estim_param,  X = X , times = times)
 # Parametric Bayesian estimation
 # one random effect
-model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
-M <- 50 ; T <- 1; N <- 100; param <- c(3, 0.5)
+model = 'OU'; random <- 1; sigma <- 0.1 ;fixed <- 5
+M <- 50 ; T <- 1; N <- 100
+density.phi <- 'normal' ; param <- c(3, 0.5)
 
-simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0, op.plot = 0)
-X <- simu$X; phi <- simu$phi; times <- simu$times
-plot(times, X[1,], ylim = range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0, op.plot=0)
+X <- simu$X ; phi <- simu$phi; times <- simu$times
+plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
 
-estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', nMCMC = 1000)
+estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000)
 plot(estim_Bayes_withoutprior)
 
-prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, beta.omega = param[2]^2*10,
-alpha.sigma = 10, beta.sigma = sigma^2*9)
-estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
+prior <- list( m=c(param[1], fixed), v=c(param[1], fixed), alpha.omega=11, beta.omega=param[2]^2*10,
+alpha.sigma=10, beta.sigma=sigma^2*9)
+estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000)
 
 validation <- valid(estim_Bayes, numj = 10)
 plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 (results_Bayes <- summary(estim_Bayes))
-plot(estim_Bayes, style = 'cred.int', true.phi = phi)
-plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
+plot(estim_Bayes, style='cred.int', true.phi=phi)
+plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
 
-plot.compare(estim_Bayes, estim_Bayes_withoutprior, names=c("with prior", "without prior"))
+plot.compare(estim_Bayes, estim_Bayes_withoutprior, names=c('with prior', 'without prior'))
 
 print(estim_Bayes)
 
@@ -210,22 +254,23 @@ pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
 # second example
 
-model <- 'CIR'; random <- 2; sigma <- 0.2; fixed <- 5
-M <- 20 ; T <- 1; N <- 100; param <- c(3, 0.5)
+model = 'CIR'; random <- 2; sigma <- 0.2 ;fixed <- 5
+M <- 20 ; T <- 1; N <- 100
+density.phi <- 'normal' ; param <- c(3, 0.5)
 
-simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0.1, op.plot = 0)
-X <- simu$X; phi <- simu$phi; times <- simu$times
-plot(times, X[1,], ylim = range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0.1, op.plot=0)
+X <- simu$X ; phi <- simu$phi; times <- simu$times
+plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
 
-prior <- list( m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10,
-alpha.sigma = 10, beta.sigma = sigma^2*9)
+prior <- list( m=c(fixed, param[1]), v=c(fixed, param[1]), alpha.omega=11, beta.omega=param[2]^2*10,
+alpha.sigma=10, beta.sigma=sigma^2*9)
 
-estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
+estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000)
 plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 (results_Bayes <- summary(estim_Bayes))
-plot(estim_Bayes, style = 'cred.int', true.phi = phi, reduced = TRUE)
+plot(estim_Bayes, style='cred.int', true.phi=phi, reduced=TRUE)
 
 print(estim_Bayes)
 pred.result <- pred(estim_Bayes)
@@ -233,54 +278,29 @@ summary(out(pred.result))
 plot(pred.result)
 
 # for two random effects
-model <- 'OU'; random <- c(1, 2); sigma <- 0.1
-M <- 20 ; T <- 1; N <- 100; param <- c(3, 0.5, 5, 0.2)
+model = 'OU'; random <- c(1,2); sigma <- 0.1
+M <- 20 ; T <- 1; N <- 100
+density.phi <- 'normalnormal' ; param <- c(3, 0.5, 5, 0.2)
 
-simu <- mixedsde.sim(M, T = T, N = N, model, random, density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 0)
-X <- simu$X; phi <- simu$phi; times <- simu$times
-plot(times, X[1,], ylim = range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+simu <- mixedsde.sim(M,T=T,N=N,model,random, density.phi=density.phi, param=param, sigma=sigma, X0=0,op.plot=0)
+X <- simu$X ; phi <- simu$phi; times <- simu$times
+plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
 
-estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', nMCMC = 1000)
-plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
+estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000)
+plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
 
-prior <- list( m = param[c(1, 3)], v = param[c(1, 3)], alpha.omega = c(11, 11), beta.omega = param[c(2, 4)]^2*10,
-alpha.sigma = 10, beta.sigma = sigma^2*9)
+prior <- list( m=param[c(1,3)], v=param[c(1,3)], alpha.omega=c(11,11), beta.omega=param[c(2,4)]^2*10,
+alpha.sigma=10, beta.sigma=sigma^2*9)
 
-estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
+estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 summary(estim_Bayes)
 plot(estim_Bayes)
-plot(estim_Bayes, style = 'cred.int', true.phi = phi)
+plot(estim_Bayes, style='cred.int', true.phi=phi)
 print(estim_Bayes)
 
 pred.result <- pred(estim_Bayes)
-
-# for Virkler data
-data("crack.data")
-X <- crack.data[[1]]
-times <- crack.data[[2]]
-
-estim_Bayes_Virkler1 <- mixedsde.fit(times, X, model = "OU", random = 1, estim.method = 'paramBayes', nMCMC = 2000)
-estim_Bayes_Virkler2 <- mixedsde.fit(times, X, model = "OU", random = 2, estim.method = 'paramBayes', nMCMC = 2000)
-estim_Bayes_Virkler12 <- mixedsde.fit(times, X, model = "OU", random = c(1, 2), estim.method = 'paramBayes', nMCMC = 2000)
-
-plot(estim_Bayes_Virkler1)
-plot(estim_Bayes_Virkler2, reduced = TRUE, plot.priorMean = FALSE)
-plot(estim_Bayes_Virkler12, reduced = TRUE, style = "density", plot.priorMean = FALSE)
-plot.compare(estim_Bayes_Virkler1, estim_Bayes_Virkler2, estim_Bayes_Virkler12, names = c("random=1", "random=2", "random=(1,2)"))
-
-pred.result1 <- pred(estim_Bayes_Virkler1)
-pred.result2 <- pred(estim_Bayes_Virkler2)
-pred.result12 <- pred(estim_Bayes_Virkler12)
-
-plot.compare(pred.result1, pred.result2, pred.result12, names = c("random=1", "random=2", "random=(1,2)"))
-
-pred.result1_traj <- pred(estim_Bayes_Virkler1, trajectories = TRUE)
-pred.result2_traj <- pred(estim_Bayes_Virkler2, trajectories = TRUE)
-pred.result12_traj <- pred(estim_Bayes_Virkler12, trajectories = TRUE)
-
-plot.compare(pred.result1_traj, pred.result2_traj, pred.result12_traj, names = c("random=1", "random=2", "random=(1,2)"))
 }
 \references{
 For the parametric estimation see:

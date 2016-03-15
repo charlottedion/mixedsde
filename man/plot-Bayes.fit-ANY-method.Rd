@@ -16,11 +16,11 @@
 
 \item{reduced}{logical(1), if TRUE, the chains are reduced with the burn-in and thin rate}
 
-\item{style}{one out of "chains", "acf", "density" or "cred.int"}
+\item{style}{one out of 'chains', 'acf', 'density' or 'cred.int'}
 
-\item{level}{alpha for the credibility intervals, only for style "cred.int", default = 0.05}
+\item{level}{alpha for the credibility intervals, only for style 'cred.int', default = 0.05}
 
-\item{true.phi}{only for style "cred.int", for the case of known true values, e.g. for simulation}
+\item{true.phi}{only for style 'cred.int', for the case of known true values, e.g. for simulation}
 
 \item{newwindow}{logical(1), if TRUE, a new window is opened for the plot}
 

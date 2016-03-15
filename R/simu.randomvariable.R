@@ -14,7 +14,4 @@ discr <- function(x, p) {
     cp <- cumsum(p)
     U <- runif(1, 0, max(cp))
     x[which(cp >= U)[1]]
-}
-
-
- 
+} 

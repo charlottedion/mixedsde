@@ -6,7 +6,7 @@
 \title{Validation of the chosen model.}
 \usage{
 \S4method{valid}{Freq.fit}(x, Xtrue, times, Mrep = 100, newwindow = FALSE,
-  plot.valid = TRUE, numj = NULL, ...)
+  plot.valid = TRUE, numj, ...)
 }
 \arguments{
 \item{x}{Freq.fit class}

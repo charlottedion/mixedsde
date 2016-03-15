@@ -6,8 +6,7 @@
 \title{Comparing plot method plot.compare for three Bayesian prediction class objects}
 \usage{
 \S4method{plot.compare}{Bayes.pred}(x, y, z, newwindow = FALSE,
-  plot.legend = TRUE, names, ylim, xlab = "times", ylab = "X",
-  colors = 1:3, linetypes = rep(1, 3), ...)
+  plot.legend = TRUE, names, ylim, xlab = "times", ylab = "X", ...)
 }
 \arguments{
 \item{x}{Bayes.pred class}
@@ -24,13 +23,9 @@
 
 \item{ylim}{optional}
 
-\item{xlab}{optional, default "times"}
+\item{xlab}{optional, default 'times'}
 
-\item{ylab}{optional, default "X"}
-
-\item{colors}{optional, default 1:3}
-
-\item{linetypes}{optional, default rep(1, 3)}
+\item{ylab}{optional, default 'X'}
 
 \item{...}{optional plot parameters}
 }

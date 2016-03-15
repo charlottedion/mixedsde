@@ -36,8 +36,8 @@ Gibbs sampler for Bayesian estimation of the random effects \eqn{(\alpha_j, \bet
  \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma a(X_j(t)) dW_j(t)}.
 }
 \references{
-Hermann, S., Ickstadt, K. and C. M{\"u}ller (2015). Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.
+Hermann, S., Ickstadt, K. and C. M{\'u}ller (2015). Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.
 
-Rosenthal, J. S. (2011). "Optimal proposal distributions and adaptive MCMC." Handbook of Markov Chain Monte Carlo (2011): 93-112.
+Rosenthal, J. S. (2011). 'Optimal proposal distributions and adaptive MCMC.' Handbook of Markov Chain Monte Carlo (2011): 93-112.
 }
 
