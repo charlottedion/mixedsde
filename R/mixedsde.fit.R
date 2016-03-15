@@ -120,8 +120,8 @@
 #' # The function return on a list the prediction of phi \code{phipred}, the prediction of X \code{Xpred}, 
 #' # and the indexes of the corresponding true trajectories \code{indexpred} 
 #' 
-#' test1 <- pred(estim, X = X,   invariant  = 1, times = times)
-#' test2 <- pred(estim_param,  X = X,  invariant  = 1,  times = times)
+#' test1 <- pred(estim, X = X,   times = times,  invariant  = 1)
+#' test2 <- pred(estim_param,  X = X,   times = times, invariant  = 1)
 #' 
 #' # More graph
 #' fhat <- outputsNP$estimf  
@@ -2508,7 +2508,6 @@ setGeneric("pred", function(x, Xtrue, times, invariant = 0,  level = 0.05, newwi
 #' @param Xtrue observed data
 #' @param times observation times
 #' @param invariant 1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue
-#' @param pred.trunc logical(0), if TRUE the prediction is done from the truncated estimator
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.pred logical(1), if TRUE, the results are depicted grafically
@@ -2516,7 +2515,7 @@ setGeneric("pred", function(x, Xtrue, times, invariant = 0,  level = 0.05, newwi
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  times, invariant = 0, pred.trunc = 0, 
+setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  times, invariant = 0,
     level = 0.05, newwindow = FALSE, plot.pred = TRUE, ...) {
     if (newwindow) {
         x11(width = 10)
@@ -2703,7 +2702,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
             gridf1 <- x@gridf[1, ]
             gridf2 <- x@gridf[2, ]
             
-            if (pred.trunc == 0) {
+            
                 marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf, 1, sum)
                 marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
                 p1 <- marg1/sum(marg1)
@@ -2713,20 +2712,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
                   phipred[1, i] <- discr(gridf1, p1)
                   phipred[2, i] <- discr(gridf2, p2)
                 }
-            }
-            
-            if (pred.trunc == 1) {
-                marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf.trunc, 1, sum)
-                marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf.trunc, 2, sum)
-                p1 <- marg1/sum(marg1)
-                p2 <- marg2/sum(marg2)
-                phipred <- matrix(0, 2, sum(x@cutoff))
-                
-                for (i in 1:sum(x@cutoff)) {
-                  phipred[1, i] <- discr(gridf1, p1)
-                  phipred[2, i] <- discr(gridf2, p2)
-                }
-            }
+          
         }
         
         if (x@model == "OU") {
@@ -2769,7 +2755,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
             op <- par(mfrow = c(2, 2), mar = c(2, 2, 1.8, 1.8), mgp = c(1.5, 0.5, 0), oma = c(0, 0, 0, 0), cex.main = 0.8, cex.lab = 0.7, 
                 cex.axis = 0.7)
             
-            if (pred.trunc == 0) {
+           
                 plot(sort(x@estimphi[1, indexpred]), sort(phipred[1, ]), pch = 18, xlim = c(min(x@estimphi[1, ], phipred[1, ]) * 
                   0.8, max(x@estimphi[1, ], phipred[1, ]) * 1.2), ylim = c(min(x@estimphi[1, ], phipred[1, ]) * 0.8, max(x@estimphi[1, 
                   ], phipred[1, ]) * 1.2), ylab = "", xlab = "", main = "First random effect")
@@ -2778,17 +2764,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
                   0.8, max(x@estimphi[2, ], phipred[2, ]) * 1.2), ylim = c(min(x@estimphi[2, ], phipred[2, ]) * 0.8, max(x@estimphi[2, 
                   ], phipred[2, ]) * 1.2), ylab = "", xlab = "", main = "Second random effect")
                 abline(0, 1)
-            }
-            if (pred.trunc == 1) {
-                plot(sort(x@estimphi.trunc[1, indexpred]), sort(phipred[1, ]), pch = 18, xlim = c(min(x@estimphi.trunc[1, ], phipred[1, 
-                  ]) * 0.8, max(x@estimphi.trunc[1, ], phipred[1, ]) * 1.2), ylim = c(min(x@estimphi.trunc[1, ], phipred[1, ]) * 
-                  0.8, max(x@estimphi.trunc[1, ], phipred[1, ]) * 1.2), ylab = "", xlab = "", main = "First random effect")
-                abline(0, 1)
-                plot(sort(x@estimphi.trunc[2, indexpred]), sort(phipred[2, ]), pch = 18, xlim = c(min(x@estimphi.trunc[2, ], phipred[2, 
-                  ]) * 0.8, max(x@estimphi.trunc[2, ], phipred[2, ]) * 1.2), ylim = c(min(x@estimphi.trunc[2, ], phipred[2, ]) * 
-                  0.8, max(x@estimphi.trunc[2, ], phipred[2, ]) * 1.2), ylab = "", xlab = "", main = "Second random effect")
-                abline(0, 1)
-            }
+          
             
             plot(times, Xtrue[indexpred[1], ], type = "l", xlab = "", ylab = "", ylim = c(min(Xtrue, Xpred) * 0.8, max(Xtrue, Xpred) * 
                 1.5), main = "True trajectories")
