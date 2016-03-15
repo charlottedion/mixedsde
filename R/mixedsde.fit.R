@@ -359,7 +359,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
         ind.4.prior <- M + 1
       }
       
-      res <- BayesianNormal(times, X[-ind.4.prior,], model, prior, start = list(mu = prior$m, sigma = prior$beta.sigma/(prior$alpha.sigma - 1)), random, nMCMC)
+      res <- BayesianNormal(times, X[-ind.4.prior,], model, prior, start = list(mu = prior$m, sigma2 = prior$beta.sigma/(prior$alpha.sigma - 1)), random, nMCMC)
       he <- diagnostic(res, random)
       return(new(Class = "Bayes.fit", prior = prior, alpha = as.matrix(res$alpha), beta = as.matrix(res$beta), random = random, mu = as.matrix(res$mu), omega = as.matrix(res$omega), 
           sigma2 = res$sigma2, burnIn = he$burnIn, thinning = he$thinning, model = model, times = times, X = X, ind.4.prior = ind.4.prior))
