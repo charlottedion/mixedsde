@@ -94,7 +94,7 @@ summary(outputBayes)
 plot(estim_Bayes, style='cred.int', true.phi=phi)
 plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
 
-plot.compare(estim_Bayes, estim_Bayes_withoutprior, names=c("with prior", "without prior"))
+plot2compare(estim_Bayes, estim_Bayes_withoutprior, names=c("with prior", "without prior"))
 
 print(estim_Bayes)
 

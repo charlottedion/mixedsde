@@ -197,33 +197,27 @@
 #' valid1 <- valid(estim, X,  times=times,  numj=floor(runif(1,1,M)))
 #' test1 <- pred(estim, X = X, times = times)
 #' test2 <- pred(estim_param,  X = X , times = times)
-
+#'
+#'
 #' # Parametric Bayesian estimation 
 #' # one random effect
-#' model = 'OU'; random <- 1; sigma <- 0.1 ;fixed <- 5
-#' M <- 50 ; T <- 1; N <- 100
-#' density.phi <- 'normal' ; param <- c(3, 0.5)
+#' random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
+#' sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = "OU", random, fixed = fixed, density.phi = "normal", param, sigma, X0 = 0, op.plot = 1)
 #' 
-#' simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0, op.plot=0)
-#' X <- simu$X ; phi <- simu$phi; times <- simu$times
-#' plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
-#' 
-#' estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000) 
-#' plot(estim_Bayes_withoutprior)
-#' 
-#' prior <- list( m=c(param[1], fixed), v=c(param[1], fixed), alpha.omega=11, beta.omega=param[2]^2*10,
-#' alpha.sigma=10, beta.sigma=sigma^2*9)
-#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
+#' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = "OU", random, estim.method = 'paramBayes', nMCMC = 1000)
+#' prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, beta.omega = param[2]^2*10,
+#' alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = "OU", random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' 
 #' validation <- valid(estim_Bayes, numj = 10)
 #' plot(estim_Bayes)
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' (results_Bayes <- summary(estim_Bayes))
-#' plot(estim_Bayes, style='cred.int', true.phi=phi)
-#' plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
+#' plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi)
+#' plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 #' 
-#' plot.compare(estim_Bayes, estim_Bayes_withoutprior, names=c('with prior', 'without prior'))
+#' plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
 #' 
 #' print(estim_Bayes)
 #' 
@@ -235,58 +229,57 @@
 #' 
 #' # second example
 #' 
-#' model = 'CIR'; random <- 2; sigma <- 0.2 ;fixed <- 5
-#' M <- 20 ; T <- 1; N <- 100
-#' density.phi <- 'normal' ; param <- c(3, 0.5)
+#' random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
+#' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = "CIR", random, fixed = fixed, density.phi = "normal", param, sigma, X0 = 0.1, op.plot = 1)
 #' 
-#' simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0.1, op.plot=0)
-#' X <- simu$X ; phi <- simu$phi; times <- simu$times
-#' plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
-#' 
-#' prior <- list( m=c(fixed, param[1]), v=c(fixed, param[1]), alpha.omega=11, beta.omega=param[2]^2*10,
-#' alpha.sigma=10, beta.sigma=sigma^2*9)
+#' prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 #'
-#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
+#'\dontrun{
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = "CIR", random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' plot(estim_Bayes)
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' (results_Bayes <- summary(estim_Bayes))
-#' plot(estim_Bayes, style='cred.int', true.phi=phi, reduced=TRUE)
+#' plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 #' 
 #' print(estim_Bayes)
 #' pred.result <- pred(estim_Bayes)
 #' summary(out(pred.result))
 #' plot(pred.result)
-#'
+#'}
 #' # for two random effects
-#' model = 'OU'; random <- c(1,2); sigma <- 0.1 
-#' M <- 20 ; T <- 1; N <- 100
-#' density.phi <- 'normalnormal' ; param <- c(3, 0.5, 5, 0.2)
+#' random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
 #' 
-#' simu <- mixedsde.sim(M,T=T,N=N,model,random, density.phi=density.phi, param=param, sigma=sigma, X0=0,op.plot=0)
-#' X <- simu$X ; phi <- simu$phi; times <- simu$times
-#' plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+#' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = "OU", random, density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
 #' 
-#' estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000)
-#' plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
+#' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = "OU", random, estim.method = 'paramBayes', nMCMC = 1000)
+#' plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 #'  
-#' prior <- list( m=param[c(1,3)], v=param[c(1,3)], alpha.omega=c(11,11), beta.omega=param[c(2,4)]^2*10,
-#' alpha.sigma=10, beta.sigma=sigma^2*9)
-#'
-#' estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000) 
+#' prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11), beta.omega = param[c(2,4)]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = "OU", random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' summary(estim_Bayes)
 #' plot(estim_Bayes)
-#' plot(estim_Bayes, style='cred.int', true.phi=phi)
+#' plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi)
 #' print(estim_Bayes)
 #' 
 #' pred.result <- pred(estim_Bayes)
 #' 
-
-
-
-
+#' 
+#' # invariant case
+#' 
+#' random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
+#' sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = "OU", random, fixed = fixed, density.phi = "normal", param, sigma, invariant = 1, op.plot = 1)
+#' 
+#' prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11, beta.omega = param[2]^2*10,
+#' alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = "OU", random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#' plot(estim_Bayes)
+#'
+#' pred.result <- pred(estim_Bayes, invariant = 1)
+#' pred.result.traj <- pred(estim_Bayes, invariant = 1, trajectories = TRUE)
+#' 
 
 #' 
 #' @keywords estimation
@@ -1706,11 +1699,11 @@ setMethod(f = "plot", signature = "Bayes.pred", definition = function(x, newwind
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setGeneric("plot.compare", function(x, y, z, ...) {
-    standardGeneric("plot.compare")
+setGeneric("plot2compare", function(x, y, z, ...) {
+    standardGeneric("plot2compare")
 })
 ######## 
-#' Comparing plot method plot.compare for three Bayesian estimation class objects
+#' Comparing plot method plot2compare for three Bayesian estimation class objects
 #' 
 #' @description Comparison of the posterior densities for up to three S4 class Bayes.fit objects
 #' @param x Bayes.fit class
@@ -1724,7 +1717,7 @@ setGeneric("plot.compare", function(x, y, z, ...) {
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "plot.compare", signature = "Bayes.fit", definition = function(x, y, z, names, true.values, reduced = TRUE, newwindow = FALSE) {
+setMethod(f = "plot2compare", signature = "Bayes.fit", definition = function(x, y, z, names, true.values, reduced = TRUE, newwindow = FALSE) {
     if (newwindow) {
         x11(width = 10)
     }
@@ -1976,7 +1969,7 @@ setMethod(f = "plot.compare", signature = "Bayes.fit", definition = function(x, 
 })
 
 ######## 
-#' Comparing plot method plot.compare for three Bayesian prediction class objects
+#' Comparing plot method plot2compare for three Bayesian prediction class objects
 #' 
 #' @description Comparison of the results for up to three S4 class Bayes.pred objects
 #' @param x Bayes.pred class
@@ -1993,7 +1986,7 @@ setMethod(f = "plot.compare", signature = "Bayes.fit", definition = function(x, 
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "plot.compare", signature = "Bayes.pred", definition = function(x, y, z, newwindow = FALSE, plot.legend = TRUE, names, 
+setMethod(f = "plot2compare", signature = "Bayes.pred", definition = function(x, y, z, newwindow = FALSE, plot.legend = TRUE, names, 
     ylim, xlab = "times", ylab = "X", ...) {
     if (newwindow) {
         x11(width = 10)
@@ -2346,6 +2339,8 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
     if (newwindow) {
         x11(width = 10)
     }
+    original.settings <- par(no.readonly = TRUE)
+  
     times <- round(x@times, 10)
     N <- length(times) - 1
     Xtrue <- x@X[-x@ind.4.prior, ]
@@ -2367,7 +2362,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
             phihat <- rbind(apply(x@alpha, 2, mean), apply(x@beta, 2, mean))
             
             for (j in 1:M) {
-                Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, density.phi = "normalnormal", 
+                Xnew[[j]] <- mixedsde.sim(M = Mrep, Tend, N = N, model = x@model, random = x@random, density.phi = "normalnormal", 
                   param = c(phihat[1, j], 0, phihat[2, j], 0), sigma = sigma, X0 = Xtrue[j, 1], op.plot = 0)$X
             }
         } else {
@@ -2376,7 +2371,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
                 betahat <- mean(x@beta)
                 
                 for (j in 1:M) {
-                  Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = length(timessimu), model = x@model, random = x@random, fixed = betahat, 
+                  Xnew[[j]] <- mixedsde.sim(M = Mrep, Tend, N = length(timessimu), model = x@model, random = x@random, fixed = betahat, 
                     density.phi = "normal", param = c(alphahat[j], 0), sigma = sigma, X0 = Xtrue[j, 1], op.plot = 0)$X
                 }
             }
@@ -2385,7 +2380,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
                 alphahat <- mean(x@alpha)
                 
                 for (j in 1:M) {
-                  Xnew[[j]] <- mixedsde.sim(M = Mrep, T = Tend, N = length(timessimu), model = x@model, random = x@random, fixed = alphahat, 
+                  Xnew[[j]] <- mixedsde.sim(M = Mrep, Tend, N = length(timessimu), model = x@model, random = x@random, fixed = alphahat, 
                     density.phi = "normal", param = c(betahat[j], 0), sigma = sigma, X0 = Xtrue[j, 1], op.plot = 0)$X
                 }
             }
@@ -2428,7 +2423,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
             phihat <- c(mean(x@alpha[, numj]), mean(x@beta[, numj]))
             
             
-            Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = length(timessimu), model = x@model, random = x@random, density.phi = "normalnormal", 
+            Xnew <- mixedsde.sim(M = Mrep, Tend, N = length(timessimu), model = x@model, random = x@random, density.phi = "normalnormal", 
                 param = c(phihat[1], 0, phihat[2], 0), sigma = sigma, X0 = Xtrue[numj, 1], op.plot = 0)$X
             
         } else {
@@ -2436,14 +2431,14 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
                 alphahat <- mean(x@alpha[, numj])
                 betahat <- mean(x@beta)
                 
-                Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = length(timessimu), model = x@model, random = x@random, fixed = betahat, 
+                Xnew <- mixedsde.sim(M = Mrep, Tend, N = length(timessimu), model = x@model, random = x@random, fixed = betahat, 
                   density.phi = "normal", param = c(alphahat, 0), sigma = sigma, X0 = Xtrue[numj, 1], op.plot = 0)$X
             }
             if (x@random == 2) {
                 betahat <- mean(x@beta[, numj])
                 alphahat <- mean(x@alpha)
                 
-                Xnew <- mixedsde.sim(M = Mrep, T = Tend, N = N, model = x@model, random = x@random, fixed = alphahat, density.phi = "normal", 
+                Xnew <- mixedsde.sim(M = Mrep, Tend, N = N, model = x@model, random = x@random, fixed = alphahat, density.phi = "normal", 
                   param = c(betahat, 0), sigma = sigma, X0 = Xtrue[numj, 1], op.plot = 0)$X
             }
         }
@@ -2473,8 +2468,11 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
             abline(0, 1)
         }
     }
+    # set plot settings back
+    par(original.settings)
     
     return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
+    
 })
 
 ########################################################### PREDICTION
@@ -2800,7 +2798,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
 #' 
 #' @description Bayesian prediction
 #' @param x Bayes.fit class
-#' @param invariant 1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue
+#' @param invariant logical(1), if TRUE, the initial value is from the invariant distribution \eqn{X_t~N(\alpha/\beta, \sigma^2/2\beta)} for the OU and \eqn{X_t~Gamma(2\alpha/\sigma^2, \sigma^2/2\beta)} for the CIR process, default X0 is fixed from Xtrue
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.pred logical(1), if TRUE, the results are depicted grafically
@@ -2820,7 +2818,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue,  t
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invariant =0, level = 0.05,  newwindow = FALSE, plot.pred = TRUE, plot.legend = TRUE, 
+setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invariant = FALSE, level = 0.05, newwindow = FALSE, plot.pred = TRUE, plot.legend = TRUE, 
     burnIn, thinning, only.interval = TRUE, sample.length = 500, cand.length = 100, trajectories = FALSE, ylim, xlab = "times", 
     ylab = "X", col = 2, lwd = 2, ...) {
     if (newwindow) {
@@ -2846,6 +2844,8 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
     model <- x@model
     
     if (trajectories) {
+      sigma2 <- mean(est@sigma2)
+      
         
         if (length(random) == 2) {
             
@@ -2861,19 +2861,42 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
             prob <- sapply(cand2, dens, samples = list(mu = est@mu[, 2], omega = est@omega[, 2]))
             phi.pred[, 2] <- replicate(M, discr(cand2, prob))
             
+            if(invariant){
+              if(model == "OU"){
+                X0 <- rnorm(M, phi.pred[, 1]/phi.pred[, 2], sqrt(sigma2/(2*phi.pred[, 2])))
+              }
+              if(model == "CIR"){
+                X0 <- rgamma(M, 2 * phi.pred[, 1]/sigma2, scale = sigma2/(2 * phi.pred[, 2]))
+              }
+              
+            }else{
+              X0 <- x@X[, 1]
+            }
+            
         } else {
             
             cand <- seq(mean(est@mu) - 4 * sqrt(mean(est@omega)), mean(est@mu) + 4 * sqrt(mean(est@omega)), length = 500)
             prob <- sapply(cand, dens, samples = list(mu = est@mu, omega = est@omega))
             phi.pred <- replicate(M, discr(cand, prob))
             
+            if(invariant){
+              if(model == "OU"){
+                if(random == 1) X0 <- rnorm(M, phi.pred/mean(est@beta), sqrt(sigma2/(2*mean(est@beta))))
+                if(random == 2) X0 <- rnorm(M, mean(est@alpha)/phi.pred, sqrt(sigma2/(2*phi.pred)))
+              }
+              if(model == "CIR"){
+                if(random == 1) X0 <- rgamma(M, 2*phi.pred/sigma2, scale = sigma2/(2*mean(est@beta)))
+                if(random == 2) X0 <- rgamma(M, 2*mean(est@alpha)/sigma2, scale = sigma2/(2*phi.pred))
+              }
+            }else{
+              X0 <- x@X[, 1]
+            }
+            
         }
         
-        X0 <- x@X[1, ]
         
         Xpred <- matrix(0, M, length(x@times))
-        Xpred[1, ] <- X0
-        sigma2 <- mean(est@sigma2)
+        Xpred[, 1] <- X0
         dt <- diff(x@times)
         if (model == "OU") {
             m.traj <- function(t, phi, Xn_1) phi[1]/phi[2] + (Xn_1 - phi[1]/phi[2]) * exp(-phi[2] * t)
@@ -2984,25 +3007,50 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
             prob <- sapply(cand2, dens, samples = list(mu = est@mu[, 2], omega = est@omega[, 2]))
             phi.pred[, 2] <- replicate(K, discr(cand2, prob))
             
+            if(invariant){
+              if(model == "OU"){
+                dens <- function(t) mean(dnorm(t, phi.pred[, 1]/phi.pred[, 2], sqrt(est@sigma2/(2*phi.pred[, 2]))))
+                cand <- seq(min(x@X[, 1]) - abs(max(x@X[, 1]))*0.5, max(x@X[, 1]) + abs(max(x@X[, 1]))*0.9, length = 1000)
+              }
+              if(model == "CIR"){
+                dens <- function(t) mean(dgamma(t, 2*phi.pred[, 1]/est@sigma2, scale = est@sigma2/(2*phi.pred[, 2])))
+                cand <- seq(max(1e-03, min(x@X[, 1]) - abs(max(x@X[, 1]))*0.5), max(x@X[, 1]) + abs(max(x@X[, 1]))*0.9, length = 1000)
+              }
+              prob <- sapply(cand, dens)
+              X0 <- replicate(K, discr(cand, prob))
+            }else{
+              if(length(unique(x@X[, 1])) == 1) X0 <- x@X[1, 1]
+              if(length(unique(x@X[, 1])) > 1) X0 <- rep(x@X[, 1], length = K)
+            }
+            
         } else {
             
             cand <- seq(mean(est@mu) - 4 * sqrt(mean(est@omega)), mean(est@mu) + 4 * sqrt(mean(est@omega)), length = 500)
             prob <- sapply(cand, dens, samples = list(mu = est@mu, omega = est@omega))
             phi.pred <- replicate(K, discr(cand, prob))
             
+            if(invariant){
+              if(model == "OU"){
+                if(random == 1) dens <- function(t) mean(dnorm(t, phi.pred/est@beta, sqrt(est@sigma2/(2*est@beta))))
+                if(random == 2) dens <- function(t) mean(dnorm(t, est@alpha/phi.pred, sqrt(est@sigma2/(2*phi.pred))))
+                cand <- seq(min(x@X[, 1]) - abs(max(x@X[, 1]))*0.5, max(x@X[, 1]) + abs(max(x@X[, 1]))*0.9, length = 1000)
+              }
+              if(model == "CIR"){
+                if(random == 1) dens <- function(t) mean(dgamma(t, 2*phi.pred/est@sigma2, scale = est@sigma2/(2*est@beta)))
+                if(random == 2) dens <- function(t) mean(dgamma(t, 2*est@alpha/est@sigma2, scale = est@sigma2/(2*phi.pred)))
+                cand <- seq(max(1e-03, min(x@X[, 1]) - abs(max(x@X[, 1]))*0.5), max(x@X[, 1]) + abs(max(x@X[, 1]))*0.9, length = 1000)
+              }
+              prob <- sapply(cand, dens)
+              X0 <- replicate(K, discr(cand, prob))
+            }else{
+              if(length(unique(x@X[, 1])) == 1) X0 <- x@X[1, 1]
+              if(length(unique(x@X[, 1])) > 1) X0 <- rep(x@X[, 1], length = K)
+              
+            }
+            
         }
-        X0 <- x@X[1, 1]
-        
-        if (model == "OU") {
-            m <- function(t, phi) phi[1]/phi[2] + (X0 - phi[1]/phi[2]) * exp(-phi[2] * t)
-            v <- function(t, phi) phi[3] * (1 - exp(-2 * phi[2] * t))/2/phi[2]
-            likeli <- function(x, t, phi, sigma2) dnorm(x, m(t, phi), sqrt(v(t, c(phi, sigma2))))
-        } else {
-            likeli <- function(x, t, phi, sigma2) dcCIR2(x, t, X0, c(phi, sqrt(sigma2)))
-        }
-        
-        K <- length(est@sigma2)
-        
+
+       
         cand <- function(i) {
             he <- x@X[, i + 1]
             seq(min(he) - abs(min(he)) * 0.5, max(he) + abs(max(he)) * 0.5, length = cand.length)
@@ -3011,65 +3059,67 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
         l.bound = level/2
         u.bound = 1 - level/2
         
+        dcCIR2.vec <- function(x, t, x0, theta, log = FALSE) {
+          c <- 2 * theta[,2]/((1 - exp(-theta[,2] * t)) * theta[,3]^2)
+          ncp <- 2 * c * x0 * exp(-theta[,2] * t)
+          df <- 4 * theta[,1]/theta[,3]^2
+          lik <- (dchisq(2 * x * c, df = df, ncp = ncp, log = TRUE) + log(2 * c))
+          if (!log) 
+            lik <- exp(lik)
+          lik
+        }
+        
         if (length(random) == 2) {
-            pred <- function(i) {
-                dens <- function(c, samples) mean(sapply(1:K, function(a) likeli(c, x@times[i + 1] - x@times[1], samples$phi[a, 
-                  ], samples$sigma2[a])))
-                ca <- cand(i)
-                prob <- sapply(ca, dens, samples = list(phi = phi.pred, sigma2 = est@sigma2))
-                
-                if (!only.interval) {
-                  samp.X <- replicate(sample.length, discr(ca, prob))
-                } else {
-                  samp.X <- NULL
-                }
-                
-                VF <- cumsum(prob)/sum(prob)
-                qu.l <- ca[which(VF >= l.bound)[1]]
-                qu.u <- ca[which(VF >= u.bound)[1]]
-                return(list(samp.X = samp.X, qu.l = qu.l, qu.u = qu.u))
-            }
-            
+          
+          if (model == "OU") {
+            m <- function(t) phi.pred[1]/phi.pred[,2] + (X0 - phi.pred[,1]/phi.pred[,2]) * exp(-phi.pred[,2] * t)
+            v <- function(t) est@sigma2 * (1 - exp(-2 * phi.pred[,2] * t))/2/phi.pred[,2]
+            likeli <- function(x, t) dnorm(x, m(t), sqrt(v(t)))
+          } else {
+            likeli <- function(x, t) dcCIR2.vec(x, t, X0, cbind(phi.pred, sqrt(est@sigma2)))
+          }
+          
+           
         } else {
             if (random == 1) {
-                pred <- function(i) {
-                  # print(i)
-                  dens <- function(c, samples) mean(sapply(1:K, function(a) likeli(c, x@times[i + 1] - x@times[1], c(samples$phi[a], 
-                    samples$beta[a]), samples$sigma2[a])))
-                  ca <- cand(i)
-                  prob <- sapply(ca, dens, samples = list(phi = phi.pred, beta = est@beta, sigma2 = est@sigma2))
-                  
-                  if (!only.interval) {
-                    samp.X <- replicate(sample.length, discr(ca, prob))
-                  } else {
-                    samp.X <- NULL
-                  }
-                  
-                  VF <- cumsum(prob)/sum(prob)
-                  qu.l <- ca[which(VF >= l.bound)[1]]
-                  qu.u <- ca[which(VF >= u.bound)[1]]
-                  return(list(samp.X = samp.X, qu.l = qu.l, qu.u = qu.u))
-                }
-            } else {
-                pred <- function(i) {
-                  dens <- function(c, samples) mean(sapply(1:K, function(a) likeli(c, x@times[i + 1] - x@times[1], c(samples$alpha[a], 
-                    samples$phi[a]), samples$sigma2[a])))
-                  ca <- cand(i)
-                  prob <- sapply(ca, dens, samples = list(phi = phi.pred, alpha = est@alpha, sigma2 = est@sigma2))
-                  
-                  if (!only.interval) {
-                    samp.X <- replicate(sample.length, discr(ca, prob))
-                  } else {
-                    samp.X <- NULL
-                  }
-                  
-                  VF <- cumsum(prob)/sum(prob)
-                  qu.l <- ca[which(VF >= l.bound)[1]]
-                  qu.u <- ca[which(VF >= u.bound)[1]]
-                  return(list(samp.X = samp.X, qu.l = qu.l, qu.u = qu.u))
-                }
+              
+              if (model == "OU") {
+                m <- function(t) phi.pred/est@beta + (X0 - phi.pred/est@beta) * exp(-est@beta * t)
+                v <- function(t) est@sigma2 * (1 - exp(-2 * est@beta * t))/2/est@beta
+                likeli <- function(x, t) dnorm(x, m(t), sqrt(v(t)))
+              } else {
+                likeli <- function(x, t) dcCIR2.vec(x, t, X0, cbind(phi.pred, est@beta, sqrt(est@sigma2)))
+              }
+              
+           } else {  # random == 2
+              
+              if (model == "OU") {
+                m <- function(t) est@alpha/phi.pred + (X0 - est@alpha/phi.pred) * exp(-phi.pred * t)
+                v <- function(t) est@sigma2 * (1 - exp(-2 * phi.pred * t))/2/phi.pred
+                likeli <- function(x, t) dnorm(x, m(t), sqrt(v(t)))
+              } else {
+                likeli <- function(x, t) dcCIR2.vec(x, t, X0, cbind(est@alpha, phi.pred, sqrt(est@sigma2)))
+              }
+              
             }
             
+        }
+        
+        pred <- function(i) {
+          dens <- function(c) mean(likeli(c, x@times[i + 1] - x@times[1]))
+          ca <- cand(i)
+          prob <- sapply(ca, dens)
+          
+          if (!only.interval) {
+            samp.X <- replicate(sample.length, discr(ca, prob))
+          } else {
+            samp.X <- NULL
+          }
+          
+          VF <- cumsum(prob)/sum(prob)
+          qu.l <- ca[which(VF >= l.bound)[1]]
+          qu.u <- ca[which(VF >= u.bound)[1]]
+          return(list(samp.X = samp.X, qu.l = qu.l, qu.u = qu.u))
         }
         
         qu.l <- numeric(lt)
@@ -3110,6 +3160,8 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
                 legend("bottomright", paste((1 - level) * 100, "%", sep = ""), lty = 2, col = 2, cex = 0.7, box.lty = 0, inset = 0.01)
             
         }
+        # set plot settings back
+        par(original.settings)
         
         if (!only.interval) {
             return(new(Class = "Bayes.pred", phi.pred = as.matrix(phi.pred), Xpred = Xpred, coverage.rate = cr, qu.l = qu.l, qu.u = qu.u, 
@@ -3119,7 +3171,5 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
         }
     }
     
-    # set plot settings back
-    par(original.settings)
     
 }) 
