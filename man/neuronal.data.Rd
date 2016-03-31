@@ -57,15 +57,15 @@ fhat_param <- outputsP$estimf
 
  gridf <- outputsNP$gridf
  gridf1 <- gridf[1,]; gridf2 <- gridf[2,]
- marg1T03OU <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhatT03OU,1,sum) #with cutoff
- marg2T03OU <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhatT03OU,2,sum)
- marg1_paramT03OU <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_paramT03OU,1,sum) 
- marg2_paramT03OU <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_paramT03OU,2,sum)
+ marg1 <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat,1,sum) #with cutoff
+ marg2 <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat,2,sum)
+ marg1_param <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_param,1,sum) 
+ marg2_param <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_param,2,sum)
 
- plot(gridf1,marg1T03OU,type='l', col='red')
- lines(gridf1,marg1_paramT03OU, lwd=2, col='red')
- plot(gridf2, marg2T03OU,type='l', col='red')
- lines(gridf2,marg2_paramT03OU, lwd=2, col='red')
+ plot(gridf1,marg1,type='l', col='red')
+ lines(gridf1,marg1_param, lwd=2, col='red')
+ plot(gridf2, marg2,type='l', col='red')
+ lines(gridf2,marg2_param, lwd=2, col='red')
 
 
 # Bayesian

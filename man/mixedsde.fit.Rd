@@ -89,7 +89,7 @@ The nonparametric method estimates the density of the random effects with a kern
 The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects.
 }
 \examples{
-\dontrun{ # Frequentist estimation
+# Frequentist estimation
 # Two random effects
 model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'gammainvgamma2';
 param<- c(1.8, 0.8, 8, 0.05);
@@ -253,7 +253,7 @@ random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
 sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0.1, op.plot = 1)
 
 prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
-}
+
 \dontrun{
 estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 plot(estim_Bayes)
@@ -266,7 +266,7 @@ print(estim_Bayes)
 pred.result <- pred(estim_Bayes)
 summary(out(pred.result))
 plot(pred.result)
-
+}
 # for two random effects
 random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
 
@@ -299,7 +299,6 @@ plot(estim_Bayes)
 
 pred.result <- pred(estim_Bayes, invariant = 1)
 pred.result.traj <- pred(estim_Bayes, invariant = 1, trajectories = TRUE)
-}
 }
 \references{
 For the parametric estimation see:
