@@ -1,6 +1,12 @@
 exportPattern("^[[:alpha:]]+")
 
 import(sde)
-import(plot3D)
 import(moments)
 import(MASS)
+import(methods)
+
+importFrom(plot3D, persp3D)
+
+
+
+

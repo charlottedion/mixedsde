@@ -112,10 +112,10 @@ likelihoodNormalestimfix <- function(mu1, mu2, omega, U, V, estimphi, random) {
 
 # #sans estimer leffet fixe on avait la fonction: likelihoodNormal <- function(mu, omega, estimphi, V, random) { # lorsque lon
 # estime leffet fixe on doit rajouter un parametre pour la fonction optim #likelihoodNormal <- function(mu1, mu2, omega,
-# estimphi, V, random) { # lorsque lon estime leffet fixe # if (length(random) == 1) { # mu <- c(mu1, mu2) # # fix <- (random ==
-# 1) + 1 # # psi <- mu[fix] # # muRandom <- mu[random] # # Omega <- omega^2 # # V11 <- unlist(V)[seq(1, 4 * length(V), by = 4)]
-# # V22 <- unlist(V)[seq(4, 4 * length(V), by = 4)] # # Vrr <- V11 * (random == 1) + V22 * (random == 2) # # Vff <- V11 * (fix
-# == 1) + V22 * (fix == 2) # # Vfr <- unlist(V)[seq(2, 4 * length(V), by = 4)] # # Ur <- estimphi[1, ] * (random == 1) +
+# estimphi, V, random) { # lorsque lon estime leffet fixe # if (length(random) == 1) { # mu <- c(mu1, mu2) # # fix <- (random
+# == 1) + 1 # # psi <- mu[fix] # # muRandom <- mu[random] # # Omega <- omega^2 # # V11 <- unlist(V)[seq(1, 4 * length(V), by =
+# 4)] # V22 <- unlist(V)[seq(4, 4 * length(V), by = 4)] # # Vrr <- V11 * (random == 1) + V22 * (random == 2) # # Vff <- V11 *
+# (fix == 1) + V22 * (fix == 2) # # Vfr <- unlist(V)[seq(2, 4 * length(V), by = 4)] # # Ur <- estimphi[1, ] * (random == 1) +
 # estimphi[2, ] * (random == 2) # Uf <- estimphi[1, ] * (fix == 1) + estimphi[2, ] * (fix == 2) # # L <- sum(log(1 + Omega *
 # Vrr)) - 2* sum(-Vrr * (1 / (2 + 2 * Omega * Vrr)) * (muRandom- (1 / Vrr) * (Ur - psi* Vfr))^2 + # (Ur - psi * Vfr)^2 * (1 /
 # (Vrr *2)) + psi * Uf - 0.5 * Vff * psi^2) # # } #lorsque lon estime pas leffet fixe if (length(random) == 1) { Omega <-

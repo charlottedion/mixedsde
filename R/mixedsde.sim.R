@@ -105,8 +105,8 @@
 #' 
 #' 
 #' 
-mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, invariant = 0, delta = T/N, 
-    op.plot = 0, add.plot = FALSE) {
+mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, invariant = 0, 
+    delta = T/N, op.plot = 0, add.plot = FALSE) {
     
     delta <- T/N
     times <- seq(t0, T, length = N + 1)
@@ -273,8 +273,8 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
                   }
                   if (fixed != 0) {
                     X0 <- rgamma(1, 2 * fixed/sig^2, scale = sig^2/(2 * phi[j]))
-                    X[j, ] <- sde.sim(t0 = t0, T = T, X0 = X0, N, delta = delta, method = "milstein", theta = c(fixed, phi[j], sig), 
-                      sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+                    X[j, ] <- sde.sim(t0 = t0, T = T, X0 = X0, N, delta = delta, method = "milstein", theta = c(fixed, phi[j], 
+                      sig), sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
                   }
                 }
             }

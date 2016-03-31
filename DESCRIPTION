@@ -2,22 +2,19 @@ Package: mixedsde
 Version: 1.0
 Date: 2016-19-01
 Title: Estimation methods for stochastic differential mixed effects models
-Authors@R: c(person("Joe", "Developer", role = c("aut", "cre"),
-    email = "Joe.Developer@some.domain.net"),
-    person("Pat", "Developer", role = "aut"),
-    person("A.", "User", role = "ctb",
-    email = "A.User@whereever.net"))
 Author: Charlotte Dion [aut, cre],
     Adeline Sansom [aut], Simone Hermann [aut]
 Maintainer: Charlotte Dion <charlotte.dion@imag.fr>
 Depends:
     R (>= 3.0.2),
     sde,
-    plot3D,
     moments,
-    MASS
+    MASS,
+    stats,
+    graphics,
+    methods
+Imports: plot3D
 Description: Inference on stochastic differential models Ornstein-Uhlenbeck or
     Cox-Ingersoll-Ross, with one or two random effects in the drift function.
 License: GPL (>= 2)
 URL: http://www.r-project.org
-BugReports: http://pkgname.bugtracker.url

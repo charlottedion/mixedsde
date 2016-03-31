@@ -41,7 +41,7 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
             init.mu <- mean(estimphi)
             init.omega <- sd(estimphi)
             
-            res <- optim(c(init.mu, init.omega), f = ln, method = "Nelder-Mead")
+            res <- optim(c(init.mu, init.omega), fn = ln, method = "Nelder-Mead")
             mu <- res$par[1]
             omega <- abs(res$par[2])
             
@@ -66,7 +66,7 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
             init.mu <- c(mean(estimphi[1, ]), mean(estimphi[2, ]))
             init.omega <- sd(estimphi[random, ])
             
-            res <- optim(c(init.mu, init.omega), f = ln, method = "Nelder-Mead")
+            res <- optim(c(init.mu, init.omega), fn = ln, method = "Nelder-Mead")
             
             fix <- (random == 1) + 1
             mu <- c(res$par[random], res$par[fix]) * (random == 1) + c(res$par[fix], res$par[random]) * (random == 2)
@@ -114,10 +114,10 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
 # mean(estimphi) init.omega <- sd(estimphi) res = optim(c(init.mu, init.omega), f = ln, method = 'Nelder-Mead') mu = res$par[1]
 # omega = abs(res$par[2]) BIChere <- likelihoodNormal(mu, omega, cova = 0, estimphi, V, random) + log(2 * pi) +
 # log(length(estimphi)) * 2 AIChere <- likelihoodNormal(mu, omega, cova = 0, estimphi, V, random) + log(2 * pi) + 2 } if
-# (length(random) == 2) { loglik_Omegacov = function(param, estimphi, V) { mu <- param[1:2] omega <- param[3:4] cova <- param[5]
-# return(likelihoodNormal(mu, omega, cova, estimphi, V, random)) } init.mu <- c(mean(estimphi[1, ]), mean(estimphi[2, ]))
-# init.omega <- c(sd(estimphi[1, ]), sd(estimphi[2, ])) init.cov <- cov(estimphi[1, ], estimphi[2, ]) res <- optim(c(init.mu,
-# init.omega, init.cov), loglik_Omegacov, gr = NULL, estimphi, V, method = 'Nelder-Mead') mu <- c(res$par[1], res$par[2]) omega
-# <- abs(c(res$par[3], res$par[4])) cova <- res$par[5] BIChere <- loglik_Omegacov(c(mu, omega, cova), estimphi, V) + log(4 * pi)
-# + log(dim(estimphi)[2]) * 4 AIChere <- loglik_Omegacov(c(mu, omega, cova), estimphi, V) + log(4 * pi) + 4 } return(list(mu =
-# mu, omega = omega, cova = cova, BIChere = BIChere, AIChere = AIChere)) } 
+# (length(random) == 2) { loglik_Omegacov = function(param, estimphi, V) { mu <- param[1:2] omega <- param[3:4] cova <-
+# param[5] return(likelihoodNormal(mu, omega, cova, estimphi, V, random)) } init.mu <- c(mean(estimphi[1, ]), mean(estimphi[2,
+# ])) init.omega <- c(sd(estimphi[1, ]), sd(estimphi[2, ])) init.cov <- cov(estimphi[1, ], estimphi[2, ]) res <-
+# optim(c(init.mu, init.omega, init.cov), loglik_Omegacov, gr = NULL, estimphi, V, method = 'Nelder-Mead') mu <- c(res$par[1],
+# res$par[2]) omega <- abs(c(res$par[3], res$par[4])) cova <- res$par[5] BIChere <- loglik_Omegacov(c(mu, omega, cova),
+# estimphi, V) + log(4 * pi) + log(dim(estimphi)[2]) * 4 AIChere <- loglik_Omegacov(c(mu, omega, cova), estimphi, V) + log(4 *
+# pi) + 4 } return(list(mu = mu, omega = omega, cova = cova, BIChere = BIChere, AIChere = AIChere)) } 

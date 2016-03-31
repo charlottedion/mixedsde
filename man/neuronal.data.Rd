@@ -27,7 +27,7 @@ data(neuronal.data)
 X <- neuronal.data[[1]]
 times <- neuronal.data[[2]]
 
-plot(times,X[10, ], type = 'l', xlab = 'time', ylab='', col = 'blue', ylim=c(0,0.016))
+#plot(times,X[10, ], type = 'l', xlab = 'time', ylab='', col = 'blue', ylim=c(0,0.016))
 
 random <- c(1,2)
 
@@ -40,14 +40,12 @@ estim.method<-'paramML'
 estim_param <- mixedsde.fit(times=times, X=X, model=model, random= random, estim.method= 'paramML')
 
 #- implemented methods
-# plot(estim); print(estim); valid(estim)
-print(estim_param); plot(estim_param); # Freq.valid(estim_param)
+# plot(estim); 
+print(estim); #valid(estim)
+print(estim_param); #plot(estim_param);  valid(estim_param)
 
-# validation <- Freq.valid(estim, X=X, times = times)
-# it produce the same method with estim_param
-
-test1 <- pred(estim, X,  estim.method= 'nonparam',times = times)
-test2 <- pred(estim_param, X,estim.method= 'paramML', times = times) 
+#test1 <- pred(estim, X,  estim.method= 'nonparam',times = times)
+#test2 <- pred(estim_param, X,estim.method= 'paramML', times = times) 
 
 #- Other possible plots
 par(mfrow=c(1,2))
@@ -57,22 +55,22 @@ outputsP <- out(estim_param)
 fhat <- outputsNP$estimf
 fhat_param <- outputsP$estimf 
 
-gridf <- outputsNP$gridf
-gridf1 <- gridf[1,]; gridf2 <- gridf[2,]
-# marg1T03OU <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhatT03OU,1,sum) #with cutoff
-# marg2T03OU <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhatT03OU,2,sum)
-# marg1_paramT03OU <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_paramT03OU,1,sum) 
-# marg2_paramT03OU <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_paramT03OU,2,sum)
+ gridf <- outputsNP$gridf
+ gridf1 <- gridf[1,]; gridf2 <- gridf[2,]
+ marg1T03OU <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhatT03OU,1,sum) #with cutoff
+ marg2T03OU <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhatT03OU,2,sum)
+ marg1_paramT03OU <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_paramT03OU,1,sum) 
+ marg2_paramT03OU <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_paramT03OU,2,sum)
 
-# plot(gridf1,marg1T03OU,type='l', col='red')
-# lines(gridf1,marg1_paramT03OU, lwd=2, col='red')
-# plot(gridf2, marg2T03OU,type='l', col='red')
-# lines(gridf2,marg2_paramT03OU, lwd=2, col='red')
+ plot(gridf1,marg1T03OU,type='l', col='red')
+ lines(gridf1,marg1_paramT03OU, lwd=2, col='red')
+ plot(gridf2, marg2T03OU,type='l', col='red')
+ lines(gridf2,marg2_paramT03OU, lwd=2, col='red')
 
 
 # Bayesian
 ind <- seq(1, 2000, by=10)
-estim_Bayes <- mixedsde.fit(times[ind], X[,ind], model="OU", random=1, estim.method='paramBayes', nMCMC=2000) 
+estim_Bayes <- mixedsde.fit(times[ind], X[,ind], model = "OU", random = 1, estim.method = 'paramBayes', nMCMC = 2000) 
 pred_Bayes <- pred(estim_Bayes, trajectories=TRUE)
 }
 

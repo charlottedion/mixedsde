@@ -46,9 +46,9 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
     } else {
         likeli <- dcCIR2
         postSigma <- function(phi, sigmaOld = 1, propSdSigma2 = NULL) {
-            # alphaPost <- prior$alpha.sigma + M*(N-1)/2 help <- numeric(M) for (i in 1:M) { help[i] <- sum((X[i,-1] - X[i,-N] - b(phi[i, ],
-            # times[-N], X[i,-N]) * delta)^2/ (X[i,-N] * delta)) } betaPost <- prior$beta.sigma + sum(help)/2 return(1/rgamma(1, alphaPost,
-            # betaPost))
+            # alphaPost <- prior$alpha.sigma + M*(N-1)/2 help <- numeric(M) for (i in 1:M) { help[i] <- sum((X[i,-1] - X[i,-N] - b(phi[i,
+            # ], times[-N], X[i,-N]) * delta)^2/ (X[i,-N] * delta)) } betaPost <- prior$beta.sigma + sum(help)/2 return(1/rgamma(1,
+            # alphaPost, betaPost))
             
             sigma_drawn <- rnorm(1, sqrt(sigmaOld), propSdSigma2)^2
             ratio <- dgamma(1/sigma_drawn, prior$alpha.sigma, prior$beta.sigma)/dgamma(1/sigmaOld, prior$alpha.sigma, prior$beta.sigma)  # prior ratio

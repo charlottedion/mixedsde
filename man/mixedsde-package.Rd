@@ -32,12 +32,10 @@ Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  He
 
 }
 \keyword{ package }
-\seealso{
-Optional links to other man pages, e.g. 
- \code{\link[mixedsde.fit]{misdesde.fit}} 
-}
+
 \examples{
 # Frequentist estimation, two random effects
+
 model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'gammainvgamma2';
 param<- c(1.8, 0.8, 8, 0.05);
 simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,sigma=sigma, invariant = 1)
@@ -94,7 +92,7 @@ summary(outputBayes)
 plot(estim_Bayes, style='cred.int', true.phi=phi)
 plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
 
-plot2compare(estim_Bayes, estim_Bayes_withoutprior, names=c("with prior", "without prior"))
+plot2compare(estim_Bayes, estim_Bayes_withoutprior, names=c('with prior', 'without prior'))
 
 print(estim_Bayes)
 
@@ -105,5 +103,4 @@ plot(pred.result)
 pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
 validbayes <- valid(estim_Bayes)
-
 }
