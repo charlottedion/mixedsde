@@ -69,9 +69,11 @@ fhat_param <- outputsP$estimf
 
 
 # Bayesian
-ind <- seq(1, 2000, by=10)
-estim_Bayes <- mixedsde.fit(times[ind], X[,ind], model = "OU", random = 1, estim.method = 'paramBayes', nMCMC = 2000) 
-pred_Bayes <- pred(estim_Bayes, trajectories=TRUE)
+ind <- seq(1, 2000, by = 10)
+estim_Bayes <- mixedsde.fit(times[ind], X[,ind], model = "OU", random = 1, estim.method = "paramBayes", nMCMC = 1000) 
+plot(estim_Bayes)
+pred_Bayes1 <- pred(estim_Bayes)
+pred_Bayes2 <- pred(estim_Bayes, trajectories = TRUE)
 }
 
 \source{

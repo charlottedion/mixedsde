@@ -9,7 +9,7 @@
 #' @param start list of starting values: mu, sigma  
 #' @param random random effects in the drift: 1 if one additive random effect, 2 if one multiplicative random effect or c(1,2) if 2 random effects.
 #' @param nMCMC number of iterations of the MCMC algorithm
-#' @param propSd proposal standard deviation of \eqn{\phi} is \eqn{|\mu|*}\code{propSd}\eqn{/\log(N)} at the beginning, is adjusted when acceptance rate is under 20\% or over 80\%
+#' @param propSd proposal standard deviation of \eqn{\phi} is \eqn{|\mu|*}\code{propSd}\eqn{/\log(N)} at the beginning, is adjusted when acceptance rate is under 30\% or over 60\%
 #' @return
 #' \item{alpha}{posterior samples (Markov chain) of \eqn{\alpha}}
 #' \item{beta}{posterior samples (Markov chain) of \eqn{\beta}}
@@ -17,7 +17,7 @@
 #' \item{omega}{posterior samples (Markov chain) of \eqn{\Omega}}
 #' \item{sigma2}{posterior samples (Markov chain) of \eqn{\sigma^2}}
 #' @references 
-#' Hermann, S., Ickstadt, K. and C. M{\'u}ller (2015). Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  
+#' Hermann, S., Ickstadt, K. and C. M{\"u}ller (2016). Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  
 #' 
 #' Rosenthal, J. S. (2011). 'Optimal proposal distributions and adaptive MCMC.' Handbook of Markov Chain Monte Carlo (2011): 93-112.
 
@@ -106,8 +106,8 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
         # storage and starting variables
         alpha_out <- matrix(0, nMCMC, M)
         beta_out <- matrix(0, nMCMC, M)
-        mu_out <- matrix(0, nMCMC, length(start$m))
-        Omega_out <- matrix(0, nMCMC, length(start$m))
+        mu_out <- matrix(0, nMCMC, length(start$mu))
+        Omega_out <- matrix(0, nMCMC, length(start$mu))
         phi <- matrix(rep(start$mu, each = M), M)
         mu <- start$mu
         Omega <- postOm(phi, mu) + 0.1
@@ -231,10 +231,10 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
             
             if (count%%50 == 0) {
                 propSdPhi <- c(ad.propSd_random(alpha_out[(count - 50 + 1):count, ], propSdPhi[1], count), ad.propSd_random(beta_out[(count - 
-                  50 + 1):count, ], propSdPhi[2], count))
+                  50 + 1):count, ], propSdPhi[2], count/50))
             }
             if (model == "CIR" && count%%50 == 0) {
-                propSdSigma2 <- ad.propSd(sigma_out[(count - 50 + 1):count], propSdSigma2, count)
+                propSdSigma2 <- ad.propSd(sigma_out[(count - 50 + 1):count], propSdSigma2, count/50)
             }
         }
     } else {
@@ -262,11 +262,11 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
                 
                 if (count%%50 == 0) {
                   propSdPhi <- c(ad.propSd_random(alpha_out[(count - 50 + 1):count, ], propSdPhi[1], count), ad.propSd(beta_out[(count - 
-                    50 + 1):count], propSdPhi[2], count))
+                    50 + 1):count], propSdPhi[2], count/50))
                 }
                 
                 if (model == "CIR" && count%%50 == 0) {
-                  propSdSigma2 <- ad.propSd(sigma_out[(count - 50 + 1):count], propSdSigma2, count)
+                  propSdSigma2 <- ad.propSd(sigma_out[(count - 50 + 1):count], propSdSigma2, count/50)
                 }
                 
             }
@@ -295,11 +295,11 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
                 
                 if (count%%50 == 0) {
                   propSdPhi <- c(ad.propSd(alpha_out[(count - 50 + 1):count], propSdPhi[1], count), ad.propSd_random(beta_out[(count - 
-                    50 + 1):count, ], propSdPhi[2], count))
+                    50 + 1):count, ], propSdPhi[2], count/50))
                 }
                 
                 if (model == "CIR" && count%%50 == 0) {
-                  propSdSigma2 <- ad.propSd(sigma_out[(count - 50 + 1):count], propSdSigma2, count)
+                  propSdSigma2 <- ad.propSd(sigma_out[(count - 50 + 1):count], propSdSigma2, count/50)
                 }
                 
             }
@@ -316,7 +316,7 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
 #' @param x current observation
 #' @param t time of observation
 #' @param x0 starting point, i.e. observation in time 0
-#' @param theta parameter
+#' @param theta parameter \eqn{(\alpha, \beta, \sigma)}
 #' @param log logical(1) if TRUE, log likelihood
 #' @references 
 #' Iacus, S. M. (2008). Simulation and Inference for Stochastic Differential Equations.
@@ -338,7 +338,7 @@ dcCIR2 <- function(x, t, x0, theta, log = FALSE) {
 #' @description Transfers class object Bayes.fit from the original to the thinned chains
 #' @param res Bayes.fit class object
 #' @param burnIn number of burn-in samples
-#' @param thinning thin rate
+#' @param thinning thinning rate
 chain2samples <- function(res, burnIn, thinning) {
     if (missing(burnIn)) 
         burnIn <- res@burnIn
@@ -353,12 +353,32 @@ chain2samples <- function(res, burnIn, thinning) {
 }
 
 ######## 
-#' Calcucation Of Burn-in Phase And Thin Rate
+#' Calcucation Of Burn-in Phase And Thinning Rate
 #' 
 #' @description Proposal for burn-in and thin rate
 #' @param results Bayes.fit class object
 #' @param random one out of 1, 2, c(1,2)
 diagnostic <- function(results, random) {
+  diagnostic.own <- function(chain, dependence = 0.8, m = 10) {
+    lc <- length(chain)
+    K <- floor(lc/m)
+    thinning <- min(which(acf(chain[-(1:floor(lc/5))], plot = F)$acf <= dependence)[1], floor(K/10), na.rm = TRUE)
+    he1 <- sapply(1:m, function(i) chain[((i - 1) * K + 1):(i * K)][seq(1, K, by = thinning)])
+    
+    he2 <- apply(he1, 2, quantile, c(0.025, 0.975))
+    he.mean <- apply(he1, 2, mean)
+    is.in <- (he.mean[-m] >= he2[1, -1] & he.mean[-m] <= he2[2, -1]) | (he.mean[-1] >= he2[1, -m] & he.mean[-1] <= he2[2, -m])
+    # burnIn <- 0
+    burnIn <- K
+    for (i in 1:(m - 1)) {
+      if (sum(is.in) < length(is.in)) {
+        is.in <- is.in[-1]
+        burnIn <- burnIn + K
+      }
+    }
+    burnIn <- min((m - 1) * K, burnIn)
+    return(c(burnIn = burnIn, thinning = thinning))
+  }
     if (length(random) == 2) {
         # he <- matrix(0,5,4) he[1, ] <- raftery.diag(as.mcmc(results$mu[,1]))$resmatrix he[2, ] <-
         # raftery.diag(as.mcmc(results$mu[,2]))$resmatrix he[3, ] <- raftery.diag(as.mcmc(results$omega[,1]))$resmatrix he[4, ] <-
@@ -406,32 +426,7 @@ diagnostic <- function(results, random) {
     return(list(burnIn = burnIn, thinning = thinning))
 }
 
-#' Calcucation Of Burn-in Phase And Thin Rate
-#' 
-#' @description Proposal for burn-in and thin rate
-#' @param chain vector of Markov chain samples
-#' @param dependence allowed dependence for the chain
-#' @param m number of blocks
-diagnostic.own <- function(chain, dependence = 0.8, m = 10) {
-    lc <- length(chain)
-    K <- floor(lc/m)
-    thinning <- min(which(acf(chain[-(1:floor(lc/5))], plot = F)$acf <= dependence)[1], floor(K/10), na.rm = TRUE)
-    he1 <- sapply(1:m, function(i) chain[((i - 1) * K + 1):(i * K)][seq(1, K, by = thinning)])
-    
-    he2 <- apply(he1, 2, quantile, c(0.025, 0.975))
-    he.mean <- apply(he1, 2, mean)
-    is.in <- (he.mean[-m] >= he2[1, -1] & he.mean[-m] <= he2[2, -1]) | (he.mean[-1] >= he2[1, -m] & he.mean[-1] <= he2[2, -m])
-    # burnIn <- 0
-    burnIn <- K
-    for (i in 1:(m - 1)) {
-        if (sum(is.in) < length(is.in)) {
-            is.in <- is.in[-1]
-            burnIn <- burnIn + K
-        }
-    }
-    burnIn <- min((m - 1) * K, burnIn)
-    return(c(burnIn = burnIn, thinning = thinning))
-}
+
 
 #' Adaptation For The Proposal Variance
 #' 

@@ -13,7 +13,8 @@ Depends:
     stats,
     graphics,
     methods
-Imports: plot3D
+Imports:
+    plot3D
 Description: Inference on stochastic differential models Ornstein-Uhlenbeck or
     Cox-Ingersoll-Ross, with one or two random effects in the drift function.
 License: GPL (>= 2)

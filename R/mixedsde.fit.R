@@ -38,9 +38,6 @@
 #' \item{mu}{posterior samples (Markov chain) of \eqn{\mu}}
 #' \item{omega}{posterior samples (Markov chain) of \eqn{\Omega}}
 #' \item{sigma2}{posterior samples (Markov chain) of \eqn{\sigma^2}}
-
-#' \item{mu}{estimator of the mean of the random effects normal density, 0 if we do nonparametric estimation}
-#' \item{omega}{estimator of the standard deviation of the random effects normal density, 0 if we do nonparametric estimation}
 #' \item{model}{initial choice}
 #' \item{random}{initial choice}
 #' \item{burnIn}{proposal for burn-in period}
@@ -50,8 +47,9 @@
 #' \item{X}{initial choice}
 #' \item{ind.4.prior}{in the case of calculation of prior parameters: the indices of used series}
 #' @details
-#' Estimation of the random effects density from M independent trajectories of the SDE (the Brownian motions \eqn{Wj} are independent), with linear drift. Two diffusions are implemented, with one or two random effects:
+#' Estimation of the random effects density from M independent trajectories of the SDE (the Brownian motions \eqn{W_j} are independent), with linear drift. Two diffusions are implemented, with one or two random effects:
 #' \subsection{Ornstein-Uhlenbeck model (OU)}{
+#' 
 #' If random = 1, \eqn{\beta} is a fixed effect: \eqn{dX_j(t)= (\alpha_j- \beta X_j(t))dt + \sigma dW_j(t)  } 
 #' 
 #' If random = 2, \eqn{\alpha} is a fixed effect: \eqn{dX_j(t)= (\alpha - \beta_j X_j(t))dt + \sigma dW_j(t)  }
@@ -59,11 +57,12 @@
 #' If random = c(1,2), \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma dW_j(t)  } 
 #' }
 #' \subsection{Cox-Ingersoll-Ross model (CIR)}{
+#' 
 #' If random = 1, \eqn{\beta} is a fixed effect: \eqn{dX_j(t)= (\alpha_j- \beta X_j(t))dt + \sigma \sqrt{X_(t)} dWj_(t)  } 
 #' 
 #' If random = 2, \eqn{\alpha} is a fixed effect: \eqn{dX_j(t)= (\alpha - \beta_j X_j(t))dt + \sigma \sqrt{X_j(t)} dW_j(t)  } 
 #' 
-#' If random = c(1,2), \eqn{dXj(t)= (\alpha_j- \beta_j Xj(t))dt + \sigma \sqrt{Xj(t)}  dWj(t)  } 
+#' If random = c(1,2), \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma \sqrt{X_j(t)}  dW_j(t)  } 
 #'}
 #' The nonparametric method estimates the density of the random effects with a kernel estimator (one-dimensional or two-dimensional density).
 #' The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects. 
@@ -247,6 +246,7 @@
 #' summary(out(pred.result))
 #' plot(pred.result)
 #' }
+#' 
 #' # for two random effects
 #' random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
 #' 
@@ -766,14 +766,14 @@ setClass(Class = "Freq.fit", representation = representation(model = "character"
 #' @slot omega matrix of posterior samples for \eqn{\omega}
 #' @slot alpha matrix of posterior samples for \eqn{\alpha}
 #' @slot beta matrix of posterior samples for \eqn{\beta}
-#' @slot random 1, 2, or c(1,2)
+#' @slot random 1, 2 or c(1,2)
 #' @slot burnIn proposal for the burn-in phase
 #' @slot thinning proposal for the thinning rate
 #' @slot model 'OU' or 'CIR'
 #' @slot prior list of prior values, input variable or calculated by the first 10\% of series
 #' @slot times vector of observation times, storage of input variable
 #' @slot X matrix of observations, storage of input variable
-#' @slot ind.4.prior indices of series usaged for the prior parameter calculation, if prior knowledge is availabe, M+1
+#' @slot ind.4.prior indices of series used for the prior parameter calculation, if prior knowledge is availabe it is set to M+1
 #' 
 setClass(Class = "Bayes.fit", representation = representation(sigma2 = "numeric", mu = "matrix", omega = "matrix", alpha = "matrix", 
     beta = "matrix", random = "numeric", burnIn = "numeric", thinning = "numeric", model = "character", prior = "list", times = "numeric", 
@@ -785,7 +785,7 @@ setClass(Class = "Bayes.fit", representation = representation(sigma2 = "numeric"
 #' @slot coverage.rate amount of covering prediction intervals
 #' @slot qu.u upper prediction interval bound
 #' @slot qu.l lower prediction interval bound
-#' @slot estim list of Bayes.fit object entries
+#' @slot estim list of Bayes.fit object entries, storage of input variable
 setClass(Class = "Bayes.pred", representation = representation(phi.pred = "matrix", Xpred = "matrix", coverage.rate = "numeric", 
     qu.u = "numeric", qu.l = "numeric", estim = "list"))
 
@@ -925,7 +925,7 @@ setMethod("summary", "Freq.fit", function(object) {
 #' Short summary of the results of class object Bayes.fit
 #' @description Method for the S4 class Bayes.fit
 #' @param object Bayes.fit class
-#' @param level default 0.05
+#' @param level default is 0.05
 #' @param burnIn optional
 #' @param thinning optional
 #' @references 
@@ -1694,7 +1694,7 @@ setMethod(f = "plot", signature = "Bayes.pred", definition = function(x, newwind
 #' @description Method for classes
 #' @param x Bayes.fit or Bayes.pred class
 #' @param y Bayes.fit or Bayes.pred class
-#' @param z Bayes.fit or Bayes.pred class
+#' @param z Bayes.fit or Bayes.pred class (optional)
 #' @param ... other parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
@@ -1708,7 +1708,7 @@ setGeneric("plot2compare", function(x, y, z, ...) {
 #' @description Comparison of the posterior densities for up to three S4 class Bayes.fit objects
 #' @param x Bayes.fit class
 #' @param y Bayes.fit class
-#' @param z Bayes.fit class
+#' @param z Bayes.fit class (optional)
 #' @param names character vector of names for x, y and z
 #' @param true.values list of parameters to compare with the estimations, if available
 #' @param reduced logical(1), if TRUE, the chains are reduced with the burn-in and thin rate
@@ -1974,10 +1974,10 @@ setMethod(f = "plot2compare", signature = "Bayes.fit", definition = function(x, 
 #' @description Comparison of the results for up to three S4 class Bayes.pred objects
 #' @param x Bayes.pred class
 #' @param y Bayes.pred class
-#' @param z Bayes.pred class
+#' @param z Bayes.pred class (optional)
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
-#' @param plot.legend logical(1)
-#' @param names names for the three object appearing in the legend
+#' @param plot.legend logical(1), if TRUE, a legend is added
+#' @param names character vector with names for the three objects appearing in the legend
 #' @param ylim optional
 #' @param xlab optional, default 'times'
 #' @param ylab optional, default 'X'
@@ -2100,8 +2100,8 @@ setGeneric("valid", function(x, ...) {
 #' @param times observation times
 #' @param Mrep number of trajectories to be drawn
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
-#' @param plot.valid to be added
-#' @param numj to be added
+#' @param plot.valid logical(1), if TRUE, the results are depicted grafically
+#' @param numj optional number of series to be validated
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
@@ -2325,11 +2325,11 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
 #' @description Validation of the chosen model. For the index numj, Mrep=100 new trajectories are simulated
 #' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
 #' and one the left the corresponding qq-plot for each time.
-#' @param x Freq.fit class
+#' @param x Bayes.fit class
 #' @param Mrep number of trajectories to be drawn
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
-#' @param plot.valid to be added
-#' @param numj to be added
+#' @param plot.valid logical(1), if TRUE, the results are depicted grafically
+#' @param numj optional number of series to be validated
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
@@ -2481,8 +2481,8 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
 #' 
 #' @description Prediction
 #' @param x Freq.fit or Bayes.fit class
-#' @param Xtrue observed data
-#' @param times observation times
+#' @param Xtrue observed data (only for Freq.fit class)
+#' @param times observation times (only for Freq.fit class)
 #' @param invariant 1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
@@ -2797,17 +2797,17 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, ti
 #' 
 #' @description Bayesian prediction
 #' @param x Bayes.fit class
-#' @param invariant logical(1), if TRUE, the initial value is from the invariant distribution \eqn{X_t~N(\alpha/\beta, \sigma^2/2\beta)} for the OU and \eqn{X_t~Gamma(2\alpha/\sigma^2, \sigma^2/2\beta)} for the CIR process, default X0 is fixed from Xtrue
+#' @param invariant logical(1), if TRUE, the initial value is from the invariant distribution \eqn{X_t~N(\alpha/\beta, \sigma^2/2\beta)} for the OU and \eqn{X_t~Gamma(2\alpha/\sigma^2, \sigma^2/2\beta)} for the CIR process, if FALSE (default) X0 is fixed from the data starting points
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.pred logical(1), if TRUE, the results are depicted grafically
-#' @param plot.legend logical(1)
+#' @param plot.legend logical(1), if TRUE, a legend is added to the plot
 #' @param burnIn optional, if missing, the proposed value of the mixedsde.fit function is taken
 #' @param thinning optional, if missing, the proposed value of the mixedsde.fit function is taken
 #' @param only.interval logical(1), if TRUE, only prediction intervals are calculated, much faster than sampling from the whole predictive distribution
 #' @param sample.length number of samples to be drawn from the predictive distribution, if only.interval = FALSE
 #' @param cand.length number of candidates for which the predictive density is calculated, i.e. the candidates to be drawn from
-#' @param trajectories logical(1), if TRUE, only trajectories are drawn instead of sampling from the predictive distribution, similar to the frequentist approach
+#' @param trajectories logical(1), if TRUE, only trajectories are drawn from the point estimations instead of sampling from the predictive distribution, similar to the frequentist approach
 #' @param ylim optional
 #' @param xlab optional, default 'times'
 #' @param ylab optional, default 'X'

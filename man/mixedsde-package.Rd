@@ -28,7 +28,7 @@ See Bidimensional random effect estimation in mixed stochastic differential mode
 
 Maximum likelihood estimation for stochastic differential equations with random effects, M. Delattre, V. Genon-Catalot and A. Samson, \emph{Scandinavian Journal of Statistics 2012}, Vol 40, \bold{322--343}
 
-Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  Hermann, S., Ickstadt, K. and C. M{\"u}ller (2015)
+Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  Hermann, S., Ickstadt, K. and C. M{\"u}ller (2016)
 
 }
 \keyword{ package }
@@ -70,29 +70,29 @@ points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pc
 
 
 # Parametric Bayesian estimation one random effect
-model = 'OU'; random <- 1; sigma <- 0.1 ;fixed <- 5
+model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
 M <- 50 ; T <- 1; N <- 100
-density.phi <- 'normal' ; param <- c(3, 0.5)
+density.phi <- 'normal'; param <- c(3, 0.5)
 
-simu <- mixedsde.sim(M, T=T, N=N, model, random, fixed=fixed, density.phi, param, sigma, X0=0, op.plot=0)
-X <- simu$X ; phi <- simu$phi; times <- simu$times
-plot(times, X[1,], ylim=range(X), type='l'); for(i in 2:M) lines(times, X[i,])
+simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi, param, sigma, X0 = 0, op.plot = 0)
+X <- simu$X; phi <- simu$phi; times <- simu$times
+plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
 
-estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', nMCMC=1000)
+estim_Bayes_withoutprior <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', nMCMC = 1000)
 plot(estim_Bayes_withoutprior)
 
-prior <- list( m=c(param[1], fixed), v=c(param[1], fixed), alpha.omega=11, beta.omega=param[2]^2*10,
-alpha.sigma=10, beta.sigma=sigma^2*9)
-estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method='paramBayes', prior=prior, nMCMC=1000)
+prior <- list(m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, beta.omega = param[2]^2*10,
+alpha.sigma = 10, beta.sigma = sigma^2*9)
+estim_Bayes <- mixedsde.fit(times, X, model, random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 
 plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 (results_Bayes <- summary(estim_Bayes))
-plot(estim_Bayes, style='cred.int', true.phi=phi)
-plot(estim_Bayes_withoutprior, style='cred.int', true.phi=phi, reduced=TRUE)
+plot(estim_Bayes, style = 'cred.int', true.phi = phi)
+plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
 
-plot2compare(estim_Bayes, estim_Bayes_withoutprior, names=c('with prior', 'without prior'))
+plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
 
 print(estim_Bayes)
 
