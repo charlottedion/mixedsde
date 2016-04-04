@@ -56,9 +56,9 @@
 #' 
 #' 'normalinvgamma':  Normal for \eqn{\alpha}, Inverse Gamma for \eqn{\beta} and param=c(mean_\eqn{\alpha}, sd_\eqn{\alpha}, shape_\eqn{\beta}, scale_\eqn{\beta})
 #' 
-#' 'gammagamma2':  Gamma \eqn{+2 * sigma^2} for \eqn{\alpha},  Gamma \eqn{+ 1} for \eqn{\beta}  and param=c(shape_\eqn{\alpha}, scale_\eqn{\alpha}, shape_\eqn{\beta}, scale_\eqn{\beta})
+#' 'gammagamma2':  Gamma \eqn{+2 * \sigma^2} for \eqn{\alpha},  Gamma \eqn{+ 1} for \eqn{\beta}  and param=c(shape_\eqn{\alpha}, scale_\eqn{\alpha}, shape_\eqn{\beta}, scale_\eqn{\beta})
 #' 
-#' 'gammainvgamma2':   Gamma \eqn{+2 * sigma^2} for \eqn{\alpha}, Inverse Gamma for \eqn{\beta} and param=c(shape_\eqn{\alpha}, scale_\eqn{\alpha}, shape_\eqn{\beta}, scale_\eqn{\beta})
+#' 'gammainvgamma2':   Gamma \eqn{+2 * \sigma^2} for \eqn{\alpha}, Inverse Gamma for \eqn{\beta} and param=c(shape_\eqn{\alpha}, scale_\eqn{\alpha}, shape_\eqn{\beta}, scale_\eqn{\beta})
 #' 
 #' \emph{If only \eqn{\alpha} is random, choice between}
 #' 
@@ -71,12 +71,12 @@
 #' 
 #' 'gamma': Gamma distribution with param=c(shape, scale) 
 #' 
-#' 'mixture.gamma': mixture of Gamma distribution \eqn{p Gamma(shape1,scale1) + (1-p)Gamma(shape2,scale2)}
+#' 'mixture.gamma': mixture of Gamma distribution \eqn{p \Gamma(shape1,scale1) + (1-p)\Gamma(shape2,scale2)}
 #' with param=c(p, shape1, scale1, shape2, scale2)
 #' 
-#' 'gamma2': Gamma distribution \eqn{+2 * sigma^2} with param=c(shape, scale) 
+#' 'gamma2': Gamma distribution \eqn{+2 * \sigma^2} with param=c(shape, scale) 
 #' 
-#' 'mixed.gamma2': mixture of Gamma distribution \eqn{p Gamma(shape1,scale1) + (1-p)Gamma(shape2,scale2)} + \eqn{+2 * sigma^2}
+#' 'mixed.gamma2': mixture of Gamma distribution \eqn{p \Gamma(shape1,scale1) + (1-p) \Gamma(shape2,scale2)} + \eqn{+2 * \sigma^2}
 #' with param=c(p, shape1, scale1, shape2, scale2)
 #' 
 #' \emph{If only \eqn{\beta} is random, choice between}
@@ -84,13 +84,13 @@
 #'  
 #'  'gamma': Gamma distribution with param=c(shape, scale) 
 #'  
-#'  'mixture.gamma': mixture of Gamma distribution \eqn{p Gamma(shape1,scale1) + (1-p)Gamma(shape2,scale2)}
+#'  'mixture.gamma': mixture of Gamma distribution \eqn{p \Gamma(shape1,scale1) + (1-p) \Gamma(shape2,scale2)}
 #' with param=c(p, shape1, scale1, shape2, scale2)
 #' 
 #' }
 #'
 #' @examples 
-#' #Simulation of 5 trajectories of the Ornstein-Uhlenbeck SDE with the random effect alpha Gamma  distributed.
+#' #Simulation of 5 trajectories of the OU SDE with random =1, and a Gamma distribution.
 #' 
 #' simuOU <- mixedsde.sim(M=5, T=10,N=1000,model='OU', random=1,fixed=0.5,
 #' density.phi='gamma', param=c(1.8, 0.8) , sigma=0.1,op.plot=1)
@@ -101,10 +101,9 @@
 #' Chapter 2
 #' @seealso \url{http://cran.r-project.org/package=sde}
 #' 
-#' 
-#' 
-#' 
-#' 
+
+
+
 mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, invariant = 0, 
     delta = T/N, op.plot = 0, add.plot = FALSE) {
     

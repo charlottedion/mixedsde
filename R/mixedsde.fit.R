@@ -17,6 +17,7 @@
 #'
 #' \item{index}{is the vector of subscript in \eqn{1,...,M} where the estimation of \eqn{phi} has been done,  most of the time \eqn{index= 1:M}}
 #' \item{estimphi}{matrix of estimators of \eqn{\phi=\alpha, or \beta, or (\alpha,\beta)} from the efficient statitics (see \code{\link{UV}}), matrix of two lines if random =c(1,2), numerical type otherwise}
+#' \item{estim.fixed}{if estim.fix is TRUE and random = 1 or 2, estimator of \eqn{\phi=\alpha, or \beta} from the efficient statitics (see \code{\link{UV}}), 0 otherwise}
 #' \item{gridf}{grid of values on which the estimated is done for the nonparametric method, otherwise, grid used for the plots, matrix form}
 #' \item{estimf}{estimator of the density of \eqn{\phi} from a kernel estimator from package: stats, function: density, or package: MASS, function: kde2D. Matrix form: one line if one random effect or square matrix otherwise}
 #' If there is a truncation threshold in the estimator
@@ -89,17 +90,17 @@
 #' print(estim)
 #' # Validation 
 #' # If numj is fixed by the user: this function simulates Mrep =100 (by default) new trajectories with the value of the
-#' #estimated random effect. Then it plots on the left graph the Mrep new trajectories \eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)), k= 1, ... Mrep}
-#' #with in red the true trajectory \eqn{(Xnumj(t1), ... Xnumj(tN))}. 
+#' #estimated random effect. Then it plots on the left graph the Mrep new trajectories \eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)),
+#' # k= 1, ... Mrep} with in red the true trajectory \eqn{(Xnumj(t1), ... Xnumj(tN))}. 
 #' #The right graph is a qq-plot of the quantiles of samples \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
-#' #for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function are: a matrix \code{Xnew} dimension Mrepx N+1, vector 
-#' #of quantiles \code{quantiles} length N and the number of the trajectory for the plot \code{plotnumj= numj} 
+#' #for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function are: a matrix \code{Xnew} dimension
+#' # Mrepx N+1, vector of quantiles \code{quantiles} length N and the number of the trajectory for the plot \code{plotnumj= numj} 
 #' # If numj is not precised by the user, then, this function simulates Mrep =100 (by default) new trajectories for each estimated
 #' #random effect. Then left graph is a plot of the Mrep new trajectories \eqn{(Xj^{k}(t1), ... Xj^{k}(tN)), k= 1, ... Mrep}
 #' #for a randomly chosen number j with in red the true trajectory \eqn{(Xj(t1), ... Xj(tN))}. 
 #' #The right graph is a qq-plot of the quantiles of samples \eqn{(Xj^{1}(ti), ... Xj^{Mrep}(ti))}, for the same j and 
-#' #for each time \eqn{ti}. The outputs of the function are: a list of matrices \code{Xnew} length M, matrix of quantiles \code{quantiles} dimension MxN and the 
-#' #number of the trajectory for the plot \code{plotnumj} 
+#' #for each time \eqn{ti}. The outputs of the function are: a list of matrices \code{Xnew} length M, matrix of quantiles 
+#' #\code{quantiles} dimension MxN and the number of the trajectory for the plot \code{plotnumj} 
 #' 
 #' validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
 #' 
@@ -153,9 +154,11 @@
 #' phihat_trunc <- outputsNP$estimphi.trunc
 #' par(mfrow=c(1,2))
 #' plot.ts(phi[1,], phihat[1,], xlim=c(0, 15), ylim=c(0,15), pch=18); abline(0,1)
-#' points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); abline(0,1)
+#' points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); 
+#' abline(0,1)
 #' plot.ts(phi[2,], phihat[2,], xlim=c(0, 15), ylim=c(0,15),pch=18); abline(0,1)
-#' points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); abline(0,1)
+#' points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); 
+#' abline(0,1)
 #' 
 #' # one ranfom effect: 
 #' 
@@ -167,7 +170,8 @@
 #' fixed <- 2 ; param <- c(1, 0.2)
 #'#-------------------
 #'#- simulation
-#' simu <- mixedsde.sim(M,T=T,N=N,model=model,random=random, fixed=fixed,density.phi=density.phi, param=param, sigma=sigma, X0=X0)
+#' simu <- mixedsde.sim(M,T=T,N=N,model=model,random=random, fixed=fixed,density.phi=density.phi, 
+#'                param=param, sigma=sigma, X0=X0)
 #' X <- simu$X
 #' phi <- simu$phi
 #' times <-simu$times
@@ -201,12 +205,15 @@
 #' # Parametric Bayesian estimation 
 #' # one random effect
 #' random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
-#' sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0, op.plot = 1)
+#' sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random = random, fixed = fixed, density.phi = 'normal', 
+#'               param= param, sigma= sigma, X0 = 0, op.plot = 1)
 #' 
-#' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', nMCMC = 1000)
+#' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes',
+#'                             nMCMC = 1000)
 #' prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, beta.omega = param[2]^2*10,
-#' alpha.sigma = 10, beta.sigma = sigma^2*9)
-#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#'                  alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', 
+#'                     prior = prior, nMCMC = 1000) 
 #' 
 #' validation <- valid(estim_Bayes, numj = 10)
 #' plot(estim_Bayes)
@@ -229,12 +236,15 @@
 #' # second example
 #' 
 #' random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
-#' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random, fixed = fixed, density.phi = 'normal', param, sigma, X0 = 0.1, op.plot = 1)
+#' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random = random, fixed = fixed, density.phi = 'normal', 
+#'                      param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
 #' 
-#' prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10,
+#'              alpha.sigma = 10, beta.sigma = sigma^2*9)
 #'
 #'\dontrun{
-#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random, estim.method = 'paramBayes', 
+#'                     prior = prior, nMCMC = 1000) 
 #' plot(estim_Bayes)
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
@@ -250,13 +260,17 @@
 #' # for two random effects
 #' random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
 #' 
-#' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random, density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
+#' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random, density.phi = 'normalnormal', param = param,
+#'                      sigma = sigma, X0 = 0, op.plot = 1)
 #' 
-#' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', nMCMC = 1000)
+#' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random, 
+#'                     estim.method = 'paramBayes', nMCMC = 1000)
 #' plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 #'  
-#' prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11), beta.omega = param[c(2,4)]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
-#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#' prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11), beta.omega = param[c(2,4)]^2*10, 
+#'                    alpha.sigma = 10, beta.sigma = sigma^2*9)
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random, estim.method = 'paramBayes', 
+#'                   prior = prior, nMCMC = 1000) 
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' summary(estim_Bayes)
@@ -270,11 +284,13 @@
 #' # invariant case
 #' 
 #' random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
-#' sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random, fixed = fixed, density.phi = 'normal', param, sigma, invariant = 1, op.plot = 1)
+#' sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random = random, fixed = fixed, density.phi = 'normal',
+#'                   param = param, sigma = sigma, invariant = 1, op.plot = 1)
 #' 
 #' prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11, beta.omega = param[2]^2*10,
 #' alpha.sigma = 10, beta.sigma = sigma^2*9)
-#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes', 
+#'                 prior = prior, nMCMC = 1000) 
 #' plot(estim_Bayes)
 #'
 #' pred.result <- pred(estim_Bayes, invariant = 1)
@@ -2173,6 +2189,12 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
         if (dim(x@gridf)[1] == 1) {
             
             phihat <- x@estimphi
+            if (x@estim.fix == 1) {
+              paramfixed <- x@estim.fixed
+            }
+            if (x@estim.fix == 0) {
+              paramfixed <- x@fixed
+            }
             
             Xnew <- as.list(1:M)  # for each phihat_j a new sample size Mrep
             
@@ -2182,7 +2204,7 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
                     Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat[j], 
-                      x@fixed, sig), model = "OU", M = Mrep))
+                                   paramfixed, sig), model = "OU", M = Mrep))
                   }
                 }
                 if (x@model == "CIR") {
@@ -2190,7 +2212,7 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
                     Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", 
-                      theta = c(phihat[j], x@xfixed, sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
+                      theta = c(phihat[j], paramfixed, sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
                         sqrt(x))))
                   }
                 }
@@ -2202,7 +2224,7 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
                   
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
-                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(x@fixed, 
+                    Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "EA", theta = c(paramfixed, 
                       phihat[j], sig), model = "OU", M = Mrep))
                   }
                 }
@@ -2211,7 +2233,7 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
                   for (j in 1:M) {
                     Xnew[[j]] <- matrix(0, Mrep, length(timessimu))
                     Xnew[[j]] <- t(sde.sim(T = Tend, X0 = Xtrue[j, 1], N = length(timessimu), delta = del, method = "milstein", 
-                      theta = c(x@fixed, phihat[j], sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
+                      theta = c(paramfixed, phihat[j], sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
                         sqrt(x))))
                     
                   }
@@ -2269,25 +2291,32 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
         
         if (dim(x@gridf)[1] == 1) {
             phihat <- x@estimphi[numj]
+            phihat <- x@estimphi
             
+            if (x@estim.fix == 1) {
+              paramfixed <- x@estim.fixed
+            }
+            if (x@estim.fix == 0) {
+              paramfixed <- x@fixed
+            }
             if (sum(x@random) == 1) {
                 if (x@model == "OU") {
                   Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(phihat, 
-                    x@fixed, sig), model = "OU", M = Mrep))
+                                   paramfixed, sig), model = "OU", M = Mrep))
                 }
                 
                 if (x@model == "CIR") {
                   Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(phihat, 
-                    x@fixed, sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
+                                paramfixed, sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
                 }
             }
             if (sum(x@random) == 2) {
                 if (x@model == "OU") {
-                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(x@fixed, 
+                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "EA", theta = c(paramfixed, 
                     phihat, sig), model = "OU", M = Mrep))
                 }
                 if (x@model == "CIR") {
-                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(x@fixed, 
+                  Xnew <- t(sde.sim(T = Tend, X0 = Xtrue[numj, 1], N = length(timessimu), delta = del, method = "milstein", theta = c(paramfixed, 
                     phihat, sig), model = "CIR", M = Mrep, sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x))))
                 }
             }
@@ -2316,7 +2345,7 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
             abline(0, 1)
         }
     }
-    return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
+  return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
 })
 
 
@@ -2444,7 +2473,6 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
         }
         
         N <- length(vecttimes)
-        
         q <- rep(0, N)
         for (i in 1:N) {
             q[i] <- sum(Xtrue[numj, which(times == vecttimes[i])[1]] > Xnew[, which(timessimu == vecttimes[i])[1]])/Mrep
@@ -2471,8 +2499,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
     # set plot settings back
     par(original.settings)
     
-    return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
-    
+    return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))  
 })
 
 ########################################################### PREDICTION
@@ -2797,7 +2824,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, ti
 #' 
 #' @description Bayesian prediction
 #' @param x Bayes.fit class
-#' @param invariant logical(1), if TRUE, the initial value is from the invariant distribution \eqn{X_t~N(\alpha/\beta, \sigma^2/2\beta)} for the OU and \eqn{X_t~Gamma(2\alpha/\sigma^2, \sigma^2/2\beta)} for the CIR process, if FALSE (default) X0 is fixed from the data starting points
+#' @param invariant logical(1), if TRUE, the initial value is from the invariant distribution \eqn{X_t~N(\alpha/\beta, \sigma^2/2\beta)} for the OU and \eqn{X_t~\Gamma(2\alpha/\sigma^2, \sigma^2/2\beta)} for the CIR process, if FALSE (default) X0 is fixed from the data starting points
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.pred logical(1), if TRUE, the results are depicted grafically
@@ -2816,7 +2843,8 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, ti
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-#' 
+
+
 setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invariant = FALSE, level = 0.05, newwindow = FALSE, plot.pred = TRUE, 
     plot.legend = TRUE, burnIn, thinning, only.interval = TRUE, sample.length = 500, cand.length = 100, trajectories = FALSE, ylim, 
     xlab = "times", ylab = "X", col = 2, lwd = 2, ...) {
@@ -2829,8 +2857,7 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
         burnIn <- x@burnIn
     if (missing(thinning)) 
         thinning <- x@thinning
-    
-    
+  
     random <- x@random
     
     est <- chain2samples(x, burnIn, thinning)
@@ -2839,7 +2866,6 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
     M <- nrow(x@X)
     
     ##### 
-    
     model <- x@model
     
     if (trajectories) {
@@ -3182,6 +3208,4 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
             return(new(Class = "Bayes.pred", phi.pred = as.matrix(phi.pred), coverage.rate = cr, qu.l = qu.l, qu.u = qu.u, estim = out(x)))
         }
     }
-    
-    
 }) 

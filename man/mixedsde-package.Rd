@@ -28,7 +28,7 @@ See Bidimensional random effect estimation in mixed stochastic differential mode
 
 Maximum likelihood estimation for stochastic differential equations with random effects, M. Delattre, V. Genon-Catalot and A. Samson, \emph{Scandinavian Journal of Statistics 2012}, Vol 40, \bold{322--343}
 
-Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  Hermann, S., Ickstadt, K. and C. M{\"u}ller (2016)
+Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  Hermann, S., Ickstadt, K. and C. Muller (2016)
 
 }
 \keyword{ package }
@@ -36,9 +36,11 @@ Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  He
 \examples{
 # Frequentist estimation, two random effects
 
-model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'gammainvgamma2';
+model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); 
+density.phi <- 'gammainvgamma2';
 param<- c(1.8, 0.8, 8, 0.05);
-simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,sigma=sigma, invariant = 1)
+simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,
+              sigma=sigma, invariant = 1)
 X <- simu$X ; phi <- simu$phi; times <- simu$times
 estim.method<- 'nonparam'
 estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
@@ -74,7 +76,7 @@ model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
 M <- 50 ; T <- 1; N <- 100
 density.phi <- 'normal'; param <- c(3, 0.5)
 
-simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi, param, sigma, X0 = 0, op.plot = 0)
+simu <- mixedsde.sim(M, T = T, N = N, model, random, fixed = fixed, density.phi, param, sigma, X0 = 0)
 X <- simu$X; phi <- simu$phi; times <- simu$times
 plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
 
