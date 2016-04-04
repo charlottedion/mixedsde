@@ -92,54 +92,63 @@ The parametric method estimates the mean and standard deviation of the Gaussian 
 \examples{
 # Frequentist estimation
 # Two random effects
-model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ; random <- c(1,2); density.phi <- 'gammainvgamma2';
-param<- c(1.8, 0.8, 8, 0.05);
-simu <- mixedsde.sim(M=M, T=T, N=N, model=model,random=random, density.phi=density.phi, param=param, sigma=sigma, invariant = 1)
+model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ;
+random <- c(1,2); density.phi <- 'gammainvgamma2'; param<- c(1.8, 0.8, 8, 0.05);
+simu <- mixedsde.sim(M=M, T=T, N=N, model=model,random=random, density.phi=density.phi,
+               param=param, sigma=sigma, invariant = 1)
 X <- simu$X ; phi <- simu$phi; times <- simu$times
 estim.method<- 'nonparam'
 estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
 #To stock the results of the function, use method \\code{out}
-#which put the outputs of the function on a list according to the frequentist or Bayesian approach.
+#which put the outputs of the function on a list according to the frequentist or
+# Bayesian approach.
 outputsNP <- out(estim)
 plot(estim)
-# It represents the bidimensional density, the histogram of the first estimated random effect \\eqn{\\alpha} with the
-# marginal of \\eqn{\\hat{f}} from the first coordonate which estimates the density of \\eqn{\\alpha}. And the same for the
-# second random effect \\eqn{\\beta}. More, it plots a qq-plot for the sample of estimator of the random effects
+# It represents the bidimensional density, the histogram of the first estimated random
+# effect \\eqn{\\alpha} with the  marginal of \\eqn{\\hat{f}} from the first coordonate which
+# estimates  the density of \\eqn{\\alpha}. And the same for the second random effect
+# \\eqn{\\beta}. More, it plots a qq-plot for the sample of estimator of the random effects
 # compared with the quantiles of a Gaussian sample with the same mean and standard deviation.
 
 summary(estim)
 print(estim)
 # Validation
-# If numj is fixed by the user: this function simulates Mrep =100 (by default) new trajectories with the value of the
-#estimated random effect. Then it plots on the left graph the Mrep new trajectories \\eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)),
+# If numj is fixed by the user: this function simulates Mrep =100 (by default) new
+# trajectories with the value of the estimated random effect. Then it plots on the
+# left graph the Mrep new trajectories \\eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)),
 # k= 1, ... Mrep} with in red the true trajectory \\eqn{(Xnumj(t1), ... Xnumj(tN))}.
 #The right graph is a qq-plot of the quantiles of samples \\eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
-#for each time \\eqn{ti} compared with the uniform quantiles. The outputs of the function are: a matrix \\code{Xnew} dimension
-# Mrepx N+1, vector of quantiles \\code{quantiles} length N and the number of the trajectory for the plot \\code{plotnumj= numj}
-# If numj is not precised by the user, then, this function simulates Mrep =100 (by default) new trajectories for each estimated
-#random effect. Then left graph is a plot of the Mrep new trajectories \\eqn{(Xj^{k}(t1), ... Xj^{k}(tN)), k= 1, ... Mrep}
+#for each time \\eqn{ti} compared with the uniform quantiles. The outputs of the function
+# are: a matrix \\code{Xnew} dimension Mrepx N+1, vector of quantiles \\code{quantiles} length
+# N and the number of the trajectory for the plot \\code{plotnumj= numj}
+# If numj is not precised by the user, then, this function simulates Mrep =100 (by default)
+# new trajectories for each estimated random effect. Then left graph is a plot of the Mrep
+# new trajectories \\eqn{(Xj^{k}(t1), ... Xj^{k}(tN)), k= 1, ... Mrep}
 #for a randomly chosen number j with in red the true trajectory \\eqn{(Xj(t1), ... Xj(tN))}.
-#The right graph is a qq-plot of the quantiles of samples \\eqn{(Xj^{1}(ti), ... Xj^{Mrep}(ti))}, for the same j and
-#for each time \\eqn{ti}. The outputs of the function are: a list of matrices \\code{Xnew} length M, matrix of quantiles
-#\\code{quantiles} dimension MxN and the number of the trajectory for the plot \\code{plotnumj}
+#The right graph is a qq-plot of the quantiles of samples \\eqn{(Xj^{1}(ti), ... Xj^{Mrep}(ti))},
+# for the same j and for each time \\eqn{ti}. The outputs of the function are: a list of
+# matrices \\code{Xnew} length M, matrix of quantiles \\code{quantiles} dimension MxN
+# and the number of the trajectory for the plot \\code{plotnumj}
 
 validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
 
 # Parametric estimation
 estim.method<-'paramML'
-estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, estim.method = 'paramML')
+estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random,
+           estim.method = 'paramML')
 outputsP <- out(estim_param)
 plot(estim_param)
 summary(estim_param)
 
 # Prediction for the frequentist approach
-# This function uses the estimation of the density function to simulate a new sample of random
-# effects according to this density. If \\code{plot.pred =1} (default) is plots on the top
-# the predictive random effects versus the estimated random effects from the data.
-# On the bottom, the left graph is the true trajectories, on the right the predictive trajectories
-# and the empiric prediciton intervals at level \\code{level=0.05} (defaut).
-# The function return on a list the prediction of phi \\code{phipred}, the prediction of X \\code{Xpred},
-# and the indexes of the corresponding true trajectories \\code{indexpred}
+# This function uses the estimation of the density function to simulate a
+# new sample of random effects according to this density. If \\code{plot.pred =1} (default)
+# is plots on the top the predictive random effects versus the estimated random effects
+# from the data. On the bottom, the left graph is the true trajectories, on the right
+#the predictive trajectories and the empiric prediciton intervals at level
+# \\code{level=0.05} (defaut). The function return on a list the prediction of phi
+# \\code{phipred}, the prediction of X \\code{Xpred}, and the indexes of the
+# corresponding true trajectories \\code{indexpred}
 
 test1 <- pred(estim, X = X,   times = times,  invariant  = 1)
 test2 <- pred(estim_param,  X = X,   times = times, invariant  = 1)
@@ -199,15 +208,18 @@ times <-simu$times
 plot(times, X[10,], type='l')
 #- parametric estimation
 estim.method<-'paramML'
-estim_param <- mixedsde.fit(times, X=X, model=model, random=random, estim.fix= 1, estim.method=estim.method)
+estim_param <- mixedsde.fit(times, X=X, model=model, random=random, estim.fix= 1,
+               estim.method=estim.method)
 outputsP <- out(estim_param)
 estim.fixed <- outputsP$estim.fixed #to compare with fixed
 #or
-estim_param2 <- mixedsde.fit(times, X=X, model=model, random=random, fixed = fixed, estim.method=estim.method)
+estim_param2 <- mixedsde.fit(times, X=X, model=model, random=random, fixed = fixed,
+             estim.method=estim.method)
 outputsP2 <- out(estim_param2)
 #- nonparametric estimation
 estim.method <- 'nonparam'
-estim <- mixedsde.fit(times, X, model=model, random=random, fixed = fixed, estim.method=estim.method)
+estim <- mixedsde.fit(times, X, model=model, random=random, fixed = fixed,
+           estim.method=estim.method)
 outputsNP <- out(estim)
 
 plot(estim)
@@ -226,15 +238,15 @@ test2 <- pred(estim_param,  X = X , times = times)
 # Parametric Bayesian estimation
 # one random effect
 random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
-sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random = random, fixed = fixed, density.phi = 'normal',
-              param= param, sigma= sigma, X0 = 0, op.plot = 1)
+sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random = random, fixed = fixed,
+       density.phi = 'normal',param= param, sigma= sigma, X0 = 0, op.plot = 1)
 
-estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes',
-                            nMCMC = 1000)
-prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, beta.omega = param[2]^2*10,
-                 alpha.sigma = 10, beta.sigma = sigma^2*9)
-estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes',
-                    prior = prior, nMCMC = 1000)
+estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
+             random, estim.method = 'paramBayes',  nMCMC = 1000)
+prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11,
+            beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random,
+           estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 
 validation <- valid(estim_Bayes, numj = 10)
 plot(estim_Bayes)
@@ -257,15 +269,15 @@ pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 # second example
 
 random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
-sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random = random, fixed = fixed, density.phi = 'normal',
-                     param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
+sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random = random,
+         fixed = fixed, density.phi = 'normal',param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
 
-prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, beta.omega = param[2]^2*10,
-             alpha.sigma = 10, beta.sigma = sigma^2*9)
+prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11,
+         beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 
 \dontrun{
-estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random, estim.method = 'paramBayes',
-                    prior = prior, nMCMC = 1000)
+estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random,
+                 estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
@@ -281,8 +293,8 @@ plot(pred.result)
 # for two random effects
 random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
 
-sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random, density.phi = 'normalnormal', param = param,
-                     sigma = sigma, X0 = 0, op.plot = 1)
+sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random,
+       density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
 
 estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
                     estim.method = 'paramBayes', nMCMC = 1000)
@@ -290,8 +302,8 @@ plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced =
 
 prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11), beta.omega = param[c(2,4)]^2*10,
                    alpha.sigma = 10, beta.sigma = sigma^2*9)
-estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random, estim.method = 'paramBayes',
-                  prior = prior, nMCMC = 1000)
+estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
+                estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 summary(estim_Bayes)
@@ -305,8 +317,8 @@ pred.result <- pred(estim_Bayes)
 # invariant case
 
 random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
-sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random = random, fixed = fixed, density.phi = 'normal',
-                  param = param, sigma = sigma, invariant = 1, op.plot = 1)
+sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random = random, fixed = fixed,
+           density.phi = 'normal',param = param, sigma = sigma, invariant = 1, op.plot = 1)
 
 prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11, beta.omega = param[2]^2*10,
 alpha.sigma = 10, beta.sigma = sigma^2*9)

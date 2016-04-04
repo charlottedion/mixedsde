@@ -85,8 +85,8 @@ likelihoodNormalestimfix <- function(mu1, mu2, omega, U, V, estimphi, random) {
         Ur <- U[1, ] * (random == 1) + U[2, ] * (random == 2)
         Uf <- U[1, ] * (fix == 1) + U[2, ] * (fix == 2)
         
-        L <- sum(log(1 + Omega * Vrr)) + sum(Vrr/(1 + Omega * Vrr) * (muRandom - (Ur - psi * Vfr)/Vrr)^2 - (Ur - psi * Vfr)^2/Vrr - 
-            2 * psi * Uf + Vff * psi^2)
+        L <- sum(log(1 + Omega * Vrr)) + sum(Vrr/(1 + Omega * Vrr) * (muRandom - (Ur - psi * Vfr)/Vrr)^2 - (Ur - psi * Vfr)^2/Vrr - 2 * 
+            psi * Uf + Vff * psi^2)
         
     }
     
@@ -103,23 +103,21 @@ likelihoodNormalestimfix <- function(mu1, mu2, omega, U, V, estimphi, random) {
 
 # DO NOT DELETE fonction pour omega NON diagonale likelihoodNormal = function(mu, omega, cova, estimphi, V, random) { if
 # (length(random) == 1) { Omega <- omega^2 L <- sum(log(1 + Omega * V)) + sum(V/(1 + Omega * V) * (mu - estimphi)^2) } if
-# (length(random) == 2) { Omega <- matrix(c(omega[1]^2, cova, cova, omega[2]^2), 2, 2, byrow = TRUE) M <- dim(estimphi)[2]
-# loglik <- vector(length = M) I2 <- diag(c(1, 1)) for (j in 1:M) { A <- (I2 + V[[j]] %*% Omega) #print(det(A)) #print(Omega)
-# Rinv <- solve(A) %*% V[[j]] b <- mu - estimphi[ , j] loglik[j] <- log(det(A)) + t(b) %*% Rinv %*% b } L <- sum(loglik) }
-# return(L) }
+# (length(random) == 2) { Omega <- matrix(c(omega[1]^2, cova, cova, omega[2]^2), 2, 2, byrow = TRUE) M <- dim(estimphi)[2] loglik <-
+# vector(length = M) I2 <- diag(c(1, 1)) for (j in 1:M) { A <- (I2 + V[[j]] %*% Omega) #print(det(A)) #print(Omega) Rinv <- solve(A)
+# %*% V[[j]] b <- mu - estimphi[ , j] loglik[j] <- log(det(A)) + t(b) %*% Rinv %*% b } L <- sum(loglik) } return(L) }
 
 ### garder le 08/03/2016
 
-# #sans estimer leffet fixe on avait la fonction: likelihoodNormal <- function(mu, omega, estimphi, V, random) { # lorsque lon
-# estime leffet fixe on doit rajouter un parametre pour la fonction optim #likelihoodNormal <- function(mu1, mu2, omega,
-# estimphi, V, random) { # lorsque lon estime leffet fixe # if (length(random) == 1) { # mu <- c(mu1, mu2) # # fix <- (random
-# == 1) + 1 # # psi <- mu[fix] # # muRandom <- mu[random] # # Omega <- omega^2 # # V11 <- unlist(V)[seq(1, 4 * length(V), by =
-# 4)] # V22 <- unlist(V)[seq(4, 4 * length(V), by = 4)] # # Vrr <- V11 * (random == 1) + V22 * (random == 2) # # Vff <- V11 *
-# (fix == 1) + V22 * (fix == 2) # # Vfr <- unlist(V)[seq(2, 4 * length(V), by = 4)] # # Ur <- estimphi[1, ] * (random == 1) +
-# estimphi[2, ] * (random == 2) # Uf <- estimphi[1, ] * (fix == 1) + estimphi[2, ] * (fix == 2) # # L <- sum(log(1 + Omega *
-# Vrr)) - 2* sum(-Vrr * (1 / (2 + 2 * Omega * Vrr)) * (muRandom- (1 / Vrr) * (Ur - psi* Vfr))^2 + # (Ur - psi * Vfr)^2 * (1 /
-# (Vrr *2)) + psi * Uf - 0.5 * Vff * psi^2) # # } #lorsque lon estime pas leffet fixe if (length(random) == 1) { Omega <-
-# omega^2 L <- sum(log(1 + Omega * V)) + sum(V/(1 + Omega * V) * (mu- estimphi)^2) } # ne change pas if (length(random) == 2) {
-# Omega <- matrix(c(omega[1]^2, 0, 0, omega[2]^2), 2, 2, byrow = TRUE) M <- dim(estimphi)[2] loglik <- vector(length = M) I2 <-
-# diag(c(1, 1)) for (j in 1:M) { A <- (I2 + V[[j]] %*% Omega) Rinv <- solve(A) %*% V[[j]] b <- mu - estimphi[, j] loglik[j] <-
-# log(det(A)) + t(b) %*% Rinv %*% b } L <- sum(loglik) } return(L) } 
+# #sans estimer leffet fixe on avait la fonction: likelihoodNormal <- function(mu, omega, estimphi, V, random) { # lorsque lon estime
+# leffet fixe on doit rajouter un parametre pour la fonction optim #likelihoodNormal <- function(mu1, mu2, omega, estimphi, V, random)
+# { # lorsque lon estime leffet fixe # if (length(random) == 1) { # mu <- c(mu1, mu2) # # fix <- (random == 1) + 1 # # psi <- mu[fix]
+# # # muRandom <- mu[random] # # Omega <- omega^2 # # V11 <- unlist(V)[seq(1, 4 * length(V), by = 4)] # V22 <- unlist(V)[seq(4, 4 *
+# length(V), by = 4)] # # Vrr <- V11 * (random == 1) + V22 * (random == 2) # # Vff <- V11 * (fix == 1) + V22 * (fix == 2) # # Vfr <-
+# unlist(V)[seq(2, 4 * length(V), by = 4)] # # Ur <- estimphi[1, ] * (random == 1) + estimphi[2, ] * (random == 2) # Uf <- estimphi[1,
+# ] * (fix == 1) + estimphi[2, ] * (fix == 2) # # L <- sum(log(1 + Omega * Vrr)) - 2* sum(-Vrr * (1 / (2 + 2 * Omega * Vrr)) *
+# (muRandom- (1 / Vrr) * (Ur - psi* Vfr))^2 + # (Ur - psi * Vfr)^2 * (1 / (Vrr *2)) + psi * Uf - 0.5 * Vff * psi^2) # # } #lorsque lon
+# estime pas leffet fixe if (length(random) == 1) { Omega <- omega^2 L <- sum(log(1 + Omega * V)) + sum(V/(1 + Omega * V) * (mu-
+# estimphi)^2) } # ne change pas if (length(random) == 2) { Omega <- matrix(c(omega[1]^2, 0, 0, omega[2]^2), 2, 2, byrow = TRUE) M <-
+# dim(estimphi)[2] loglik <- vector(length = M) I2 <- diag(c(1, 1)) for (j in 1:M) { A <- (I2 + V[[j]] %*% Omega) Rinv <- solve(A) %*%
+# V[[j]] b <- mu - estimphi[, j] loglik[j] <- log(det(A)) + t(b) %*% Rinv %*% b } L <- sum(loglik) } return(L) } 

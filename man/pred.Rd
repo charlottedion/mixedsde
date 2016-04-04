@@ -4,25 +4,12 @@
 \alias{pred}
 \title{Prediction method}
 \usage{
-pred(x, Xtrue, times, invariant = 0, level = 0.05, newwindow = FALSE,
-  plot.pred = TRUE, ...)
+pred(x, ...)
 }
 \arguments{
 \item{x}{Freq.fit or Bayes.fit class}
 
-\item{Xtrue}{observed data (only for Freq.fit class)}
-
-\item{times}{observation times (only for Freq.fit class)}
-
-\item{invariant}{1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue}
-
-\item{level}{alpha for the predicion intervals, default 0.05}
-
-\item{newwindow}{logical(1), if TRUE, a new window is opened for the plot}
-
-\item{plot.pred}{logical(1), if TRUE, the results are depicted grafically}
-
-\item{...}{optional plot parameters}
+\item{...}{other optional parameters}
 }
 \description{
 Prediction
