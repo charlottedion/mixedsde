@@ -539,7 +539,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             if (estim.method == "nonparam") {
                 
                 if (estim.fix == 1) {
-                  print("wrong argument estim.fix with method nonparam")
+                  print("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0")
                 }
                 
                 if (estim.fix == 0) {
@@ -701,6 +701,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 }
                 
                 if (estim.fix == 0) {
+                  if (fixed == 0){
+                    print("be careful: estim.fix=0 and fixed=0 thus your fixed effect is 0 and it is not estimated")
+                  }
+                  
                   res <- EstParamNormal(U = Usigma212, V = Vsigma212, K = K, random, estim.fix = 0, fixed = fixed)
                   bic <- res$BIChere
                   aic <- res$AIChere
