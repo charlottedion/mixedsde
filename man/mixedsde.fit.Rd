@@ -296,12 +296,12 @@ random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
 sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random,
        density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
 
-estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
-                    estim.method = 'paramBayes', nMCMC = 1000)
+estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
+             random = random, estim.method = 'paramBayes', nMCMC = 1000)
 plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 
-prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11), beta.omega = param[c(2,4)]^2*10,
-                   alpha.sigma = 10, beta.sigma = sigma^2*9)
+prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11),
+           beta.omega = param[c(2,4)]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
                 estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 outputBayes <- out(estim_Bayes)
@@ -320,10 +320,10 @@ random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
 sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random = random, fixed = fixed,
            density.phi = 'normal',param = param, sigma = sigma, invariant = 1, op.plot = 1)
 
-prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11, beta.omega = param[2]^2*10,
-alpha.sigma = 10, beta.sigma = sigma^2*9)
-estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, estim.method = 'paramBayes',
-                prior = prior, nMCMC = 1000)
+prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11,
+       beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random,
+       estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
 plot(estim_Bayes)
 
 pred.result <- pred(estim_Bayes, invariant = 1)
