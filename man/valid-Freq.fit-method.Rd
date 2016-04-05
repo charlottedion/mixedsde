@@ -5,15 +5,11 @@
 \alias{valid,Freq.fit-method}
 \title{Validation of the chosen model.}
 \usage{
-\S4method{valid}{Freq.fit}(x, Xtrue, times, Mrep = 100, newwindow = FALSE,
+\S4method{valid}{Freq.fit}(x, Mrep = 100, newwindow = FALSE,
   plot.valid = TRUE, numj, ...)
 }
 \arguments{
 \item{x}{Freq.fit class}
-
-\item{Xtrue}{observed data}
-
-\item{times}{observation times}
 
 \item{Mrep}{number of trajectories to be drawn}
 

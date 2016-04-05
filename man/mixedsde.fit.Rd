@@ -48,6 +48,8 @@ For the parametric maximum likelihood estimation
 \item{model}{initial choice}
 \item{random}{initial choice}
 \item{fixed}{initial choice}
+\item{times}{initial choice}
+\item{X}{initial choice}
 
 For the parametric Bayesian estimation
 \item{alpha}{posterior samples (Markov chain) of \eqn{\alpha}}
@@ -130,7 +132,7 @@ print(estim)
 # matrices \\code{Xnew} length M, matrix of quantiles \\code{quantiles} dimension MxN
 # and the number of the trajectory for the plot \\code{plotnumj}
 
-validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
+validation <- valid(estim,  numj=floor(runif(1,1,M)))
 
 # Parametric estimation
 estim.method<-'paramML'
@@ -150,8 +152,8 @@ summary(estim_param)
 # \\code{phipred}, the prediction of X \\code{Xpred}, and the indexes of the
 # corresponding true trajectories \\code{indexpred}
 
-test1 <- pred(estim, X = X,   times = times,  invariant  = 1)
-test2 <- pred(estim_param,  X = X,   times = times, invariant  = 1)
+test1 <- pred(estim,  invariant  = 1)
+test2 <- pred(estim_param, invariant  = 1)
 
 # More graph
 fhat <- outputsNP$estimf
@@ -206,6 +208,7 @@ X <- simu$X
 phi <- simu$phi
 times <-simu$times
 plot(times, X[10,], type='l')
+
 #- parametric estimation
 estim.method<-'paramML'
 estim_param <- mixedsde.fit(times, X=X, model=model, random=random, estim.fix= 1,
@@ -230,9 +233,9 @@ plot(estim_param)
 print(estim_param)
 summary(estim_param)
 
-valid1 <- valid(estim, X,  times=times,  numj=floor(runif(1,1,M)))
-test1 <- pred(estim, X = X, times = times)
-test2 <- pred(estim_param,  X = X , times = times)
+valid1 <- valid(estim,  numj=floor(runif(1,1,M)))
+test1 <- pred(estim )
+test2 <- pred(estim_param)
 
 
 # Parametric Bayesian estimation

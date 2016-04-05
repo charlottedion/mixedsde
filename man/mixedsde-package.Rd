@@ -49,7 +49,7 @@ plot(estim)
 summary(estim)
 print(estim)
 
-validation <- valid(estim, Xtrue= X, times=times, numj=floor(runif(1,1,M)))
+validation <- valid(estim, numj=floor(runif(1,1,M)))
 
 estim.method<-'paramML'
 estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, estim.method = 'paramML')
@@ -57,8 +57,8 @@ outputsP <- out(estim_param)
 plot(estim_param)
 summary(estim_param)
 
-test1 <- pred(estim, X = X,  times=times, invariant = 1)
-test2 <- pred(estim_param,  X = X, times=times, invariant = 1)
+test1 <- pred(estim, invariant = 1)
+test2 <- pred(estim_param, invariant = 1)
 
 cutoff <- outputsNP$cutoff
 phihat <- outputsNP$estimphi
@@ -74,6 +74,7 @@ abline(0,1)
 
 
 # Parametric Bayesian estimation one random effect
+
 model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
 M <- 50 ; T <- 1; N <- 100
 density.phi <- 'normal'; param <- c(3, 0.5)

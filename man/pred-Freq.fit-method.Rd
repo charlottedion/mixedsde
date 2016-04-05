@@ -5,15 +5,11 @@
 \alias{pred,Freq.fit-method}
 \title{Prediction method for the Freq.fit class object}
 \usage{
-\S4method{pred}{Freq.fit}(x, Xtrue, times, invariant = 0, level = 0.05,
+\S4method{pred}{Freq.fit}(x, invariant = 0, level = 0.05,
   newwindow = FALSE, plot.pred = TRUE, ...)
 }
 \arguments{
 \item{x}{Freq.fit class}
-
-\item{Xtrue}{observed data}
-
-\item{times}{observation times}
 
 \item{invariant}{1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue}
 

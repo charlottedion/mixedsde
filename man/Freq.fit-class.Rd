@@ -43,5 +43,9 @@ S4 class for the frequentist estimation results
 \item{\code{bic}}{numeric bic}
 
 \item{\code{aic}}{numeric aic}
+
+\item{\code{times}}{vector of observation times, storage of input variable}
+
+\item{\code{X}}{matrix of observations, storage of input variable}
 }}
 

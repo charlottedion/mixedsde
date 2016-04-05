@@ -32,6 +32,8 @@
 #' \item{model}{initial choice}
 #' \item{random}{initial choice}
 #' \item{fixed}{initial choice}
+#' \item{times}{initial choice}
+#' \item{X}{initial choice}
 #' 
 #' For the parametric Bayesian estimation 
 #' \item{alpha}{posterior samples (Markov chain) of \eqn{\alpha}}
@@ -109,7 +111,7 @@
 #' # matrices \code{Xnew} length M, matrix of quantiles \code{quantiles} dimension MxN
 #' # and the number of the trajectory for the plot \code{plotnumj} 
 #' 
-#' validation <- valid(estim, X, times=times,  numj=floor(runif(1,1,M)))
+#' validation <- valid(estim,  numj=floor(runif(1,1,M)))
 #' 
 #' # Parametric estimation
 #' estim.method<-'paramML'
@@ -129,8 +131,8 @@
 #' # \code{phipred}, the prediction of X \code{Xpred}, and the indexes of the 
 #' # corresponding true trajectories \code{indexpred} 
 #' 
-#' test1 <- pred(estim, X = X,   times = times,  invariant  = 1)
-#' test2 <- pred(estim_param,  X = X,   times = times, invariant  = 1)
+#' test1 <- pred(estim,  invariant  = 1)
+#' test2 <- pred(estim_param, invariant  = 1)
 #' 
 #' # More graph
 #' fhat <- outputsNP$estimf  
@@ -185,6 +187,7 @@
 #' phi <- simu$phi
 #' times <-simu$times
 #' plot(times, X[10,], type='l')
+#' 
 #' #- parametric estimation
 #' estim.method<-'paramML'
 #' estim_param <- mixedsde.fit(times, X=X, model=model, random=random, estim.fix= 1, 
@@ -209,9 +212,9 @@
 #' print(estim_param)
 #' summary(estim_param)
 #'
-#' valid1 <- valid(estim, X,  times=times,  numj=floor(runif(1,1,M)))
-#' test1 <- pred(estim, X = X, times = times)
-#' test2 <- pred(estim_param,  X = X , times = times)
+#' valid1 <- valid(estim,  numj=floor(runif(1,1,M)))
+#' test1 <- pred(estim )
+#' test2 <- pred(estim_param)
 #'
 #'
 #' # Parametric Bayesian estimation 
@@ -758,7 +761,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
     }
     return(new(Class = "Freq.fit", model = model, random = random, fixed = fixed, gridf = gridf, mu = mu, omega = omega, cutoff = cutoff, 
         sigma2 = sigma2, estimf.trunc = estimf.trunc, estimphi.trunc = estimphi.trunc, estimf = estimf, estimphi = estimphi, estim.fixed = estim.fixed, 
-        estim.fix = estim.fix, index = index, bic = bic, aic = aic))
+        estim.fix = estim.fix, index = index, bic = bic, aic = aic, times = times, X = X))
     
 }
 
@@ -783,10 +786,12 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
 #' @slot estim.fix 1 if the user asked for the estimation of fixed parameter 
 #' @slot bic numeric bic 
 #' @slot aic numeric aic
+#' @slot times vector of observation times, storage of input variable
+#' @slot X matrix of observations, storage of input variable
 
 setClass(Class = "Freq.fit", representation = representation(model = "character", random = "numeric", fixed = "numeric", gridf = "matrix", 
     mu = "numeric", omega = "numeric", cutoff = "logical", sigma2 = "numeric", estimf.trunc = "matrix", estimphi.trunc = "matrix", index = "numeric", 
-    estimphi = "matrix", estimf = "matrix", estim.fixed = "numeric", estim.fix = "numeric", bic = "numeric", aic = "numeric"))
+    estimphi = "matrix", estimf = "matrix", estim.fixed = "numeric", estim.fix = "numeric", bic = "numeric", aic = "numeric", times = "numeric", X = "matrix"))
 
 
 
@@ -2113,8 +2118,6 @@ setGeneric("valid", function(x, ...) {
 #' with the value of the estimated random effect number numj. Two plots are given: on the left the simulated trajectories and the true one (red)
 #' and one the left the corresponding qq-plot for each time.
 #' @param x Freq.fit class
-#' @param Xtrue observed data
-#' @param times observation times
 #' @param Mrep number of trajectories to be drawn
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
 #' @param plot.valid logical(1), if TRUE, the results are depicted grafically
@@ -2124,14 +2127,14 @@ setGeneric("valid", function(x, ...) {
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
 
-setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, times, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, 
+setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Mrep = 100, newwindow = FALSE, plot.valid = TRUE, 
     numj, ...) {
     
     if (newwindow) {
         x11(width = 10)
     }
-    
-    times <- round(times, 10)
+    Xtrue <- x@X
+    times <- round(x@times, 10)
     Tend <- max(times)
     del <- round(min(diff(times)), 10)
     timessimu <- round(seq(del, Tend, by = del), 10)
@@ -2290,7 +2293,6 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Xtrue, t
         
         if (dim(x@gridf)[1] == 1) {
             phihat <- x@estimphi[numj]
-            phihat <- x@estimphi
             
             if (x@estim.fix == 1) {
                 paramfixed <- x@estim.fixed
@@ -2521,8 +2523,6 @@ setGeneric("pred", function(x, ...) {
 #' 
 #' @description Frequentist prediction
 #' @param x Freq.fit class
-#' @param Xtrue observed data
-#' @param times observation times
 #' @param invariant 1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue
 #' @param level alpha for the predicion intervals, default 0.05
 #' @param newwindow logical(1), if TRUE, a new window is opened for the plot
@@ -2531,13 +2531,13 @@ setGeneric("pred", function(x, ...) {
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setMethod(f = "pred", signature = "Freq.fit", definition = function(x, Xtrue, times, invariant = 0, level = 0.05, newwindow = FALSE, plot.pred = TRUE, 
+setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant = 0, level = 0.05, newwindow = FALSE, plot.pred = TRUE, 
     ...) {
     if (newwindow) {
         x11(width = 10)
     }
-    
-    timestrue <- times
+    Xtrue <- x@X
+    timestrue <- x@times
     T <- timestrue[length(timestrue)]
     sig <- sqrt(x@sigma2)
     
