@@ -107,6 +107,8 @@
 mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, invariant = 0, delta = T/N, 
     op.plot = 0, add.plot = FALSE) {
     
+    if (missing(X0)&missing(invariant)){print('be careful, X0 and invariant are missing thus the initial value X0=0.01 is used')} 
+    
     delta <- T/N
     times <- seq(t0, T, length = N + 1)
     

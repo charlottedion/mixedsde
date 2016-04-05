@@ -429,7 +429,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
     } else {
         
         if (sum(random) > 2) {
-            
+          
+          if (missing(fixed)==0){print('be careful, X0 and invariant are missing thus the initial value X0=0.01 is used')} 
+          
+          
             # -- computation of the sufficient statistics
             U <- matrix(0, 2, M)
             V <- as.list(1:M)
@@ -2683,8 +2686,6 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
             }
             lines(times, PI[1, ], col = "green", lwd = 2)
             lines(times, PI[2, ], col = "green", lwd = 2)
-            # if (plot.legend) { legend('topright', c('predictive trajectories', 'prediction intervals'), lty = 1, col = c(1, 'red'), lwd = c(1,
-            # 2), box.lty = 0, inset = 0.08)#, text.width = 0.7) }
         }
         return(list(phipred = phipred, Xpred = Xpred, indexpred = indexpred))
     }
@@ -2826,8 +2827,8 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
 #' @param ylim optional
 #' @param xlab optional, default 'times'
 #' @param ylab optional, default 'X'
-#' @param col color for the prediction intervals, default 2
-#' @param lwd linewidth for the prediction intervals, default 2 
+#' @param col color for the prediction intervals, default 3
+#' @param lwd linewidth for the prediction intervals, default 3 
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
@@ -2835,7 +2836,7 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
 
 setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invariant = FALSE, level = 0.05, newwindow = FALSE, plot.pred = TRUE, 
     plot.legend = TRUE, burnIn, thinning, only.interval = TRUE, sample.length = 500, cand.length = 100, trajectories = FALSE, ylim, xlab = "times", 
-    ylab = "X", col = 2, lwd = 2, ...) {
+    ylab = "X", col = 3, lwd = 2, ...) {
     if (newwindow) {
         x11(width = 10)
     }

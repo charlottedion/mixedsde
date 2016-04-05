@@ -8,7 +8,7 @@
 \S4method{pred}{Bayes.fit}(x, invariant = FALSE, level = 0.05,
   newwindow = FALSE, plot.pred = TRUE, plot.legend = TRUE, burnIn,
   thinning, only.interval = TRUE, sample.length = 500, cand.length = 100,
-  trajectories = FALSE, ylim, xlab = "times", ylab = "X", col = 2,
+  trajectories = FALSE, ylim, xlab = "times", ylab = "X", col = 3,
   lwd = 2, ...)
 }
 \arguments{
@@ -42,9 +42,9 @@
 
 \item{ylab}{optional, default 'X'}
 
-\item{col}{color for the prediction intervals, default 2}
+\item{col}{color for the prediction intervals, default 3}
 
-\item{lwd}{linewidth for the prediction intervals, default 2}
+\item{lwd}{linewidth for the prediction intervals, default 3}
 
 \item{...}{optional plot parameters}
 }
