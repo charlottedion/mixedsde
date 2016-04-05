@@ -430,57 +430,68 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
         
         if (sum(random) > 2) {
           
-          if (missing(fixed)==0){print('be careful, X0 and invariant are missing thus the initial value X0=0.01 is used')} 
-          
-          
-            # -- computation of the sufficient statistics
-            U <- matrix(0, 2, M)
-            V <- as.list(1:M)
-            b <- as.list(1:M)
+          if (missing(fixed)==0){print('the parameter fixed is not used becasue random = c(1,2)')} 
+
+          # estimation of sigma^2
+          if (model == "OU") {
             
-            estimUV <- UV(X, model, random, fixed, times)
+            meanU <- rep(0, M)
+            for (i in 1:M) {
+              meanU[i] <- mean((diff(X[i, 2:K])^2) * (1/delta[1:(K - 2)]))
+            }
+            sigma2 <- mean(meanU)
+            Mindex <- M
+            index <- 1 : Mindex
+          }
+          if (model == "CIR") {
+            
+            index <- which(apply(X <= 0, 1, sum) == 0)
+            Mindex <- length(index)
+            if (Mindex == 0) {
+              print("All the trajectories have non positive values the model CIR cannot be used ")
+              estimf <- 0
+              estimphi <- 0
+              bic <- 0 
+              aic <- 0
+              gridf <- 0
+              mu <- 0 
+              omega <- 0
+              cutoff <- 0
+              sigma2<- 0 
+              estimf.trunc <- 0
+              estimphi.trunc <- 0
+              estim.fixed <- 0                   
+            }
+            if (Mindex > 0) {
+              meanU <- rep(0, Mindex)
+              for (i in 1:Mindex) {
+                meanU[i] <- mean(diff(X[index[i], 2:K])^2 * (1/delta[1:(K - 2)]) * (1/X[index[i], 3:K]))
+              }
+              sigma2 <- mean(meanU)
+            }
+          }
+            # -- computation of the sufficient statistics
+            U <- matrix(0, 2, Mindex)
+            V <- as.list(1:Mindex)
+            b <- as.list(1:Mindex)
+            
+            estimUV <- UV(X[index,], model, random, fixed, times)
             U <- estimUV$U
             V <- estimUV$V
             
             deter <- lapply(V, det)
-            index <- which((deter != Inf) & (deter != 0))
-            Mindex <- length(index)
-            V <- V[index]
-            U <- U[, index]
+            index2 <-  which((deter != Inf) & (deter != 0)) # indexes in 1:Mindex 
+            Mindex2 <- length(index2)
+            V <- V[index2]
+            U <- U[, index2]
             
             # estimation of the random effects phi
-            A <- matrix(0, Mindex, 2)
-            for (j in 1:Mindex) {
+            A <- matrix(0, Mindex2, 2)
+            for (j in 1:Mindex2) {
                 A[j, ] <- (1/det(V[[j]])) * matrix(c(V[[j]][2, 2], -V[[j]][1, 2], -V[[j]][1, 2], V[[j]][1, 1]), 2, 2) %*% U[, j]
             }
             estimphi <- t(A)
             eigenvalues <- eigenvaluesV(V)
-            
-            
-            # estimation of sigma^2
-            if (model == "OU") {
-                
-                meanU <- rep(0, Mindex)
-                for (i in 1:Mindex) {
-                  meanU[i] <- mean((diff(X[index[i], 2:K])^2) * (1/delta[1:(K - 2)]))
-                }
-                sigma2 <- mean(meanU)
-            }
-            if (model == "CIR") {
-                
-                index <- intersect(which(apply(X <= 0, 1, sum) == 0), index)
-                Mindex <- length(index)
-                if (Mindex == 0) {
-                  print("All the trajectories have non positive values")
-                }
-                if (Mindex > 0) {
-                  meanU <- rep(0, Mindex)
-                  for (i in 1:Mindex) {
-                    meanU[i] <- mean(diff(X[index[i], 2:K])^2 * (1/delta[1:(K - 2)]) * (1/X[index[i], 3:K]))
-                  }
-                  sigma2 <- mean(meanU)
-                }
-            }
             
             if (is.null(gridf) == 1) {
                 gridf <- matrix(0, 2, 500)
@@ -506,11 +517,11 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 estimf <- kde2d(estimphi[1, ], estimphi[2, ], n = length(gridf[1, ]), lims = c(min(gridf[1, ]), max(gridf[1, ]), min(gridf[2, 
                   ]), max(gridf[2, ])))$z
                 
-                if (sum(cutoff) >= 0.25 * Mindex) {
+                if (sum(cutoff) >= 0.25 * Mindex2) {
                   estimf.trunc <- kde2d(estimphi.trunc[1, ], estimphi.trunc[2, ], n = length(gridf[1, ]), lims = c(min(gridf[1, ]), max(gridf[1, 
                     ]), min(gridf[2, ]), max(gridf[2, ])))$z
                 }
-                if (sum(cutoff) < 0.25 * Mindex) {
+                if (sum(cutoff) < 0.25 * Mindex2) {
                   print("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
                   estimf.trunc <- matrix(0, 2, length(gridf[1, ]))
                 }
@@ -547,51 +558,76 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 
                 cutoff <- FALSE
             }
+           
+            index <- index[index2]
+
         }
-        
-        ####################################################### 
+
+#######################################################################################################################
         
         if (length(random) == 1) {
             
-            if (estim.method == "nonparam") {
-                
+          if (model == "OU") {
+            
+            meanU <- rep(0, M)
+            for (i in 1:M) {
+              
+              meanU[i] <- mean((diff(X[i, 2:K])^2) * (1/delta[1:(K - 2)]))
+            }
+            sigma2 <- mean(meanU)
+            Mindex <- M
+            index <- 1 : Mindex
+          }
+          
+          if (model == "CIR") {
+            index <- which(apply(X <= 0, 1, sum) == 0)
+            Mindex <- length(index)
+            if (Mindex == 0) {
+              print("All the trajectories have non positive values the model CIR cannot be used ")
+              estimf <- 0
+              estimphi <- 0
+              bic <- 0 
+              aic <- 0
+              gridf <- 0
+              mu <- 0 
+              omega <- 0
+              cutoff <- 0
+              sigma2<- 0 
+              estimf.trunc <- 0
+              estimphi.trunc <- 0
+              estim.fixed <- 0                   
+            }
+            if (Mindex != 0){
+              meanU <- rep(0, Mindex)
+              for (i in 1:Mindex) {
+                meanU[i] <- mean(diff(X[index[i], 2:K])^2 * (1/delta[1:(K - 2)]) * (1/X[index[i], 3:K]))
+             }
+              sigma2 <- mean(meanU)
+            }
+          }
+          
+          if (estim.method == "nonparam") {     
+              
                 if (estim.fix == 1) {
                   print("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0")
                 }
                 
                 if (estim.fix == 0) {
                   
-                  U <- rep(0, M)
-                  V <- rep(0, M)
-                  estimUV <- UV(X, model, random, fixed = fixed, times)
+                  U <- rep(0, Mindex)
+                  V <- rep(0, Mindex)
+                  estimUV <- UV(X[index,], model, random, fixed = fixed, times)
                   U <- estimUV$U
                   V <- estimUV$V
+                  
                   # estimation of the random effect phi
-                  index <- which((V != Inf) & (V != 0))
-                  Mindex <- length(index)
-                  V <- V[index]
-                  U <- U[index]
+                  index2 <- which((V != Inf) & (V != 0))
+                  Mindex2 <- length(index2)
+                  V <- V[index2]
+                  U <- U[index2]
                   A <- U/V
                   estimphi <- A
-                  
-                  if (model == "OU") {
-                    
-                    meanU <- rep(0, Mindex)
-                    for (i in 1:Mindex) {
-                      
-                      meanU[i] <- mean((diff(X[index[i], 2:K])^2) * (1/delta[1:(K - 2)]))
-                    }
-                    sigma2 <- mean(meanU)
-                  }
-                  if (model == "CIR") {
-                    index <- intersect(which(apply(X <= 0, 1, sum) == 0), index)
-                    Mindex <- length(index)
-                    meanU <- rep(0, Mindex)
-                    for (i in 1:Mindex) {
-                      meanU[i] <- mean(diff(X[index[i], 2:K])^2 * (1/delta[1:(K - 2)]) * (1/X[index[i], 3:K]))
-                    }
-                    sigma2 <- mean(meanU)
-                  }
+                
                   
                   if (is.null(gridf) == 1) {
                     gridf <- seq(min(estimphi) * 0.8, max(estimphi) * 1.2, length = 500)
@@ -617,7 +653,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     cutoff <- V * (1/sigma2) > kap * sqrt(Tend)
                     estimphi.trunc <- A * cutoff
                     
-                    if (sum(cutoff) < 0.25 * Mindex) {
+                    if (sum(cutoff) < 0.25 * Mindex2) {
                       print("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
                     }
                     
@@ -650,16 +686,15 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                   omega <- 0
                   estim.fixed <- 0
                 }
-                
+              index <- index[index2]
             }
-            if (estim.method == "paramML") {
+          if (estim.method == "paramML") {
+            
+                U12 <- matrix(0, 2, Mindex)
+                V12 <- as.list(1:Mindex)
+                b12 <- as.list(1:Mindex)
                 
-                
-                U12 <- matrix(0, 2, M)
-                V12 <- as.list(1:M)
-                b12 <- as.list(1:M)
-                
-                estimUV12 <- UV(X, model, random = c(1, 2), fixed = 0, times)
+                estimUV12 <- UV(X[index, ], model, random = c(1, 2), fixed = 0, times)
                 U12 <- estimUV12$U
                 V12 <- estimUV12$V
                 
@@ -669,24 +704,24 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 V12 <- V12[index12]
                 U12 <- U12[, index12]
                 # estimation of sigma2
-                if (model == "OU") {
-                  
-                  meanU <- rep(0, Mindex12)
-                  for (i in 1:Mindex12) {
-                    
-                    meanU[i] <- mean((diff(X[index12[i], 2:K])^2) * (1/delta[1:(K - 2)]))
-                  }
-                  sigma2 <- mean(meanU)
-                }
-                if (model == "CIR") {
-                  index12 <- intersect(which(apply(X <= 0, 1, sum) == 0), index12)
-                  Mindex12 <- length(index12)
-                  meanU <- rep(0, Mindex12)
-                  for (i in 1:Mindex12) {
-                    meanU[i] <- mean(diff(X[index12[i], 2:K])^2 * (1/delta[1:(K - 2)]) * (1/X[index12[i], 3:K]))
-                  }
-                  sigma2 <- mean(meanU)
-                }
+#                 if (model == "OU") {
+#                   
+#                   meanU <- rep(0, Mindex12)
+#                   for (i in 1:Mindex12) {
+#                     
+#                     meanU[i] <- mean((diff(X[index12[i], 2:K])^2) * (1/delta[1:(K - 2)]))
+#                   }
+#                   sigma2 <- mean(meanU)
+#                 }
+#                 if (model == "CIR") {
+#                   index12 <- intersect(which(apply(X <= 0, 1, sum) == 0), index12)
+#                   Mindex12 <- length(index12)
+#                   meanU <- rep(0, Mindex12)
+#                   for (i in 1:Mindex12) {
+#                     meanU[i] <- mean(diff(X[index12[i], 2:K])^2 * (1/delta[1:(K - 2)]) * (1/X[index12[i], 3:K]))
+#                   }
+#                   sigma2 <- mean(meanU)
+#                 }
                 
                 Vsigma212 <- as.list(1:length(V12))
                 Usigma212 <- U12 * (1/sigma2)
@@ -696,6 +731,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 
                 
                 if (estim.fix == 1) {
+                  
                   res <- EstParamNormal(U = Usigma212, V = Vsigma212, K = K, random = random, estim.fix = 1)
                   bic <- res$BIChere
                   aic <- res$AIChere
@@ -703,18 +739,19 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                   omega <- res$omega
                   estim.fixed <- res$mu[(random == 1) + 1]
                   
-                  U <- rep(0, M)
-                  V <- rep(0, M)
-                  estimUV <- UV(X, model, random, fixed = estim.fixed, times)
+                  U <- rep(0, Mindex)
+                  V <- rep(0, Mindex)
+                  estimUV <- UV(X[index,], model, random, fixed = estim.fixed, times)
                   V <- estimUV$V
                   U <- estimUV$U
                   # estimation of the random effect phi
-                  index <- which((V != Inf) & (V != 0))
-                  Mindex <- length(index)
-                  V <- V[index]
-                  U <- U[index]
+                  index2 <- which((V != Inf) & (V != 0))
+                  
+                  V <- V[index2]
+                  U <- U[index2]
                   A <- U/V
                   estimphi <- A
+                  index <- index[index2]
                 }
                 
                 if (estim.fix == 0) {
@@ -729,18 +766,19 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                   omega <- res$omega
                   estim.fixed <- 0
                   
-                  U <- rep(0, M)
-                  V <- rep(0, M)
-                  estimUV <- UV(X, model, random, fixed = fixed, times)
+                  U <- rep(0, Mindex)
+                  V <- rep(0, Mindex)
+                  estimUV <- UV(X[index,], model, random, fixed = fixed, times)
                   V <- estimUV$V
                   U <- estimUV$U
                   # estimation of the random effect phi
-                  index <- which((V != Inf) & (V != 0))
-                  Mindex <- length(index)
-                  V <- V[index]
-                  U <- U[index]
+                  index2 <- which((V != Inf) & (V != 0))
+        
+                  V <- V[index2]
+                  U <- U[index2]
                   A <- U/V
                   estimphi <- A
+                  index <- index[index2]
                 }
                 
                 if (is.null(gridf) == 1) {
@@ -1659,14 +1697,14 @@ setMethod(f = "plot", signature = "Bayes.fit", definition = function(x, plot.pri
 #' @param ylim optional
 #' @param xlab optional, default 'times'
 #' @param ylab optional, default 'X'
-#' @param col color for the prediction intervals, default 2
+#' @param col color for the prediction intervals, default 3
 #' @param lwd linewidth for the prediction intervals, default 2 
 #' @param ... optional plot parameters
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
 setMethod(f = "plot", signature = "Bayes.pred", definition = function(x, newwindow = FALSE, plot.legend = TRUE, ylim, xlab = "times", 
-    ylab = "X", col = 2, lwd = 2, ...) {
+    ylab = "X", col = 3, lwd = 2, ...) {
     if (newwindow) {
         x11(width = 10)
     }
