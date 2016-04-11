@@ -106,8 +106,21 @@
 
 mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, invariant = 0, delta = T/N, 
     op.plot = 0, add.plot = FALSE) {
-    
-    if (missing(X0)&missing(invariant)){print('be careful, X0 and invariant are missing thus the initial value X0=0.01 is used')} 
+
+
+    ## local sde.sim to sink undesired output away into a tempfile
+    con <- file(tempfile(), open="w")
+    on.exit(close(con))
+    sde.sim <- function(...){
+        sink(con)
+        res <- sde::sde.sim(...)
+        sink(NULL)
+        res
+    }
+        
+    if (missing(X0) && missing(invariant)){
+        message('be careful, X0 and invariant are missing thus the initial value X0=0.01 is used')
+    } 
     
     delta <- T/N
     times <- seq(t0, T, length = N + 1)
@@ -270,7 +283,7 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
                 }
                 if (invariant == 1) {
                   if (fixed == 0) {
-                    print("no invariant distribution, please fix X0")
+                    message("no invariant distribution, please fix X0")
                   }
                   if (fixed != 0) {
                     X0 <- rgamma(1, 2 * fixed/sig^2, scale = sig^2/(2 * phi[j]))

@@ -40,17 +40,17 @@ UV <- function(X, model, random, fixed, times) {
         V <- as.list(1:M)
         b <- as.list(1:M)
         
-        Int1 <- apply(Xm * matrix(delta, M, length(delta)), 1, sum)  #Int1 <- apply(Xm * delta, 1, sum)
+        Int1 <- rowSums(Xm * matrix(delta, M, length(delta)))  #Int1 <- apply(Xm * delta, 1, sum)
         
         if (model == "OU") {
             
-            Int2 <- apply(Xm^2 * matrix(delta, M, length(delta)), 1, sum)
+            Int2 <- rowSums(Xm^2 * matrix(delta, M, length(delta)))
             # Int2 <- apply(Xm^2 * delta , 1, sum)
             
             for (j in 1:M) {
                 b[[j]] <- matrix(apply(matrix(X[j, ], 1, K), 2, bx, fixed, random), 2, K)  # 2xK  matrix
                 
-                U[, j] <- apply((b[[j]][, 1:(K - 1)] * matrix((X[j, 2:K] - X[j, 1:(K - 1)]), 2, K - 1, byrow = TRUE)), 1, sum)
+                U[, j] <- rowSums((b[[j]][, 1:(K - 1)] * matrix((X[j, 2:K] - X[j, 1:(K - 1)]), 2, K - 1, byrow = TRUE)))
                 
                 V[[j]] <- matrix(c(Tend, -Int1[j], -Int1[j], Int2[j]), 2, 2)
             }
@@ -59,7 +59,7 @@ UV <- function(X, model, random, fixed, times) {
         
         if (model == "CIR") {
             
-            Int3 <- apply(1/Xm * matrix(delta, M, length(delta)), 1, sum)
+            Int3 <- rowSums(1/Xm * matrix(delta, M, length(delta)))
             # Int3 <- apply(1/Xm * delta, 1, sum)
             b <- as.list(1:M)
             bsig <- as.list(1:M)
@@ -70,9 +70,8 @@ UV <- function(X, model, random, fixed, times) {
                 bsig[[j]] <- matrix(-1, 2, K)
                 bsig[[j]][1, ] <- 1/X[j, ]
                 
-                U[, j] = apply((bsig[[j]][, 1:(K - 1)] * matrix((X[j, 2:K] - X[j, 1:(K - 1)]), 2, K - 1, byrow = TRUE)), 1, sum)
-                
-                
+                U[, j] = rowSums((bsig[[j]][, 1:(K - 1)] * matrix((X[j, 2:K] - X[j, 1:(K - 1)]), 2, K - 1, byrow = TRUE)))
+
                 V[[j]] <- matrix(c(Int3[j], -Tend, -Tend, Int1[j]), 2, 2)
                 
             }
@@ -83,7 +82,7 @@ UV <- function(X, model, random, fixed, times) {
         U <- numeric(M)
         V <- numeric(M)
         
-        Int1 <- apply(Xm * matrix(delta, M, length(delta)), 1, sum)
+        Int1 <- rowSums(Xm * matrix(delta, M, length(delta)))
         # Int1 <- apply(Xm * delta, 1, sum)
         
         if (model == "OU") {
@@ -94,6 +93,8 @@ UV <- function(X, model, random, fixed, times) {
                 
                 V[j] = sum((bxj[j, 1:(K - 1)])^2 * delta)  #idem
             }
+            # U <- rowSums(bxj[, 1:(K - 1)] * (X[ , 2:K] - X[ , 1:(K - 1)]))   + fixed * Int1
+            # V <- bxj[ , 1:(K - 1)]^2 %*% delta
         }
         
         if (model == "CIR") {
@@ -111,7 +112,7 @@ UV <- function(X, model, random, fixed, times) {
         
         
         if (model == "OU") {
-            Int1 <- apply(Xm * matrix(delta, M, length(delta)), 1, sum)
+            Int1 <- rowSums(Xm * matrix(delta, M, length(delta)))
             # Int1 <- apply(Xm * delta, 1, sum)
             
             U <- (X[, K] - X[, 1]) + fixed * Int1
@@ -121,7 +122,7 @@ UV <- function(X, model, random, fixed, times) {
         
         if (model == "CIR") {
             
-            Int2 <- apply((1/Xm) * matrix(delta, M, length(delta)), 1, sum)
+            Int2 <- rowSums((1/Xm) * matrix(delta, M, length(delta)))
             # Int2 <- apply(1/Xm * delta, 1, sum)
             
             for (j in 1:M) {

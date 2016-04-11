@@ -13,7 +13,7 @@
 eigenvaluesV <- function(V) {
     
     eig <- matrix(0, length(V), 2)
-    for (j in 1:length(V)) {
+    for (j in seq_along(V)) {
         eig[j, ] <- c(eigen(V[[j]], symmetric = TRUE)$values)
     }
     return(eigenvalues = eig)

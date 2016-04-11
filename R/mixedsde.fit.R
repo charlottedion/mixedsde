@@ -98,8 +98,9 @@
 #' # trajectories with the value of the estimated random effect. Then it plots on the 
 #' # left graph the Mrep new trajectories \eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)),
 #' # k= 1, ... Mrep} with in red the true trajectory \eqn{(Xnumj(t1), ... Xnumj(tN))}. 
-#' #The right graph is a qq-plot of the quantiles of samples \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
-#' #for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function  
+#' #The right graph is a qq-plot of the quantiles of samples 
+#' # \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
+#' # for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function  
 #' # are: a matrix \code{Xnew} dimension Mrepx N+1, vector of quantiles \code{quantiles} length 
 #' # N and the number of the trajectory for the plot \code{plotnumj= numj} 
 #' # If numj is not precised by the user, then, this function simulates Mrep =100 (by default) 
@@ -149,7 +150,8 @@
 #' marg1_param <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_param,1,sum) 
 #' marg2_param <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_param,2,sum)
 #' f1 <-  (gridf1^(param[1]-1))*exp(-gridf1/param[2])/((param[2])^param[1]*gamma(param[1]))
-#' f2 <-  (gridf2^(-param[3]-1))*exp(-(1/param[4])*(1/gridf2))*((1/param[4])^param[3])*(1/gamma(param[3]))
+#' f2 <-  (gridf2^(-param[3]-1)) * exp(-(1/param[4])*(1/gridf2)) * 
+#'  ((1/param[4])^param[3])*(1/gamma(param[3]))
 #' par(mfrow=c(1,2))
 #' plot(gridf1,f1,type='l', lwd=1,  xlab='', ylab='')
 #' lines(gridf1,marg1_trunc,col='blue', lwd=2)
@@ -252,7 +254,7 @@
 #' 
 #' random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
 #' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random = random, 
-#'          fixed = fixed, density.phi = 'normal',param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
+#'         fixed = fixed, density.phi = 'normal',param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
 #' 
 #' prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, 
 #'          beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
@@ -335,8 +337,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             X <- t(X)
         } else {
             if (ncol(X) != length(times)) {
-                print("length of times has to be equal to the columns of X")
-                break
+                stop("length of times has to be equal to the columns of X")
             }
         }
     }
@@ -352,9 +353,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 Xold <- X
                 indices <- sapply(1:M, function(i) any(X[i, ] < 0))
                 X <- X[!indices, ]
-                print("attention: series")
-                print(which(indices))
-                print("are skipped for estimation because of negative values")
+                message("attention: series ", which(indices), " are skipped for estimation because of negative values")
             }
         }
         
@@ -373,7 +372,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             
             if (length(V) == 0) {
                 l.prior <- length(ind.4.prior)
-                while (length(V) == 0 & max(ind.4.prior) + l.prior - 1 < M) {
+                while (length(V) == 0 && max(ind.4.prior) + l.prior - 1 < M) {
                   ind.4.prior <- ind.4.prior + l.prior
                   X.4.prior <- X[ind.4.prior, ]
                   estimUV <- UV(X.4.prior, model, random = c(1, 2), fixed = 0, times)  # fixed is only used for random == 1
@@ -387,11 +386,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 }
             }
             if (length(V) == 0) {
-                print("please specify prior parameters")
+                message("please specify prior parameters")
                 prior <- list(m = c(1, 1), v = c(10, 10), alpha.omega = rep(3, length(random)), beta.omega = rep(10, length(random)) * 
                   2, alpha.sigma = 3, beta.sigma = 1 * 2)
-                print("parameters are set to:")
-                print(unlist(prior))
+                message("parameters are set to: ", unlist(prior))
             } else {
                 
                 A <- matrix(0, 2, Mindex)
@@ -411,9 +409,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                   3:K]))))
                 prior <- list(m = mu, v = abs(mu), alpha.omega = rep(3, length(random)), beta.omega = Omega[random] * 2, alpha.sigma = 3, 
                   beta.sigma = sigma2 * 2)
-                print("attention: series")
-                print(ind.4.prior)
-                print("are used for prior parameter calculation")
+                message("attention: series", ind.4.prior, "are used for prior parameter calculation")
             }
         } else {
             ind.4.prior <- M + 1
@@ -430,7 +426,8 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
         
         if (sum(random) > 2) {
           
-          if (missing(fixed)==0){print('the parameter fixed is not used becasue random = c(1,2)')} 
+          if (missing(fixed)==0){
+            message('the parameter fixed is not used because random = c(1,2)')} 
 
           # estimation of sigma^2
           if (model == "OU") {
@@ -445,10 +442,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
           }
           if (model == "CIR") {
             
-            index <- which(apply(X <= 0, 1, sum) == 0)
+            index <- which(rowSums(X <= 0) == 0)
             Mindex <- length(index)
             if (Mindex == 0) {
-              print("All the trajectories have non positive values the model CIR cannot be used ")
+              message("All the trajectories have non positive values the model CIR cannot be used")
               estimf <- 0
               estimphi <- 0
               bic <- 0 
@@ -457,7 +454,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
               mu <- 0 
               omega <- 0
               cutoff <- 0
-              sigma2<- 0 
+              sigma2 <- 0 
               estimf.trunc <- 0
               estimphi.trunc <- 0
               estim.fixed <- 0                   
@@ -522,7 +519,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     ]), min(gridf[2, ]), max(gridf[2, ])))$z
                 }
                 if (sum(cutoff) < 0.25 * Mindex2) {
-                  print("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
+                  message("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
                   estimf.trunc <- matrix(0, 2, length(gridf[1, ]))
                 }
                 
@@ -583,7 +580,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             index <- which(apply(X <= 0, 1, sum) == 0)
             Mindex <- length(index)
             if (Mindex == 0) {
-              print("All the trajectories have non positive values the model CIR cannot be used ")
+              message("All the trajectories have non positive values the model CIR cannot be used ")
               estimf <- 0
               estimphi <- 0
               bic <- 0 
@@ -609,7 +606,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
           if (estim.method == "nonparam") {     
               
                 if (estim.fix == 1) {
-                  print("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0")
+                  message("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0")
                 }
                 
                 if (estim.fix == 0) {
@@ -654,7 +651,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     estimphi.trunc <- A * cutoff
                     
                     if (sum(cutoff) < 0.25 * Mindex2) {
-                      print("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
+                      message("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
                     }
                     
                     test2 <- density(estimphi.trunc, from = min(gridf), bw = "ucv", to = max(gridf), n = length(gridf))
@@ -874,47 +871,56 @@ setClass(Class = "Bayes.pred", representation = representation(phi.pred = "matri
 #' @references 
 #' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
 #' 
-setGeneric("out", function(x) {
-    standardGeneric("out")
-})
 
-######## 
-#' Transfers the class object Freq.fit to a list
-#' 
-#' @description Method for the S4 class Freq.fit
-#' @param x Freq.fit class
-#' @references 
-#' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-#' 
-setMethod(f = "out", signature = "Freq.fit", definition = function(x) {
-    
-    return(list(gridf = x@gridf, mu = x@mu, omega = x@omega, cutoff = x@cutoff, sigma2 = x@sigma2, estimf.trunc = x@estimf.trunc, estimphi.trunc = x@estimphi.trunc, 
-        estimf = x@estimf, estimphi = x@estimphi, estim.fixed = x@estim.fixed, estim.fix = x@estim.fix, index = x@index, bic = x@bic, 
-        aic = x@aic))
-})
-######## 
-#' Transfers the class object Bayes.fit to a list
-#' 
-#' @description Method for the S4 class Bayes.fit
-#' @param x Bayes.fit class
-#' @references 
-#' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-#'
-setMethod(f = "out", signature = "Bayes.fit", definition = function(x) {
-    list(sigma2 = x@sigma2, mu = x@mu, omega = x@omega, alpha = x@alpha, beta = x@beta, random = x@random, model = x@model, prior = x@prior, 
-        burnIn = x@burnIn, thinning = x@thinning, times = x@times, X = x@X, ind.4.prior = x@ind.4.prior)
-})
-######## 
-#' Transfers the class object Bayes.pred to a list
-#' 
-#' @description Method for the S4 class Bayes.pred
-#' @param x Bayes.pred class
-#' @references 
-#' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-#'
-setMethod(f = "out", signature = "Bayes.pred", definition = function(x) {
-    list(phi.pred = x@phi.pred, Xpred = x@Xpred, qu.u = x@qu.u, qu.l = x@qu.l, coverage.rate = x@coverage.rate, estim = x@estim)
-})
+out <- function(x){
+    sN <- slotNames(x)
+    res <- lapply(sN, function(name) slot(x, name))
+    names(res) <- sN
+    res
+}
+
+
+#setGeneric("out", function(x) {
+#    standardGeneric("out")
+#})
+#
+######### 
+##' Transfers the class object Freq.fit to a list
+##' 
+##' @description Method for the S4 class Freq.fit
+##' @param x Freq.fit class
+##' @references 
+##' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
+##' 
+#setMethod(f = "out", signature = "Freq.fit", definition = function(x) {
+#    
+#    return(list(gridf = x@gridf, mu = x@mu, omega = x@omega, cutoff = x@cutoff, sigma2 = x@sigma2, estimf.trunc = x@estimf.trunc, estimphi.trunc = x@estimphi.trunc, 
+#        estimf = x@estimf, estimphi = x@estimphi, estim.fixed = x@estim.fixed, estim.fix = x@estim.fix, index = x@index, bic = x@bic, 
+#        aic = x@aic))
+#})
+######### 
+##' Transfers the class object Bayes.fit to a list
+##' 
+##' @description Method for the S4 class Bayes.fit
+##' @param x Bayes.fit class
+##' @references 
+##' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
+##'
+#setMethod(f = "out", signature = "Bayes.fit", definition = function(x) {
+#    list(sigma2 = x@sigma2, mu = x@mu, omega = x@omega, alpha = x@alpha, beta = x@beta, random = x@random, model = x@model, prior = x@prior, 
+#        burnIn = x@burnIn, thinning = x@thinning, times = x@times, X = x@X, ind.4.prior = x@ind.4.prior)
+#})
+######### 
+##' Transfers the class object Bayes.pred to a list
+##' 
+##' @description Method for the S4 class Bayes.pred
+##' @param x Bayes.pred class
+##' @references 
+##' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
+##'
+#setMethod(f = "out", signature = "Bayes.pred", definition = function(x) {
+#    list(phi.pred = x@phi.pred, Xpred = x@Xpred, qu.u = x@qu.u, qu.l = x@qu.l, coverage.rate = x@coverage.rate, estim = x@estim)
+#})
 
 
 ############################################################### SUMMARY
@@ -979,11 +985,17 @@ setMethod("summary", "Freq.fit", function(object) {
             if (sum(object@cutoff) != 0) {
                 print(matrix(c("sigma", sqrt(object@sigma2), "number of truncated values", length(object@cutoff) - sum(object@cutoff)), 
                   2, 2, byrow = TRUE))
-                print(matrix(c("empiric mean 1", mean(object@estimphi[1, ]), "empiric sd 1", sd(object@estimphi[1, ]), "kurtosis 1", kurtosis(object@estimphi[1, 
-                  ]), "skewness 1", skewness(object@estimphi[1, ])), 4, 2, byrow = TRUE))
+
+                cat("\nRandom effects:\n")
+                reff1 <- matrix(c(mean(object@estimphi[1, ]), sd(object@estimphi[1, ]), kurtosis(object@estimphi[1, ]),
+                    skewness(object@estimphi[1, ])), 4, 1, byrow = TRUE)
+                rownames(reff1) <- c("empiric mean 1", "empiric sd 1", "kurtosis 1", "skewness 1")
+                print(reff1, quote = FALSE, right = TRUE)
+
+
                 print(matrix(c("empiric mean 2", mean(object@estimphi[2, ]), "empiric sd 2", sd(object@estimphi[2, ]), "kurtosis 2", kurtosis(object@estimphi[2, 
-                  ]), "skewness 2", skewness(object@estimphi[2, ])), 4, 2, byrow = TRUE))
-                
+                  ]), "skewness 2", skewness(object@estimphi[2, ])), 4, 2, byrow = TRUE), quote = FALSE, right = TRUE)
+                return(invisible(list(reff1)))
             }
             if (sum(object@cutoff) == 0) {
                 print(matrix(c("sigma", sqrt(object@sigma2)), 1, 2, byrow = TRUE))
