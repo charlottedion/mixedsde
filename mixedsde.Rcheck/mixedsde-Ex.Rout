@@ -1,0 +1,2771 @@
+
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "mixedsde"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> options(pager = "console")
+> library('mixedsde')
+Loading required package: sde
+Warning: package 'sde' was built under R version 3.0.3
+Loading required package: MASS
+Loading required package: stats4
+Loading required package: fda
+Warning: package 'fda' was built under R version 3.0.3
+Loading required package: splines
+Loading required package: Matrix
+Loading required package: lattice
+Warning: package 'lattice' was built under R version 3.0.3
+
+Attaching package: 'fda'
+
+The following object is masked from 'package:graphics':
+
+    matplot
+
+Loading required package: zoo
+Warning: package 'zoo' was built under R version 3.0.3
+
+Attaching package: 'zoo'
+
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+
+sde 2.0.13
+Companion package to the book
+'Simulation and Inference for Stochastic Differential Equations With R Examples'
+Iacus, Springer NY, (2008)
+To check the errata corrige of the book, type vignette("sde.errata")
+Loading required package: moments
+Warning: package 'moments' was built under R version 3.0.3
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("mixedsde-package")
+> ### * mixedsde-package
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mixedsde-package
+> ### Title: Density estimation in mixed stochastic differential models
+> ### Aliases: mixedsde-package mixedsde
+> ### Keywords: package
+> 
+> ### ** Examples
+> 
+> # Frequentist estimation, two random effects
+> 
+> model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01
+> random <- c(1,2); density.phi <- 'gammainvgamma2'
+> param<- c(1.8, 0.8, 8, 0.05);
+> simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,
++               sigma=sigma, invariant = 1)
+> X <- simu$X ; phi <- simu$phi; times <- simu$times
+> estim.method<- 'nonparam'
+> estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
+> outputsNP <- out(estim)
+> plot(estim)
+> summary(estim)
+     [,1]                         [,2]                 
+[1,] "sigma"                      "0.00999536522048832"
+[2,] "number of truncated values" "2"                  
+
+Random effects:
+                   [,1]
+empiric mean 1 1.506891
+empiric sd 1   1.109058
+kurtosis 1     4.084928
+skewness 1     1.067237
+     [,1]           [,2]            
+[1,] empiric mean 2 3.38373477146286
+[2,]   empiric sd 2 1.53501538505589
+[3,]     kurtosis 2  5.8421923044885
+[4,]     skewness 2 1.46716083458581
+> print(estim)
+     [,1]                          [,2] 
+[1,] "number of used trajectories" "200"
+[2,] "number of truncated values"  "2"  
+> 
+> validation <- valid(estim, numj=floor(runif(1,1,M)))
+
+T set to = 10.000000
+> 
+> estim.method<-'paramML'
+> estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, 
++ 	estim.method = 'paramML')
+> outputsP <- out(estim_param)
+> plot(estim_param)
+> summary(estim_param)
+     [,1]  [,2]               
+[1,] "BIC" "-235.285401058201"
+[2,] "AIC" "-252.478670524393"
+     [,1]    [,2]                 
+[1,] "sigma" "0.00999536522048832"
+     [,1]             [,2]               
+[1,] "empiric mean 1" "1.50689118406836" 
+[2,] "MLE mean 1"     "1.24478975274812" 
+[3,] "empiric sd 1"   "1.1090575578384"  
+[4,] "MLE sd 1"       "0.782302604135449"
+[5,] "kurtosis 1"     "4.08492791373163" 
+[6,] "skewness 1"     "1.0672371742052"  
+     [,1]             [,2]              
+[1,] "empiric mean 2" "3.38373477146286"
+[2,] "MLE mean 2"     "2.93327905953785"
+[3,] "empiric sd 2"   "1.53501538505589"
+[4,] "MLE sd 2"       "1.13817334946468"
+[5,] "kurtosis 2"     "5.8421923044885" 
+[6,] "skewness 2"     "1.46716083458581"
+> 
+> test1 <- pred(estim, invariant = 1)
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+> test2 <- pred(estim_param, invariant = 1)
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+> 
+> cutoff <- outputsNP$cutoff
+> phihat <- outputsNP$estimphi
+> phihat_trunc <- outputsNP$estimphi_trunc
+> par(mfrow=c(1,2))
+> plot.ts(phi[1,], phihat[1,], xlim=c(0, 15), ylim=c(0,15), pch=18); abline(0,1)
+> points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20), pch=18, col='red')
+> abline(0,1)
+> plot.ts(phi[2,], phihat[2,], xlim=c(0, 15), ylim=c(0,15),pch=18); abline(0,1)
+> points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20), pch=18, col='red')
+> abline(0,1)
+> 
+> 
+> 
+> # Parametric Bayesian estimation one random effect
+> 
+> model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
+> M <- 50 ; T <- 1; N <- 100
+> density.phi <- 'normal'; param <- c(3, 0.5)
+> 
+> simu <- mixedsde.sim(M, T = T, N = N, model= model, random = random, fixed = fixed, 
++       density.phi= density.phi, param= param, sigma= sigma, X0 = 0)
+> X <- simu$X; phi <- simu$phi; times <- simu$times
+> plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
+> 
+> estim_Bayes_withoutprior <- mixedsde.fit(times, X= X, model = model, random = random, 
++             estim.method = 'paramBayes', nMCMC = 100)  # nMCMC should be much larger
+attention: series 12345 are used for prior parameter calculation
+> plot(estim_Bayes_withoutprior)
+> 
+> prior <- list(m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, 
++                 beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+> estim_Bayes <- mixedsde.fit(times, X = X, model = model, random = random, 
++               estim.method = 'paramBayes', prior = prior, nMCMC = 100)
+> 
+> plot(estim_Bayes)
+> outputBayes <- out(estim_Bayes)
+> summary(outputBayes)
+            Length Class  Mode     
+sigma2       100   -none- numeric  
+mu           100   -none- numeric  
+omega        100   -none- numeric  
+alpha       5000   -none- numeric  
+beta         100   -none- numeric  
+random         1   -none- numeric  
+burnIn         1   -none- numeric  
+thinning       1   -none- numeric  
+model          1   -none- character
+prior          6   -none- list     
+times        101   -none- numeric  
+X           5050   -none- numeric  
+ind.4.prior    1   -none- numeric  
+> (results_Bayes <- summary(estim_Bayes))
+$sigma2.mean
+[1] 0.009867201
+
+$sigma2.cred_int
+       2.5%       97.5% 
+0.009635331 0.010103634 
+
+$mu.mean
+[1] 3.007519
+
+$mu.cred_int
+    2.5%    97.5% 
+2.885726 3.109312 
+
+$omega.mean
+[1] 0.182678
+
+$omega.cred_int
+    2.5%    97.5% 
+0.130006 0.257465 
+
+$alpha.mean
+ [1] 3.212693 3.760897 2.580084 3.307684 3.682057 3.587967 3.456886 3.302999
+ [9] 2.343818 3.153565 3.183835 2.954149 2.951705 3.093577 3.334218 2.719384
+[17] 2.935932 3.136327 3.110176 3.063905 3.052640 2.762840 3.425479 2.591557
+[25] 2.676944 2.887279 2.848944 2.830433 3.420358 2.827053 3.250346 2.317587
+[33] 2.901451 3.480468 3.173509 2.529309 3.553915 2.794478 3.089316 3.266811
+[41] 3.239077 2.906114 2.649576 2.533512 3.212273 2.946282 1.981118 2.399478
+[49] 3.153787 2.391988
+
+$alpha.cred_int
+          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
+2.5%  3.103732 3.619134 2.423091 3.219676 3.532987 3.388400 3.313402 3.154239
+97.5% 3.294890 3.932972 2.766907 3.429121 3.901933 3.715136 3.699543 3.431901
+          [,9]    [,10]    [,11]    [,12]    [,13]    [,14]    [,15]    [,16]
+2.5%  2.159423 2.990782 2.931771 2.803483 2.784587 2.904765 3.185146 2.557273
+97.5% 2.559759 3.275689 3.334525 3.063505 3.038743 3.237061 3.457321 2.864545
+         [,17]    [,18]    [,19]    [,20]    [,21]    [,22]    [,23]    [,24]
+2.5%  2.804726 3.029680 2.952958 2.923351 2.934478 2.669779 3.209345 2.456545
+97.5% 3.087465 3.250468 3.269380 3.196297 3.156062 2.865522 3.627711 2.757164
+         [,25]    [,26]    [,27]    [,28]    [,29]    [,30]    [,31]    [,32]
+2.5%  2.587347 2.781549 2.746025 2.739811 3.260698 2.706693 3.066554 2.128545
+97.5% 2.811849 2.999345 3.000438 2.878282 3.560252 2.899134 3.455598 2.500741
+         [,33]    [,34]    [,35]    [,36]    [,37]    [,38]    [,39]    [,40]
+2.5%  2.788599 3.276332 3.021518 2.352353 3.409920 2.629750 2.924994 3.157920
+97.5% 3.056853 3.618834 3.365671 2.699513 3.792214 3.021143 3.184849 3.426971
+         [,41]    [,42]    [,43]    [,44]    [,45]    [,46]    [,47]    [,48]
+2.5%  3.103434 2.724904 2.495967 2.340406 3.091555 2.796611 1.783123 2.303134
+97.5% 3.408470 3.083505 2.779942 2.720241 3.311639 3.073779 2.232177 2.474820
+         [,49]    [,50]
+2.5%  3.032844 2.251311
+97.5% 3.341279 2.537886
+
+$beta.mean
+[1] 5.024052
+
+$beta.cred_int
+    2.5%    97.5% 
+5.006320 5.033854 
+
+> plot(estim_Bayes, style = 'cred.int', true.phi = phi)
+> plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
+> 
+> plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
+> 
+> print(estim_Bayes)
+
+acceptance rates for random effect:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.5100  0.5825  0.6000  0.6090  0.6400  0.6900 
+
+acceptance rate for fixed effect: 0.26> 
+> pred.result <- pred(estim_Bayes)
+> summary(out(pred.result))
+              Length Class  Mode   
+phi.pred       30    -none- numeric
+Xpred           0    -none- numeric
+coverage.rate 100    -none- numeric
+qu.u          100    -none- numeric
+qu.l          100    -none- numeric
+estim          13    -none- list   
+> plot(pred.result)
+> 
+> pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
+> 
+> validbayes <- valid(estim_Bayes, numj = 1)
+> 
+> 
+> 
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> cleanEx()
+> nameEx("mixedsde.fit")
+> ### * mixedsde.fit
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mixedsde.fit
+> ### Title: Estimation Of The Random Effects In Mixed Stochastic
+> ###   Differential Equations
+> ### Aliases: mixedsde.fit
+> ### Keywords: estimation
+> 
+> ### ** Examples
+> 
+> # Frequentist estimation
+> # Two random effects
+> model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ;
+> random <- c(1,2); density.phi <- 'gammainvgamma2'; param<- c(1.8, 0.8, 8, 0.05);
+> simu <- mixedsde.sim(M=M, T=T, N=N, model=model,random=random, density.phi=density.phi,
++                param=param, sigma=sigma, invariant = 1)
+> X <- simu$X ; phi <- simu$phi; times <- simu$times
+> estim.method<- 'nonparam'
+> estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
+> #To stock the results of the function, use method \code{out}
+> #which put the outputs of the function on a list according to the frequentist or
+> # Bayesian approach.
+> outputsNP <- out(estim)
+> plot(estim)
+> # It represents the bidimensional density, the histogram of the first estimated random
+> # effect \eqn{\alpha} with the  marginal of \eqn{\hat{f}} from the first coordonate which
+> # estimates  the density of \eqn{\alpha}. And the same for the second random effect
+> # \eqn{\beta}. More, it plots a qq-plot for the sample of estimator of the random effects
+> # compared with the quantiles of a Gaussian sample with the same mean and standard deviation.
+> 
+> summary(estim)
+     [,1]                         [,2]                 
+[1,] "sigma"                      "0.00999536522048832"
+[2,] "number of truncated values" "2"                  
+
+Random effects:
+                   [,1]
+empiric mean 1 1.506891
+empiric sd 1   1.109058
+kurtosis 1     4.084928
+skewness 1     1.067237
+     [,1]           [,2]            
+[1,] empiric mean 2 3.38373477146286
+[2,]   empiric sd 2 1.53501538505589
+[3,]     kurtosis 2  5.8421923044885
+[4,]     skewness 2 1.46716083458581
+> print(estim)
+     [,1]                          [,2] 
+[1,] "number of used trajectories" "200"
+[2,] "number of truncated values"  "2"  
+> # Validation
+> # If numj is fixed by the user: this function simulates Mrep =100 (by default) new
+> # trajectories with the value of the estimated random effect. Then it plots on the
+> # left graph the Mrep new trajectories \eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)),
+> # k= 1, ... Mrep} with in red the true trajectory \eqn{(Xnumj(t1), ... Xnumj(tN))}.
+> #The right graph is a qq-plot of the quantiles of samples
+> # \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
+> # for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function
+> # are: a matrix \code{Xnew} dimension Mrepx N+1, vector of quantiles \code{quantiles} length
+> # N and the number of the trajectory for the plot \code{plotnumj= numj}
+> # If numj is not precised by the user, then, this function simulates Mrep =100 (by default)
+> # new trajectories for each estimated random effect. Then left graph is a plot of the Mrep
+> # new trajectories \eqn{(Xj^{k}(t1), ... Xj^{k}(tN)), k= 1, ... Mrep}
+> #for a randomly chosen number j with in red the true trajectory \eqn{(Xj(t1), ... Xj(tN))}.
+> #The right graph is a qq-plot of the quantiles of samples \eqn{(Xj^{1}(ti), ... Xj^{Mrep}(ti))},
+> # for the same j and for each time \eqn{ti}. The outputs of the function are: a list of
+> # matrices \code{Xnew} length M, matrix of quantiles \code{quantiles} dimension MxN
+> # and the number of the trajectory for the plot \code{plotnumj}
+> 
+> validation <- valid(estim,  numj=floor(runif(1,1,M)))
+
+T set to = 10.000000
+> 
+> # Parametric estimation
+> estim.method<-'paramML'
+> estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random,
++            estim.method = 'paramML')
+> outputsP <- out(estim_param)
+> plot(estim_param)
+> summary(estim_param)
+     [,1]  [,2]               
+[1,] "BIC" "-235.285401058201"
+[2,] "AIC" "-252.478670524393"
+     [,1]    [,2]                 
+[1,] "sigma" "0.00999536522048832"
+     [,1]             [,2]               
+[1,] "empiric mean 1" "1.50689118406836" 
+[2,] "MLE mean 1"     "1.24478975274812" 
+[3,] "empiric sd 1"   "1.1090575578384"  
+[4,] "MLE sd 1"       "0.782302604135449"
+[5,] "kurtosis 1"     "4.08492791373163" 
+[6,] "skewness 1"     "1.0672371742052"  
+     [,1]             [,2]              
+[1,] "empiric mean 2" "3.38373477146286"
+[2,] "MLE mean 2"     "2.93327905953785"
+[3,] "empiric sd 2"   "1.53501538505589"
+[4,] "MLE sd 2"       "1.13817334946468"
+[5,] "kurtosis 2"     "5.8421923044885" 
+[6,] "skewness 2"     "1.46716083458581"
+> 
+> # Prediction for the frequentist approach
+> # This function uses the estimation of the density function to simulate a
+> # new sample of random effects according to this density. If \code{plot.pred =1} (default)
+> # is plots on the top the predictive random effects versus the estimated random effects
+> # from the data. On the bottom, the left graph is the true trajectories, on the right
+> #the predictive trajectories and the empiric prediciton intervals at level
+> # \code{level=0.05} (defaut). The function return on a list the prediction of phi
+> # \code{phipred}, the prediction of X \code{Xpred}, and the indexes of the
+> # corresponding true trajectories \code{indexpred}
+> 
+> test1 <- pred(estim,  invariant  = 1)
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+> test2 <- pred(estim_param, invariant  = 1)
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+
+T set to = 10.000000
+> 
+> # More graph
+> fhat <- outputsNP$estimf
+> fhat_trunc <- outputsNP$estimf.trunc
+> fhat_param <- outputsP$estimf
+> 
+> gridf <- outputsNP$gridf; gridf1 <- gridf[1,]; gridf2 <- gridf[2,]
+> 
+> marg1 <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat,1,sum)
+> marg1_trunc <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_trunc,1,sum)
+> marg2 <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat,2,sum)
+> marg2_trunc <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_trunc,2,sum)
+> 
+> marg1_param <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_param,1,sum)
+> marg2_param <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_param,2,sum)
+> f1 <-  (gridf1^(param[1]-1))*exp(-gridf1/param[2])/((param[2])^param[1]*gamma(param[1]))
+> f2 <-  (gridf2^(-param[3]-1)) * exp(-(1/param[4])*(1/gridf2)) *
++  ((1/param[4])^param[3])*(1/gamma(param[3]))
+> par(mfrow=c(1,2))
+> plot(gridf1,f1,type='l', lwd=1,  xlab='', ylab='')
+> lines(gridf1,marg1_trunc,col='blue', lwd=2)
+> lines(gridf1,marg1,col='blue', lwd=2, lty=2)
+> lines(gridf1,marg1_param,col='red', lwd=2, lty=2)
+> plot(gridf2,f2,type='l', lwd=1, xlab='', ylab='')
+> lines(gridf2,marg2_trunc,col='blue', lwd=2)
+> lines(gridf2,marg2,col='blue', lwd=2, lty=2)
+> lines(gridf2,marg2_param,col='red', lwd=2, lty=2)
+> 
+> cutoff <- outputsNP$cutoff
+> phihat <- outputsNP$estimphi
+> phihat_trunc <- outputsNP$estimphi.trunc
+> par(mfrow=c(1,2))
+> plot.ts(phi[1,], phihat[1,], xlim=c(0, 15), ylim=c(0,15), pch=18); abline(0,1)
+> points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red');
+> abline(0,1)
+> plot.ts(phi[2,], phihat[2,], xlim=c(0, 15), ylim=c(0,15),pch=18); abline(0,1)
+> points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red');
+> abline(0,1)
+> 
+> # one random effect:
+> 
+> model <-'OU'
+> random <- 1
+> M <- 80; T <- 100  ; N <- 2000
+> sigma <- 0.1 ; X0 <- 0
+> density.phi <- 'normal'
+> fixed <- 2 ; param <- c(1, 0.2)
+> #-------------------
+> #- simulation
+> simu <- mixedsde.sim(M,T=T,N=N,model=model,random=random, fixed=fixed,density.phi=density.phi,
++                param=param, sigma=sigma, X0=X0)
+> X <- simu$X
+> phi <- simu$phi
+> times <-simu$times
+> plot(times, X[10,], type='l')
+> 
+> #- parametric estimation
+> estim.method<-'paramML'
+> estim_param <- mixedsde.fit(times, X=X, model=model, random=random, estim.fix= 1,
++                estim.method=estim.method)
+> outputsP <- out(estim_param)
+> estim.fixed <- outputsP$estim.fixed #to compare with fixed
+> #or
+> estim_param2 <- mixedsde.fit(times, X=X, model=model, random=random, fixed = fixed,
++              estim.method=estim.method)
+> outputsP2 <- out(estim_param2)
+> #- nonparametric estimation
+> estim.method <- 'nonparam'
+> estim <- mixedsde.fit(times, X, model=model, random=random, fixed = fixed,
++            estim.method=estim.method)
+Warning in bw.ucv(x) : minimum occurred at one end of the range
+> outputsNP <- out(estim)
+> 
+> plot(estim)
+> print(estim)
+[1] "number of used trajectories" "80"                         
+> summary(estim)
+     [,1]       [,2]                
+[1,] "kurtosis" "2.52687738885474"  
+[2,] "skewness" "-0.255900331835774"
+     [,1]           [,2]                
+[1,] "sigma"        "0.0980469794830501"
+[2,] "empiric mean" "1.00370552511643"  
+[3,] "empiric sd"   "0.152879603960406" 
+> 
+> plot(estim_param)
+> print(estim_param)
+[1] "number of used trajectories" "80"                         
+> summary(estim_param)
+     [,1]  [,2]               
+[1,] "BIC" "-9218.77998521863"
+[2,] "AIC" "-9236.52746745723"
+     [,1]       [,2]                
+[1,] "kurtosis" "2.52676961122205"  
+[2,] "skewness" "-0.255764017968775"
+     [,1]           [,2]                
+[1,] "sigma"        "0.0980469794830501"
+[2,] "estim.fixed"  "1.90736472685018"  
+[3,] "empiric mean" "0.957448650734141" 
+[4,] "MLE mean"     "0.957661583603442" 
+[5,] "empiric sd"   "0.145835262790594" 
+[6,] "MLE sd"       "0.144602203512835" 
+> 
+> valid1 <- valid(estim,  numj=floor(runif(1,1,M)))
+
+T set to = 100.000000
+> test1 <- pred(estim )
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+> test2 <- pred(estim_param)
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+
+T set to = 100.000000
+> 
+> 
+> # Parametric Bayesian estimation
+> # one random effect
+> random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
+> sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random = random, fixed = fixed,
++        density.phi = 'normal',param= param, sigma= sigma, X0 = 0, op.plot = 1)
+> 
+> # here: only 100 iterations for example - should be much more!
+> estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
++              random, estim.method = 'paramBayes',  nMCMC = 100)
+attention: series 12345 are used for prior parameter calculation
+> prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11,
++             beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+> estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random,
++            estim.method = 'paramBayes', prior = prior, nMCMC = 100)
+> 
+> validation <- valid(estim_Bayes, numj = 10)
+> plot(estim_Bayes)
+> outputBayes <- out(estim_Bayes)
+> summary(outputBayes)
+            Length Class  Mode     
+sigma2       100   -none- numeric  
+mu           100   -none- numeric  
+omega        100   -none- numeric  
+alpha       5000   -none- numeric  
+beta         100   -none- numeric  
+random         1   -none- numeric  
+burnIn         1   -none- numeric  
+thinning       1   -none- numeric  
+model          1   -none- character
+prior          6   -none- list     
+times        101   -none- numeric  
+X           5050   -none- numeric  
+ind.4.prior    1   -none- numeric  
+> (results_Bayes <- summary(estim_Bayes))
+$sigma2.mean
+[1] 0.01019579
+
+$sigma2.cred_int
+       2.5%       97.5% 
+0.009922752 0.010421259 
+
+$mu.mean
+[1] 2.913952
+
+$mu.cred_int
+    2.5%    97.5% 
+2.819284 3.106123 
+
+$omega.mean
+[1] 0.2297009
+
+$omega.cred_int
+     2.5%     97.5% 
+0.1843797 0.2836810 
+
+$alpha.mean
+ [1] 4.002967 2.884926 2.182391 2.837977 2.990177 2.898530 3.297338 3.298427
+ [9] 2.696127 3.511840 3.494932 2.630317 1.845419 3.149762 2.967543 2.113137
+[17] 3.958397 2.615888 2.701836 2.469565 2.984885 2.790381 2.944323 2.556393
+[25] 2.764294 3.061141 2.207077 3.279167 3.631396 2.473014 2.212442 3.412408
+[33] 3.293667 3.001676 2.922744 3.485904 2.414977 3.071744 2.587162 2.583242
+[41] 2.555247 3.116819 3.229942 3.425501 2.841281 3.396431 3.525935 3.355749
+[49] 2.645549 2.533428
+
+$alpha.cred_int
+          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
+2.5%  3.862831 2.779301 2.095127 2.731510 2.902570 2.803028 3.249071 3.244592
+97.5% 4.094332 3.020473 2.359204 2.979012 3.089428 3.023402 3.463474 3.393659
+          [,9]    [,10]    [,11]    [,12]    [,13]    [,14]    [,15]    [,16]
+2.5%  2.583601 3.384403 3.388296 2.500022 1.768118 3.021131 2.839692 1.983636
+97.5% 2.754467 3.697963 3.615683 2.671761 1.912153 3.337843 3.016193 2.248894
+         [,17]    [,18]    [,19]    [,20]    [,21]    [,22]    [,23]    [,24]
+2.5%  3.816137 2.510535 2.631470 2.374111 2.867836 2.659332 2.760687 2.498090
+97.5% 4.131121 2.717644 2.769366 2.565231 3.065293 2.914091 3.089624 2.690788
+         [,25]    [,26]    [,27]    [,28]    [,29]    [,30]    [,31]    [,32]
+2.5%  2.650143 3.013133 2.125442 3.203401 3.537535 2.395995 2.150098 3.291949
+97.5% 2.834144 3.134166 2.330685 3.422038 3.733724 2.535922 2.350586 3.480638
+         [,33]    [,34]    [,35]    [,36]    [,37]    [,38]    [,39]    [,40]
+2.5%  3.224276 2.922845 2.755128 3.388321 2.381462 2.968067 2.544895 2.519645
+97.5% 3.343512 3.082910 3.092635 3.607091 2.465482 3.185394 2.715474 2.714971
+         [,41]    [,42]    [,43]    [,44]    [,45]    [,46]    [,47]    [,48]
+2.5%  2.481860 3.041747 3.107372 3.364054 2.795327 3.305084 3.418891 3.250748
+97.5% 2.693853 3.196747 3.352295 3.524240 2.921097 3.539732 3.631579 3.498110
+         [,49]    [,50]
+2.5%  2.566406 2.336842
+97.5% 2.718351 2.674851
+
+$beta.mean
+[1] 4.938346
+
+$beta.cred_int
+    2.5%    97.5% 
+4.922395 4.978980 
+
+> plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi)
+> plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
+> 
+> plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
+> 
+> print(estim_Bayes)
+
+acceptance rates for random effect:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.4800  0.5925  0.6200  0.6178  0.6400  0.7100 
+
+acceptance rate for fixed effect: 0.2> 
+> pred.result <- pred(estim_Bayes)
+> summary(out(pred.result))
+              Length Class  Mode   
+phi.pred       10    -none- numeric
+Xpred           0    -none- numeric
+coverage.rate 100    -none- numeric
+qu.u          100    -none- numeric
+qu.l          100    -none- numeric
+estim          13    -none- list   
+> plot(pred.result)
+> 
+> pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
+> 
+> # second example
+> ## Not run: 
+> ##D random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
+> ##D sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random = random,
+> ##D         fixed = fixed, density.phi = 'normal',param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
+> ##D 
+> ##D prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11,
+> ##D          beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+> ##D 
+> ##D estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random,
+> ##D                  estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
+> ##D plot(estim_Bayes)
+> ##D outputBayes <- out(estim_Bayes)
+> ##D summary(outputBayes)
+> ##D (results_Bayes <- summary(estim_Bayes))
+> ##D plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
+> ##D 
+> ##D print(estim_Bayes)
+> ##D pred.result <- pred(estim_Bayes)
+> ##D summary(out(pred.result))
+> ##D plot(pred.result)
+> ## End(Not run)
+> 
+> # for two random effects
+> random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
+> 
+> sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random,
++        density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
+> 
+> # here: only 200 iterations for example - should be much more!
+> estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
++              random = random, estim.method = 'paramBayes', nMCMC = 100)
+attention: series 123 are used for prior parameter calculation
+> plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
+> 
+> prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11),
++            beta.omega = param[c(2,4)]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+> estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
++                 estim.method = 'paramBayes', prior = prior, nMCMC = 100)
+> outputBayes <- out(estim_Bayes)
+> summary(outputBayes)
+            Length Class  Mode     
+sigma2       100   -none- numeric  
+mu           200   -none- numeric  
+omega        200   -none- numeric  
+alpha       2000   -none- numeric  
+beta        2000   -none- numeric  
+random         2   -none- numeric  
+burnIn         1   -none- numeric  
+thinning       1   -none- numeric  
+model          1   -none- character
+prior          6   -none- list     
+times        101   -none- numeric  
+X           2020   -none- numeric  
+ind.4.prior    1   -none- numeric  
+> summary(estim_Bayes)
+$sigma2.mean
+[1] 0.009877587
+
+$sigma2.cred_int
+       2.5%       97.5% 
+0.009351211 0.010411381 
+
+$mu.mean
+[1] 3.108509 5.182591
+
+$mu.cred_int
+          [,1]     [,2]
+2.5%  2.893174 5.063193
+97.5% 3.272905 5.303974
+
+$omega.mean
+[1] 0.1810295 0.0410094
+
+$omega.cred_int
+           [,1]       [,2]
+2.5%  0.1138633 0.02550822
+97.5% 0.3151395 0.07105107
+
+$alpha.mean
+ [1] 3.115530 3.356190 3.402347 2.610095 3.188533 2.721889 2.732805 3.046407
+ [9] 2.790601 3.161024 3.269212 2.780658 3.049352 3.130201 3.752022 3.180765
+[17] 2.853443 2.921597 3.525456 3.379445
+
+$alpha.cred_int
+          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
+2.5%  2.767562 3.079497 3.173865 2.490801 2.981843 2.477292 2.528832 2.761353
+97.5% 3.329013 3.625138 3.653063 2.809598 3.412411 2.966244 3.021563 3.285475
+          [,9]    [,10]    [,11]    [,12]    [,13]    [,14]    [,15]    [,16]
+2.5%  2.572384 3.004575 2.982941 2.605466 2.786602 2.873050 3.463403 2.982822
+97.5% 3.036799 3.339855 3.489682 3.018484 3.332728 3.395873 4.023034 3.377591
+         [,17]    [,18]    [,19]    [,20]
+2.5%  2.389933 2.709569 3.178729 3.151391
+97.5% 3.079481 3.097722 3.777928 3.534676
+
+$beta.mean
+ [1] 5.079080 5.092968 5.215424 5.215960 5.138513 5.258193 5.204035 5.244534
+ [9] 5.129495 5.105085 5.163625 5.286618 5.351820 5.274795 5.117876 5.163232
+[17] 5.129981 5.179253 5.065960 5.196113
+
+$beta.cred_int
+          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
+2.5%  4.626735 4.665249 4.837490 4.988260 4.868209 4.840712 4.934785 4.870125
+97.5% 5.449799 5.497194 5.536178 5.518825 5.427244 5.640353 5.566585 5.580184
+          [,9]    [,10]    [,11]    [,12]    [,13]    [,14]    [,15]    [,16]
+2.5%  4.809747 4.861462 4.790889 4.981228 5.030032 4.981562 4.718510 4.933445
+97.5% 5.358342 5.341320 5.481052 5.524529 5.741420 5.672942 5.600845 5.605468
+         [,17]    [,18]    [,19]    [,20]
+2.5%  4.644123 4.909788 4.495259 4.921181
+97.5% 5.465173 5.437852 5.556445 5.458866
+
+> plot(estim_Bayes)
+> plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi)
+> print(estim_Bayes)
+
+acceptance rate for phi:     alpha            beta      
+ Min.   :49.00   Min.   :31.00  
+ 1st Qu.:58.00   1st Qu.:43.00  
+ Median :60.50   Median :46.50  
+ Mean   :59.95   Mean   :45.55  
+ 3rd Qu.:64.00   3rd Qu.:48.25  
+ Max.   :68.00   Max.   :54.00  
+> 
+> pred.result <- pred(estim_Bayes)
+> 
+> 
+> # invariant case
+> 
+> random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
+> sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random = random, fixed = fixed,
++            density.phi = 'normal',param = param, sigma = sigma, invariant = 1, op.plot = 1)
+> 
+> prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11,
++        beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
+> estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random,
++        estim.method = 'paramBayes', prior = prior, nMCMC = 100)
+> plot(estim_Bayes)
+> 
+> pred.result <- pred(estim_Bayes, invariant = 1)
+> pred.result.traj <- pred(estim_Bayes, invariant = 1, trajectories = TRUE)
+> 
+> 
+> 
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> cleanEx()
+> nameEx("mixedsde.sim")
+> ### * mixedsde.sim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mixedsde.sim
+> ### Title: Simulation Of A Mixed Stochastic Differential Equation
+> ### Aliases: mixedsde.sim
+> 
+> ### ** Examples
+> 
+> #Simulation of 5 trajectories of the OU SDE with random =1, and a Gamma distribution.
+> 
+> simuOU <- mixedsde.sim(M=5, T=10,N=1000,model='OU', random=1,fixed=0.5,
++ density.phi='gamma', param=c(1.8, 0.8) , sigma=0.1,op.plot=1)
+be careful, X0 and invariant are missing thus the initial value X0=0.01 is used
+> X <- simuOU$X ;
+> phi <- simuOU$phi
+> hist(phi)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mixture.sim")
+> ### * mixture.sim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mixture.sim
+> ### Title: Simulation Of A Mixture Of Two Normal Or Gamma Distributions
+> ### Aliases: mixture.sim
+> 
+> ### ** Examples
+> 
+> density.phi <- 'mixture.gamma'
+> param <- c(0.2,1.8,0.5,5.05,1); M <- 200
+> gridf <- seq(0, 8, length = 200)
+> f <- param[1] * 1/gamma(param[2]) * (gridf)^(param[2]-1) *
++            exp(-(gridf) / param[3]) / param[3]^param[2] +
++ 	(1-param[1]) * 1/gamma(param[4]) * (gridf)^(param[4]-1) *
++ 	    exp(-(gridf) / param[5]) / param[5]^param[4]
+> Y <- mixture.sim(M, density.phi, param)
+> hist(Y)
+> lines(gridf, f)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("neuronal.data")
+> ### * neuronal.data
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: neuronal.data
+> ### Title: Trajectories Interspike Of A Single Neuron Of A Ginea Pig
+> ### Aliases: neuronal.data
+> ### Keywords: data
+> 
+> ### ** Examples
+> 
+> require(plot3D)
+Loading required package: plot3D
+Warning: package 'plot3D' was built under R version 3.0.3
+> model <- "OU"
+> random <- c(1,2)
+> M <- 240     # number of trajectories, number of rows of the matrix of the data
+> T <- 0.3     # width of the interval of observation 
+> delta <- 0.00015   # step time
+> N <- T/delta  # number of points in the time interval 2000
+> # load ("data/neuronal.data.rda")
+> data(neuronal.data)
+> X <- neuronal.data[[1]]
+> times <- neuronal.data[[2]]
+> 
+> #plot(times,X[10, ], type = 'l', xlab = 'time', ylab='', col = 'blue', ylim=c(0,0.016))
+> 
+> random <- c(1,2)
+> 
+> #- nonparametric estimation
+> estim.method <- 'nonparam'
+> estim <- mixedsde.fit(times=times, X=X, model=model, random=random,  estim.method='nonparam') 
+warning: more than 75 percents of the estimated values of the random effect have been put to zero
+> 
+> #- parametric estimation   
+> estim.method<-'paramML'
+> estim_param <- mixedsde.fit(times=times, X=X, model=model, random= random, estim.method= 'paramML')
+> 
+> #- implemented methods
+> # plot(estim); 
+> print(estim); #valid(estim)
+[1] "number of used trajectories" "240"                        
+> print(estim_param); #plot(estim_param);  valid(estim_param)
+[1] "number of used trajectories" "240"                        
+> 
+> #test1 <- pred(estim, X,  estim.method= 'nonparam',times = times)
+> #test2 <- pred(estim_param, X,estim.method= 'paramML', times = times) 
+> 
+> #- Other possible plots
+> par(mfrow=c(1,2))
+> 
+> outputsNP <-  out(estim)
+> outputsP <- out(estim_param)
+> fhat <- outputsNP$estimf
+> fhat_param <- outputsP$estimf 
+> 
+>  gridf <- outputsNP$gridf
+>  gridf1 <- gridf[1,]; gridf2 <- gridf[2,]
+>  marg1 <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat,1,sum) #with cutoff
+>  marg2 <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat,2,sum)
+>  marg1_param <- ((max(gridf2)-min(gridf2))/length(gridf2))*apply(fhat_param,1,sum) 
+>  marg2_param <- ((max(gridf1)-min(gridf1))/length(gridf1))*apply(fhat_param,2,sum)
+> 
+>  plot(gridf1,marg1,type='l', col='red')
+>  lines(gridf1,marg1_param, lwd=2, col='red')
+>  plot(gridf2, marg2,type='l', col='red')
+>  lines(gridf2,marg2_param, lwd=2, col='red')
+> 
+> 
+> # Bayesian
+> ind <- seq(1, 2000, by = 10)
+> estim_Bayes <- mixedsde.fit(times[ind], X[,ind], model = "OU", random = 1, 
++               estim.method = "paramBayes", nMCMC = 1000) 
+attention: series 123456789101112131415161718192021222324 are used for prior parameter calculation
+1000 iterations done
+> plot(estim_Bayes)
+> pred_Bayes1 <- pred(estim_Bayes)
+> pred_Bayes2 <- pred(estim_Bayes, trajectories = TRUE)
+> 
+> 
+> 
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> ### * <FOOTER>
+> ###
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  604.24 3.1 607.59 NA NA 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

@@ -86,13 +86,13 @@ X <- simu$X; phi <- simu$phi; times <- simu$times
 plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
 
 estim_Bayes_withoutprior <- mixedsde.fit(times, X= X, model = model, random = random, 
-            estim.method = 'paramBayes', nMCMC = 1000)
+            estim.method = 'paramBayes', nMCMC = 100)  # nMCMC should be much larger
 plot(estim_Bayes_withoutprior)
 
 prior <- list(m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, 
                 beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 estim_Bayes <- mixedsde.fit(times, X = X, model = model, random = random, 
-              estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
+              estim.method = 'paramBayes', prior = prior, nMCMC = 100)
 
 plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
@@ -111,5 +111,5 @@ plot(pred.result)
 
 pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
-validbayes <- valid(estim_Bayes)
+validbayes <- valid(estim_Bayes, numj = 1)
 }

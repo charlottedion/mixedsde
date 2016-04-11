@@ -1,0 +1,26 @@
+* installing *source* package 'mixedsde' ...
+** R
+** data
+** preparing package for lazy loading
+Warnung: package 'sde' was built under R version 3.0.3
+Warnung: package 'fda' was built under R version 3.0.3
+Warnung: package 'lattice' was built under R version 3.0.3
+Warnung: package 'zoo' was built under R version 3.0.3
+Warnung: package 'moments' was built under R version 3.0.3
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+*** arch - i386
+Warnung: package 'sde' was built under R version 3.0.3
+Warnung: package 'fda' was built under R version 3.0.3
+Warnung: package 'lattice' was built under R version 3.0.3
+Warnung: package 'zoo' was built under R version 3.0.3
+Warnung: package 'moments' was built under R version 3.0.3
+*** arch - x64
+Warnung: package 'sde' was built under R version 3.0.3
+Warnung: package 'fda' was built under R version 3.0.3
+Warnung: package 'lattice' was built under R version 3.0.3
+Warnung: package 'zoo' was built under R version 3.0.3
+Warnung: package 'moments' was built under R version 3.0.3
+* DONE (mixedsde)

@@ -1,0 +1,15 @@
+exportPattern("^[[:alpha:]]+")
+
+import(sde)
+import(moments)
+import(MASS)
+import(methods)
+
+importFrom(plot3D, persp3D)
+
+importFrom("grDevices", "x11")
+importFrom("graphics", "abline", "hist", "layout", "legend", "lines",
+      "par", "plot", "plot.new", "points", "segments")
+importFrom("stats", "acf", "dchisq", "density", "dgamma", "dnorm",
+      "optim", "qqplot", "quantile", "rbinom", "rgamma", "rnorm",
+      "runif", "sd", "var")

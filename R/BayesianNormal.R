@@ -224,7 +224,7 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
             Omega_out[count, ] <- Omega
             sigma_out[count] <- sigma
             if (count%%1000 == 0) {
-                print(paste(count, "iterations done"))
+                message(paste(count, "iterations done"))
             }
             
             if (count%%50 == 0) {
@@ -254,7 +254,7 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
                 Omega_out[count] <- Omega
                 sigma_out[count] <- sigma
                 if (count%%1000 == 0) {
-                  print(paste(count, "iterations done"))
+                  message(paste(count, "iterations done"))
                 }
                 
                 
@@ -288,7 +288,7 @@ BayesianNormal <- function(times, X, model = c("OU", "CIR"), prior, start, rando
                 Omega_out[count] <- Omega
                 sigma_out[count] <- sigma
                 if (count%%1000 == 0) {
-                  print(paste(count, "iterations done"))
+                  message(paste(count, "iterations done"))
                 }
                 
                 if (count%%50 == 0) {

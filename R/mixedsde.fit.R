@@ -173,7 +173,7 @@
 #' points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),pch=18, col='red'); 
 #' abline(0,1)
 #' 
-#' # one ranfom effect: 
+#' # one random effect: 
 #' 
 #' model <-'OU'
 #' random <- 1
@@ -225,12 +225,13 @@
 #' sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random = random, fixed = fixed,
 #'        density.phi = 'normal',param= param, sigma= sigma, X0 = 0, op.plot = 1)
 #' 
+#' # here: only 100 iterations for example - should be much more!
 #' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
-#'              random, estim.method = 'paramBayes',  nMCMC = 1000)
+#'              random, estim.method = 'paramBayes',  nMCMC = 100)
 #' prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11,
 #'             beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 #' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, 
-#'            estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#'            estim.method = 'paramBayes', prior = prior, nMCMC = 100) 
 #' 
 #' validation <- valid(estim_Bayes, numj = 10)
 #' plot(estim_Bayes)
@@ -251,7 +252,7 @@
 #' pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 #' 
 #' # second example
-#' 
+#' \dontrun{
 #' random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
 #' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'CIR', random = random, 
 #'         fixed = fixed, density.phi = 'normal',param = param, sigma = sigma, X0 = 0.1, op.plot = 1)
@@ -259,7 +260,6 @@
 #' prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11, 
 #'          beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 #'
-#'\dontrun{
 #' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random, 
 #'                  estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
 #' plot(estim_Bayes)
@@ -280,14 +280,15 @@
 #' sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random, 
 #'        density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
 #' 
+#' # here: only 200 iterations for example - should be much more!
 #' estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', 
-#'              random = random, estim.method = 'paramBayes', nMCMC = 1000)
+#'              random = random, estim.method = 'paramBayes', nMCMC = 100)
 #' plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 #'  
 #' prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11), 
 #'            beta.omega = param[c(2,4)]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 #' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
-#'                 estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#'                 estim.method = 'paramBayes', prior = prior, nMCMC = 100) 
 #' outputBayes <- out(estim_Bayes)
 #' summary(outputBayes)
 #' summary(estim_Bayes)
@@ -307,7 +308,7 @@
 #' prior <- list(m = c(param[1], fixed), v = c(param[1], 1e-05), alpha.omega = 11, 
 #'        beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 #' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random, 
-#'        estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
+#'        estim.method = 'paramBayes', prior = prior, nMCMC = 100) 
 #' plot(estim_Bayes)
 #'
 #' pred.result <- pred(estim_Bayes, invariant = 1)
@@ -353,7 +354,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 Xold <- X
                 indices <- sapply(1:M, function(i) any(X[i, ] < 0))
                 X <- X[!indices, ]
-                message("attention: series ", which(indices), " are skipped for estimation because of negative values")
+                message("attention: series ", indices, " are skipped for estimation because of negative values")
             }
         }
         
@@ -409,7 +410,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                   3:K]))))
                 prior <- list(m = mu, v = abs(mu), alpha.omega = rep(3, length(random)), beta.omega = Omega[random] * 2, alpha.sigma = 3, 
                   beta.sigma = sigma2 * 2)
-                message("attention: series", ind.4.prior, "are used for prior parameter calculation")
+                message("attention: series ", ind.4.prior, " are used for prior parameter calculation")
             }
         } else {
             ind.4.prior <- M + 1
@@ -880,47 +881,6 @@ out <- function(x){
 }
 
 
-#setGeneric("out", function(x) {
-#    standardGeneric("out")
-#})
-#
-######### 
-##' Transfers the class object Freq.fit to a list
-##' 
-##' @description Method for the S4 class Freq.fit
-##' @param x Freq.fit class
-##' @references 
-##' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-##' 
-#setMethod(f = "out", signature = "Freq.fit", definition = function(x) {
-#    
-#    return(list(gridf = x@gridf, mu = x@mu, omega = x@omega, cutoff = x@cutoff, sigma2 = x@sigma2, estimf.trunc = x@estimf.trunc, estimphi.trunc = x@estimphi.trunc, 
-#        estimf = x@estimf, estimphi = x@estimphi, estim.fixed = x@estim.fixed, estim.fix = x@estim.fix, index = x@index, bic = x@bic, 
-#        aic = x@aic))
-#})
-######### 
-##' Transfers the class object Bayes.fit to a list
-##' 
-##' @description Method for the S4 class Bayes.fit
-##' @param x Bayes.fit class
-##' @references 
-##' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-##'
-#setMethod(f = "out", signature = "Bayes.fit", definition = function(x) {
-#    list(sigma2 = x@sigma2, mu = x@mu, omega = x@omega, alpha = x@alpha, beta = x@beta, random = x@random, model = x@model, prior = x@prior, 
-#        burnIn = x@burnIn, thinning = x@thinning, times = x@times, X = x@X, ind.4.prior = x@ind.4.prior)
-#})
-######### 
-##' Transfers the class object Bayes.pred to a list
-##' 
-##' @description Method for the S4 class Bayes.pred
-##' @param x Bayes.pred class
-##' @references 
-##' Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: an R package to fit mixed stochastic differential equations.
-##'
-#setMethod(f = "out", signature = "Bayes.pred", definition = function(x) {
-#    list(phi.pred = x@phi.pred, Xpred = x@Xpred, qu.u = x@qu.u, qu.l = x@qu.l, coverage.rate = x@coverage.rate, estim = x@estim)
-#})
 
 
 ############################################################### SUMMARY
@@ -1049,6 +1009,7 @@ setMethod("summary", signature = "Bayes.fit", definition = function(object, leve
                   c(level/2, 1 - level/2)))
         }
     }
+
     return(out)
 })
 
@@ -1088,23 +1049,35 @@ setMethod("print", "Freq.fit", function(x) {
 #'
 setMethod("print", "Bayes.fit", function(x) {
     if (length(x@random) == 2) {
-        print("acceptance rate for phi:")
-        print(summary(t(sapply(1:ncol(x@alpha), function(i) c(length(unique(x@alpha[, i])), length(unique(x@beta[, i])))/nrow(x@alpha)))))
+      alpha <- sapply(1:ncol(x@alpha), function(i) length(unique(x@alpha[, i])))
+      beta <- sapply(1:ncol(x@alpha), function(i) length(unique(x@beta[, i])))
+      cat("\nacceptance rate for phi:")
+      print(summary(cbind(alpha, beta)))
         
     } else {
         if (x@random == 1) {
-            print("acceptance rates for random effect:")
-            print(summary(apply(x@alpha, 2, function(vec) length(unique(vec))/length(vec))))
-            print(c("acceptance rate for fixed effect:", length(unique(x@beta))/length(x@beta)))
+          alpha <- apply(x@alpha, 2, function(vec) length(unique(vec))/length(vec))
+          beta <- length(unique(x@beta))/length(x@beta)  
+          cat("\nacceptance rates for random effect:\n")
+          print(summary(alpha))
+          cat(c("\nacceptance rate for fixed effect:", beta))
         }
         if (x@random == 2) {
-            print("acceptance rates for random effect:")
-            print(summary(apply(x@beta, 2, function(vec) length(unique(vec))/length(vec))))
-            print(c("acceptance rate for fixed effect:", length(unique(x@alpha))/length(x@alpha)))
+          alpha <- length(unique(x@alpha))/length(x@alpha)
+          beta <- apply(x@beta, 2, function(vec) length(unique(vec))/length(vec))
+          cat("\nacceptance rates for random effect:\n")
+          print(summary(beta))
+          cat(c("\nacceptance rate for fixed effect:", alpha))
         }
     }
-    if (x@model == "CIR") 
-        print(c("acceptance rate for sigma:", length(unique(x@sigma2))/length(x@sigma2)))
+    if (x@model == "CIR") {
+      sigma2 <- length(unique(x@sigma2))/length(x@sigma2)
+      cat(c("\nacceptance rate for sigma:", sigma2))
+    }else{
+      sigma2 <- 1
+    }
+  
+  invisible(list(alpha = alpha, beta = beta, sigma2 = sigma2))
     
 })
 
@@ -2552,7 +2525,7 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
     # set plot settings back
     par(original.settings)
     
-    return(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
+    invisible(list(quantiles = q, Xnew = Xnew, plotnumj = plotnumj))
 })
 
 ########################################################### PREDICTION
