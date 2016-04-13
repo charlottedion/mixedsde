@@ -45,22 +45,25 @@ X <- simu$X ; phi <- simu$phi; times <- simu$times
 estim.method<- 'nonparam'
 estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
 outputsNP <- out(estim)
-plot(estim)
+
 summary(estim)
 print(estim)
-
+\dontrun{
+plot(estim)
 validation <- valid(estim, numj=floor(runif(1,1,M)))
-
+}
 estim.method<-'paramML'
 estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, 
 	estim.method = 'paramML')
 outputsP <- out(estim_param)
-plot(estim_param)
+
 summary(estim_param)
 
+\dontrun{
+plot(estim_param)
 test1 <- pred(estim, invariant = 1)
 test2 <- pred(estim_param, invariant = 1)
-
+}
 cutoff <- outputsNP$cutoff
 phihat <- outputsNP$estimphi
 phihat_trunc <- outputsNP$estimphi_trunc
@@ -83,7 +86,7 @@ density.phi <- 'normal'; param <- c(3, 0.5)
 simu <- mixedsde.sim(M, T = T, N = N, model= model, random = random, fixed = fixed, 
       density.phi= density.phi, param= param, sigma= sigma, X0 = 0)
 X <- simu$X; phi <- simu$phi; times <- simu$times
-plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
+#plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
 
 estim_Bayes_withoutprior <- mixedsde.fit(times, X= X, model = model, random = random, 
             estim.method = 'paramBayes', nMCMC = 100)  # nMCMC should be much larger
@@ -105,6 +108,7 @@ plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'wit
 
 print(estim_Bayes)
 
+\dontrun{
 pred.result <- pred(estim_Bayes)
 summary(out(pred.result))
 plot(pred.result)
@@ -112,4 +116,5 @@ plot(pred.result)
 pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
 validbayes <- valid(estim_Bayes, numj = 1)
+}
 }

@@ -84,7 +84,9 @@
 #' #which put the outputs of the function on a list according to the frequentist or 
 #' # Bayesian approach.
 #' outputsNP <- out(estim)
-#' plot(estim)
+#' # Not run 
+#' \dontrun{
+#' plot(estim)}
 #' # It represents the bidimensional density, the histogram of the first estimated random 
 #' # effect \eqn{\alpha} with the  marginal of \eqn{\hat{f}} from the first coordonate which 
 #' # estimates  the density of \eqn{\alpha}. And the same for the second random effect 
@@ -119,7 +121,8 @@
 #' estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, 
 #'            estim.method = 'paramML') 
 #' outputsP <- out(estim_param)
-#' plot(estim_param)
+#' 
+#' #plot(estim_param)
 #' summary(estim_param)
 #' 
 #' # Prediction for the frequentist approach
@@ -132,9 +135,11 @@
 #' # \code{phipred}, the prediction of X \code{Xpred}, and the indexes of the 
 #' # corresponding true trajectories \code{indexpred} 
 #' 
+#' # Not run
+#' \dontrun{
 #' test1 <- pred(estim,  invariant  = 1)
 #' test2 <- pred(estim_param, invariant  = 1)
-#' 
+#' }
 #' # More graph
 #' fhat <- outputsNP$estimf  
 #' fhat_trunc <- outputsNP$estimf.trunc 
@@ -174,7 +179,7 @@
 #' abline(0,1)
 #' 
 #' # one random effect: 
-#' 
+#' \dontrun{
 #' model <-'OU'
 #' random <- 1
 #' M <- 80; T <- 100  ; N <- 2000 
@@ -217,7 +222,7 @@
 #' valid1 <- valid(estim,  numj=floor(runif(1,1,M)))
 #' test1 <- pred(estim )
 #' test2 <- pred(estim_param)
-#'
+#'}
 #'
 #' # Parametric Bayesian estimation 
 #' # one random effect
@@ -244,13 +249,13 @@
 #' plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
 #' 
 #' print(estim_Bayes)
-#' 
+#' \dontrun{
 #' pred.result <- pred(estim_Bayes)
 #' summary(out(pred.result))
 #' plot(pred.result)
 #' 
 #' pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
-#' 
+#' }
 #' # second example
 #' \dontrun{
 #' random <- 2; sigma <- 0.2; fixed <- 5; param <- c(3, 0.5)
@@ -300,7 +305,7 @@
 #' 
 #' 
 #' # invariant case
-#' 
+#' \dontrun{
 #' random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
 #' sim <- mixedsde.sim(M = 50, T = 5, N = 100, model = 'OU', random = random, fixed = fixed, 
 #'            density.phi = 'normal',param = param, sigma = sigma, invariant = 1, op.plot = 1)
@@ -313,7 +318,7 @@
 #'
 #' pred.result <- pred(estim_Bayes, invariant = 1)
 #' pred.result.traj <- pred(estim_Bayes, invariant = 1, trajectories = TRUE)
-
+#'}
 
 #' 
 #' @keywords estimation
@@ -428,8 +433,9 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
         if (sum(random) > 2) {
           
           if (missing(fixed)==0){
-            message('the parameter fixed is not used because random = c(1,2)')} 
-
+            message('the parameter fixed is not used because random = c(1,2)')
+                  } 
+          
           # estimation of sigma^2
           if (model == "OU") {
             
@@ -446,7 +452,9 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             index <- which(rowSums(X <= 0) == 0)
             Mindex <- length(index)
             if (Mindex == 0) {
-              message("All the trajectories have non positive values the model CIR cannot be used")
+              #message("All the trajectories have non positive values the model CIR cannot be used")
+              warning("All the trajectories have non positive values the model CIR cannot be used", 
+                      call. = FALSE)
               estimf <- 0
               estimphi <- 0
               bic <- 0 
@@ -520,7 +528,8 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     ]), min(gridf[2, ]), max(gridf[2, ])))$z
                 }
                 if (sum(cutoff) < 0.25 * Mindex2) {
-                  message("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
+                  message("More than 75 percents of the estimated values of the random effect have been put to zero")
+
                   estimf.trunc <- matrix(0, 2, length(gridf[1, ]))
                 }
                 
@@ -581,7 +590,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             index <- which(apply(X <= 0, 1, sum) == 0)
             Mindex <- length(index)
             if (Mindex == 0) {
-              message("All the trajectories have non positive values the model CIR cannot be used ")
+              #message("All the trajectories have non positive values the model CIR cannot be used ")
+              warning("All the trajectories have non positive values the model CIR cannot be used", 
+                      call. = FALSE)
+              
               estimf <- 0
               estimphi <- 0
               bic <- 0 
@@ -607,7 +619,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
           if (estim.method == "nonparam") {     
               
                 if (estim.fix == 1) {
-                  message("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0")
+                  #message("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0")
+                  warning("wrong argument estim.fix with method nonparam, fixed as to be specify and estim.fix = 0", 
+                          call. = FALSE)
+                  
                 }
                 
                 if (estim.fix == 0) {
@@ -652,7 +667,7 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     estimphi.trunc <- A * cutoff
                     
                     if (sum(cutoff) < 0.25 * Mindex2) {
-                      message("warning: more than 75 percents of the estimated values of the random effect have been put to zero")
+                      message("More than 75 percents of the estimated values of the random effect have been put to zero")
                     }
                     
                     test2 <- density(estimphi.trunc, from = min(gridf), bw = "ucv", to = max(gridf), n = length(gridf))
@@ -2159,6 +2174,17 @@ setMethod(f = "valid", signature = "Freq.fit", definition = function(x, Mrep = 1
     if (newwindow) {
         x11(width = 10)
     }
+    
+    ## local sde.sim to sink undesired output away into a tempfile
+    con <- file(tempfile(), open="w")
+    on.exit(close(con))
+    sde.sim <- function(...){
+      sink(con)
+      res <- sde::sde.sim(...)
+      sink(NULL)
+      res
+    }
+    
     Xtrue <- x@X
     times <- round(x@times, 10)
     Tend <- max(times)
