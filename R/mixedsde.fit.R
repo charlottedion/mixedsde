@@ -1151,14 +1151,14 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
             
             gridf1 <- x@gridf[1, ]
             gridf2 <- x@gridf[2, ]
-            marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf, 1, sum)
-            marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
+            marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * rowSums(x@estimf)
+            marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * colSums(x@estimf)
             
             hist(x@estimphi[1, ], main = "", freq = FALSE, xlab = "", ylab = "", xlim = c(min(x@estimphi[1, ]) * 0.8, max(x@estimphi[1, 
                 ]) * 1.2), ylim = c(0, max(marg1) * 1.5), breaks = 12)
             lines(gridf1, marg1, col = "red")
             if (sum(x@estimf.trunc) != 0 & sum(x@estimf.trunc == x@estimf) != length(gridf1)^2) {
-                marg1_trunc <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf.trunc, 1, sum)
+                marg1_trunc <- ((max(gridf2) - min(gridf2))/length(gridf2)) * rowSums(x@estimf.trunc)
                 lines(gridf1, marg1_trunc, col = "red", lty = 2)
             }
             
@@ -1166,7 +1166,7 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
                 ]) * 1.2), ylim = c(0, max(marg2) * 1.5), breaks = 12)
             lines(gridf2, marg2, col = "red")
             if (sum(x@estimf.trunc) != 0 & sum(x@estimf.trunc == x@estimf) != length(gridf1)^2) {
-                marg2_trunc <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf.trunc, 2, sum)
+                marg2_trunc <- ((max(gridf1) - min(gridf1))/length(gridf1)) * colSums(x@estimf.trunc)
                 lines(gridf2, marg2_trunc, col = "red", lty = 2)
             }
             
@@ -1203,14 +1203,14 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
             persp3D(x@gridf[1, ], x@gridf[2, ], x@estimf, main = "Estimator", theta = 45, phi = 25, expand = 0.75, colkey = FALSE, bty = "b2")
             gridf1 <- x@gridf[1, ]
             gridf2 <- x@gridf[2, ]
-            marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf, 1, sum)
-            marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf, 2, sum)
+            marg1 <- ((max(gridf2) - min(gridf2))/length(gridf2)) * rowSums(x@estimf)
+            marg2 <- ((max(gridf1) - min(gridf1))/length(gridf1)) * colSums(x@estimf)
             
             hist(x@estimphi[1, ], main = "", freq = FALSE, xlab = "", ylab = "", xlim = c(min(x@estimphi[1, ]) * 0.8, max(x@estimphi[1, 
                 ]) * 1.2), ylim = c(0, max(marg1) * 1.5), breaks = 12)
             lines(gridf1, marg1, col = "red")
             if (sum(x@estimf.trunc) != 0 & sum(x@estimf.trunc == x@estimf) != length(gridf1)^2) {
-                marg1_trunc <- ((max(gridf2) - min(gridf2))/length(gridf2)) * apply(x@estimf.trunc, 1, sum)
+                marg1_trunc <- ((max(gridf2) - min(gridf2))/length(gridf2)) * rowSums(x@estimf.trunc)
                 lines(gridf1, marg1_trunc, col = "red", lty = 2)
             }
             
@@ -1218,7 +1218,7 @@ setMethod(f = "plot", signature = "Freq.fit", definition = function(x, newwindow
                 ]) * 1.2), ylim = c(0, max(marg2) * 1.5), breaks = 12)
             lines(gridf2, marg2, col = "red")
             if (sum(x@estimf.trunc) != 0 & sum(x@estimf.trunc == x@estimf) != length(gridf1)^2) {
-                marg2_trunc <- ((max(gridf1) - min(gridf1))/length(gridf1)) * apply(x@estimf.trunc, 2, sum)
+                marg2_trunc <- ((max(gridf1) - min(gridf1))/length(gridf1)) * colSums(x@estimf.trunc)
                 lines(gridf2, marg2_trunc, col = "red", lty = 2)
             }
             
