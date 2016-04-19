@@ -17,7 +17,7 @@
 #' \item{omega}{posterior samples (Markov chain) of \eqn{\Omega}}
 #' \item{sigma2}{posterior samples (Markov chain) of \eqn{\sigma^2}}
 #' @references 
-#' Hermann, S., Ickstadt, K. and C. Muller (2016). Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  
+#' Hermann, S., Ickstadt, K. and C. Mueller (2016). Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model. \emph{Appearing in: Applied Stochastic Models in Business and Industry}. 
 #' 
 #' Rosenthal, J. S. (2011). 'Optimal proposal distributions and adaptive MCMC.' Handbook of Markov Chain Monte Carlo (2011): 93-112.
 

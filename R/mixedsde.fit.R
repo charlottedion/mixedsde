@@ -325,6 +325,8 @@
 #' @references For the parametric estimation see:
 #' Maximum likelihood estimation for stochastic differential equations with random effects, M. Delattre, V. Genon-Catalot and A. Samson, \emph{Scandinavian Journal of Statistics 2012}, Vol 40, \bold{322--343}
 #' 
+#' Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  S. Hermann, K. Ickstadt and C. Mueller, \emph{appearing in: Applied Stochastic Models in Business and Industry 2016}.
+#'
 #' For the nonparametric estimation see:
 #' 
 #' Nonparametric estimation for stochastic differential equations with random effects, F. Comte, V. Genon-Catalot and A. Samson, \emph{Stochastic Processes and Their Applications 2013}, Vol 7, \bold{2522--2551}

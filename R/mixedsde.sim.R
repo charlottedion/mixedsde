@@ -167,11 +167,14 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- phi[1, j]/phi[2, j] + (sig/(sqrt(2 * phi[2, j]))) * rnorm(1)
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[, j], sig), model = "OU")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[, j], sig), model = "OU")
+#                  )
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[, j], sig), model = "OU")
-                  
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[, j], sig), model = "OU")
+#                  )
                 }
             }
         }
@@ -180,12 +183,16 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- rgamma(1, 2 * phi[1, j]/sig^2, scale = sig^2/(2 * phi[2, j]))
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), model = "CIR", 
-                    sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)))
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), model = "CIR", 
+                      sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * sqrt(x)))
+#                  )
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), sigma.x = expression(sig/(2 * 
-                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "milstein", theta = c(phi[, j], sig), sigma.x = expression(sig/(2 * 
+                      sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  )
                 }
             }
             
@@ -225,10 +232,14 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- phi[j]/fixed + (sig/(sqrt(2 * fixed))) * rnorm(1)
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[j], fixed, sig), model = "OU")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[j], fixed, sig), model = "OU")
+#                  )
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[j], fixed, sig), model = "OU")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[j], fixed, sig), model = "OU")
+#                  )
                 }
             }
         }
@@ -237,12 +248,16 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- rgamma(1, 2 * phi[j]/sig^2, scale = sig^2/(2 * fixed))
-                  X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * 
-                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * 
+                      sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  )
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * 
-                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, N = N, X0 = X0, delta = delta, method = "milstein", theta = c(phi[j], fixed, sig), sigma.x = expression(sig/(2 * 
+                      sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  )
                 }
             }
         }
@@ -267,10 +282,14 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- (sig/(sqrt(2 * phi[j]))) * rnorm(1)
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(fixed, phi[j], sig), model = "OU")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(fixed, phi[j], sig), model = "OU")
+#                  )
                 }
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(fixed, phi[j], sig), model = "OU")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(fixed, phi[j], sig), model = "OU")
+#                  )
                 }
             }
         }
@@ -278,8 +297,10 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
         if (model == "CIR") {
             for (j in 1:M) {
                 if (invariant == 0) {
-                  X[j, ] <- sde.sim(t0, T, X0, N, delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * 
-                    sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  suppressMessages(
+                    X[j, ] <- sde.sim(t0, T, X0, N, delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * 
+                      sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                  )
                 }
                 if (invariant == 1) {
                   if (fixed == 0) {
@@ -287,8 +308,10 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
                   }
                   if (fixed != 0) {
                     X0 <- rgamma(1, 2 * fixed/sig^2, scale = sig^2/(2 * phi[j]))
-                    X[j, ] <- sde.sim(t0 = t0, T = T, X0 = X0, N, delta = delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * 
-                      sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                    suppressMessages(
+                      X[j, ] <- sde.sim(t0 = t0, T = T, X0 = X0, N, delta = delta, method = "milstein", theta = c(fixed, phi[j], sig), sigma.x = expression(sig/(2 * 
+                        sqrt(x))), sigma = expression(sig * sqrt(x)), model = "CIR")
+#                    )
                   }
                 }
             }

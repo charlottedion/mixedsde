@@ -13,8 +13,8 @@ This package proposes 3 methods for density estimation in the special context of
 Package: \tab mixedsde\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2016-01-19\cr
-License: \tab What license is it under?\cr
+Date: \tab 2016-04-19\cr
+License: \tab GLP-2, GLP-3\cr
 }
  An overview of how to use the package, including the most important functions 
 }
@@ -28,7 +28,7 @@ See Bidimensional random effect estimation in mixed stochastic differential mode
 
 Maximum likelihood estimation for stochastic differential equations with random effects, M. Delattre, V. Genon-Catalot and A. Samson, \emph{Scandinavian Journal of Statistics 2012}, Vol 40, \bold{322--343}
 
-Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  Hermann, S., Ickstadt, K. and C. Muller (2016)
+Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  S. Hermann, K. Ickstadt and C. Mueller, \emph{appearing in: Applied Stochastic Models in Business and Industry 2016}.
 
 }
 \keyword{ package }
