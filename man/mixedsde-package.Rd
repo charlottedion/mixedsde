@@ -39,11 +39,12 @@ Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  S.
 model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01
 random <- c(1,2); density.phi <- 'gammainvgamma2'
 param<- c(1.8, 0.8, 8, 0.05);
-simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,density.phi=density.phi,param=param,
-              sigma=sigma, invariant = 1)
+simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,
+  density.phi=density.phi,param=param,sigma=sigma, invariant = 1)
 X <- simu$X ; phi <- simu$phi; times <- simu$times
 estim.method<- 'nonparam'
-estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method= 'nonparam')
+estim <- mixedsde.fit(times=times, X=X, model=model, random=random, 
+   estim.method= 'nonparam')
 outputsNP <- out(estim)
 
 summary(estim)
@@ -69,10 +70,12 @@ phihat <- outputsNP$estimphi
 phihat_trunc <- outputsNP$estimphi_trunc
 par(mfrow=c(1,2))
 plot.ts(phi[1,], phihat[1,], xlim=c(0, 15), ylim=c(0,15), pch=18); abline(0,1)
-points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20), pch=18, col='red')
+points(phi[1,]*(1-cutoff), phihat[1,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),
+   pch=18, col='red')
 abline(0,1)
 plot.ts(phi[2,], phihat[2,], xlim=c(0, 15), ylim=c(0,15),pch=18); abline(0,1)
-points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20), pch=18, col='red')
+points(phi[2,]*(1-cutoff), phihat[2,]*(1-cutoff), xlim=c(0, 20), ylim=c(0,20),
+   pch=18, col='red')
 abline(0,1)
 
 
