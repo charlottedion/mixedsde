@@ -73,7 +73,9 @@
 #' @examples
 #'# Frequentist estimation
 #' # Two random effects
-#' model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ;
+#' model = 'CIR'; T <- 10
+#' delta <- 0.1; M <- 100 # delta <- 0.001 and M <- 200 would yield good results
+#' N <- floor(T/delta); sigma <- 0.01 ;
 #' random <- c(1,2); density.phi <- 'gammainvgamma2'; param<- c(1.8, 0.8, 8, 0.05);  
 #' simu <- mixedsde.sim(M=M, T=T, N=N, model=model,random=random, density.phi=density.phi, 
 #'                param=param, sigma=sigma, invariant = 1)
@@ -84,7 +86,7 @@
 #' #which put the outputs of the function on a list according to the frequentist or 
 #' # Bayesian approach.
 #' outputsNP <- out(estim)
-#' # Not run 
+#' 
 #' \dontrun{
 #' plot(estim)}
 #' # It represents the bidimensional density, the histogram of the first estimated random 
@@ -267,16 +269,8 @@
 #'
 #' estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random, 
 #'                  estim.method = 'paramBayes', prior = prior, nMCMC = 1000) 
-#' plot(estim_Bayes)
-#' outputBayes <- out(estim_Bayes)
-#' summary(outputBayes)
-#' (results_Bayes <- summary(estim_Bayes))
-#' plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 #' 
-#' print(estim_Bayes)
 #' pred.result <- pred(estim_Bayes)
-#' summary(out(pred.result))
-#' plot(pred.result)
 #' }
 #' 
 #' # for two random effects
@@ -3074,11 +3068,11 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
             
             if (invariant) {
                 if (model == "OU") {
-                  dens <- function(t) mean(dnorm(t, phi.pred[, 1]/phi.pred[, 2], sqrt(est@sigma2/(2 * phi.pred[, 2]))))
+                  dens <- function(t, samples = 0) mean(dnorm(t, phi.pred[, 1]/phi.pred[, 2], sqrt(est@sigma2/(2 * phi.pred[, 2]))))
                   cand <- seq(min(x@X[, 1]) - abs(max(x@X[, 1])) * 0.5, max(x@X[, 1]) + abs(max(x@X[, 1])) * 0.9, length = 1000)
                 }
                 if (model == "CIR") {
-                  dens <- function(t) mean(dgamma(t, 2 * phi.pred[, 1]/est@sigma2, scale = est@sigma2/(2 * phi.pred[, 2])))
+                  dens <- function(t, samples = 0) mean(dgamma(t, 2 * phi.pred[, 1]/est@sigma2, scale = est@sigma2/(2 * phi.pred[, 2])))
                   cand <- seq(max(0.001, min(x@X[, 1]) - abs(max(x@X[, 1])) * 0.5), max(x@X[, 1]) + abs(max(x@X[, 1])) * 0.9, length = 1000)
                 }
                 prob <- sapply(cand, dens)
@@ -3099,16 +3093,16 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
             if (invariant) {
                 if (model == "OU") {
                   if (random == 1) 
-                    dens <- function(t) mean(dnorm(t, phi.pred/est@beta, sqrt(est@sigma2/(2 * est@beta))))
+                    dens <- function(t, samples = 0) mean(dnorm(t, phi.pred/est@beta, sqrt(est@sigma2/(2 * est@beta))))
                   if (random == 2) 
-                    dens <- function(t) mean(dnorm(t, est@alpha/phi.pred, sqrt(est@sigma2/(2 * phi.pred))))
+                    dens <- function(t, samples = 0) mean(dnorm(t, est@alpha/phi.pred, sqrt(est@sigma2/(2 * phi.pred))))
                   cand <- seq(min(x@X[, 1]) - abs(max(x@X[, 1])) * 0.5, max(x@X[, 1]) + abs(max(x@X[, 1])) * 0.9, length = 1000)
                 }
                 if (model == "CIR") {
                   if (random == 1) 
-                    dens <- function(t) mean(dgamma(t, 2 * phi.pred/est@sigma2, scale = est@sigma2/(2 * est@beta)))
+                    dens <- function(t, samples = 0) mean(dgamma(t, 2 * phi.pred/est@sigma2, scale = est@sigma2/(2 * est@beta)))
                   if (random == 2) 
-                    dens <- function(t) mean(dgamma(t, 2 * est@alpha/est@sigma2, scale = est@sigma2/(2 * phi.pred)))
+                    dens <- function(t, samples = 0) mean(dgamma(t, 2 * est@alpha/est@sigma2, scale = est@sigma2/(2 * phi.pred)))
                   cand <- seq(max(0.001, min(x@X[, 1]) - abs(max(x@X[, 1])) * 0.5), max(x@X[, 1]) + abs(max(x@X[, 1])) * 0.9, length = 1000)
                 }
                 prob <- sapply(cand, dens)
@@ -3180,9 +3174,9 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
         }
         
         pred <- function(i) {
-            dens <- function(c) mean(likeli(c, x@times[i + 1] - x@times[1]))
+            dens2 <- function(c) mean(likeli(c, x@times[i + 1] - x@times[1]))
             ca <- cand(i)
-            prob <- sapply(ca, dens)
+            prob <- sapply(ca, dens2)
             
             if (!only.interval) {
                 samp.X <- replicate(sample.length, discr(ca, prob))

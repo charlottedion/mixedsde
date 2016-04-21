@@ -24,7 +24,8 @@ delta <- 0.00015   # step time
 N <- T/delta  # number of points in the time interval 2000
 # load ("data/neuronal.data.rda")
 data(neuronal.data)
-X <- neuronal.data[[1]]
+# reduction of data for example to save running times
+X <- neuronal.data[[1]][1:100,]
 times <- neuronal.data[[2]]
 
 #plot(times,X[10, ], type = 'l', xlab = 'time', ylab='', col = 'blue', ylim=c(0,0.016))
@@ -69,12 +70,14 @@ fhat_param <- outputsP$estimf
 
 
 # Bayesian
-ind <- seq(1, 2000, by = 10)
-estim_Bayes <- mixedsde.fit(times[ind], X[,ind], model = "OU", random = 1, 
-              estim.method = "paramBayes", nMCMC = 1000) 
+# reduction of data to save running time
+ind <- seq(1, 2000, by = 20)
+estim_Bayes <- mixedsde.fit(times[ind], X[1:50, ind], model = "OU", random = 1, 
+              estim.method = "paramBayes", nMCMC = 100) 
 plot(estim_Bayes)
 pred_Bayes1 <- pred(estim_Bayes)
 pred_Bayes2 <- pred(estim_Bayes, trajectories = TRUE)
+
 }
 
 \source{

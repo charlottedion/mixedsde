@@ -93,7 +93,9 @@ The parametric method estimates the mean and standard deviation of the Gaussian 
 \examples{
 # Frequentist estimation
 # Two random effects
-model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01 ;
+model = 'CIR'; T <- 10
+delta <- 0.1; M <- 100 # delta <- 0.001 and M <- 200 would yield good results
+N <- floor(T/delta); sigma <- 0.01 ;
 random <- c(1,2); density.phi <- 'gammainvgamma2'; param<- c(1.8, 0.8, 8, 0.05);
 simu <- mixedsde.sim(M=M, T=T, N=N, model=model,random=random, density.phi=density.phi,
                param=param, sigma=sigma, invariant = 1)
@@ -104,7 +106,7 @@ estim <- mixedsde.fit(times=times, X=X, model=model, random=random, estim.method
 #which put the outputs of the function on a list according to the frequentist or
 # Bayesian approach.
 outputsNP <- out(estim)
-# Not run
+
 \dontrun{
 plot(estim)}
 # It represents the bidimensional density, the histogram of the first estimated random
@@ -287,16 +289,8 @@ prior <- list(m = c(fixed, param[1]), v = c(fixed, param[1]), alpha.omega = 11,
 
 estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random = random,
                  estim.method = 'paramBayes', prior = prior, nMCMC = 1000)
-plot(estim_Bayes)
-outputBayes <- out(estim_Bayes)
-summary(outputBayes)
-(results_Bayes <- summary(estim_Bayes))
-plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
 
-print(estim_Bayes)
 pred.result <- pred(estim_Bayes)
-summary(out(pred.result))
-plot(pred.result)
 }
 
 # for two random effects

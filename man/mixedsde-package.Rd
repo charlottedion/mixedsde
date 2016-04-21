@@ -36,7 +36,9 @@ Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  S.
 \examples{
 # Frequentist estimation, two random effects
 
-model = 'CIR'; M <- 200;  T <- 10 ; delta <- 0.001; N <- floor(T/delta); sigma <- 0.01
+model = 'CIR'; M <- 200;  T <- 10 
+delta <- 0.1 # delta <- 0.001 would yield better results!
+N <- floor(T/delta); sigma <- 0.01
 random <- c(1,2); density.phi <- 'gammainvgamma2'
 param<- c(1.8, 0.8, 8, 0.05);
 simu <- mixedsde.sim(M=M,T=T,N=N,model=model,random=random,
@@ -91,27 +93,18 @@ simu <- mixedsde.sim(M, T = T, N = N, model= model, random = random, fixed = fix
 X <- simu$X; phi <- simu$phi; times <- simu$times
 #plot(times, X[1,], ylim = range(X), type = 'l'); for(i in 2:M) lines(times, X[i,])
 
-estim_Bayes_withoutprior <- mixedsde.fit(times, X= X, model = model, random = random, 
+estim_Bayes <- mixedsde.fit(times, X= X, model = model, random = random, 
             estim.method = 'paramBayes', nMCMC = 100)  # nMCMC should be much larger
-plot(estim_Bayes_withoutprior)
-
-prior <- list(m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11, 
-                beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
-estim_Bayes <- mixedsde.fit(times, X = X, model = model, random = random, 
-              estim.method = 'paramBayes', prior = prior, nMCMC = 100)
+plot(estim_Bayes)
 
 plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 (results_Bayes <- summary(estim_Bayes))
 plot(estim_Bayes, style = 'cred.int', true.phi = phi)
-plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = phi, reduced = TRUE)
-
-plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
 
 print(estim_Bayes)
 
-\dontrun{
 pred.result <- pred(estim_Bayes)
 summary(out(pred.result))
 plot(pred.result)
@@ -119,5 +112,5 @@ plot(pred.result)
 pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
 validbayes <- valid(estim_Bayes, numj = 1)
-}
+
 }
