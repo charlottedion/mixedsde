@@ -36,8 +36,8 @@ Bayesian Prediction of Crack Growth Based on a Hierarchical Diffusion Model.  S.
 \examples{
 # Frequentist estimation, two random effects
 
-model = 'CIR'; M <- 200;  T <- 10 
-delta <- 0.1 # delta <- 0.001 would yield better results!
+model = 'CIR'; M <- 100;  T <- 10 
+delta <- 0.1 # delta <- 0.001 and M <- 200 would yield better results!
 N <- floor(T/delta); sigma <- 0.01
 random <- c(1,2); density.phi <- 'gammainvgamma2'
 param<- c(1.8, 0.8, 8, 0.05);
@@ -85,7 +85,7 @@ abline(0,1)
 # Parametric Bayesian estimation one random effect
 
 model <- 'OU'; random <- 1; sigma <- 0.1; fixed <- 5
-M <- 50 ; T <- 1; N <- 100
+M <- 20 ; T <- 1; N <- 50
 density.phi <- 'normal'; param <- c(3, 0.5)
 
 simu <- mixedsde.sim(M, T = T, N = N, model= model, random = random, fixed = fixed, 
@@ -97,18 +97,13 @@ estim_Bayes <- mixedsde.fit(times, X= X, model = model, random = random,
             estim.method = 'paramBayes', nMCMC = 100)  # nMCMC should be much larger
 plot(estim_Bayes)
 
-plot(estim_Bayes)
 outputBayes <- out(estim_Bayes)
 summary(outputBayes)
-(results_Bayes <- summary(estim_Bayes))
 plot(estim_Bayes, style = 'cred.int', true.phi = phi)
 
 print(estim_Bayes)
 
 pred.result <- pred(estim_Bayes)
-summary(out(pred.result))
-plot(pred.result)
-
 pred.result.trajectories <- pred(estim_Bayes, trajectories = TRUE)
 
 validbayes <- valid(estim_Bayes, numj = 1)

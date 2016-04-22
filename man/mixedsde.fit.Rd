@@ -249,12 +249,10 @@ test2 <- pred(estim_param)
 # Parametric Bayesian estimation
 # one random effect
 random <- 1; sigma <- 0.1; fixed <- 5; param <- c(3, 0.5)
-sim <- mixedsde.sim(M = 50, T = 1, N = 100, model = 'OU', random = random, fixed = fixed,
+sim <- mixedsde.sim(M = 20, T = 1, N = 50, model = 'OU', random = random, fixed = fixed,
        density.phi = 'normal',param= param, sigma= sigma, X0 = 0, op.plot = 1)
 
 # here: only 100 iterations for example - should be much more!
-estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
-             random, estim.method = 'paramBayes',  nMCMC = 100)
 prior <- list( m = c(param[1], fixed), v = c(param[1], fixed), alpha.omega = 11,
             beta.omega = param[2]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
 estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random,
@@ -266,10 +264,6 @@ outputBayes <- out(estim_Bayes)
 summary(outputBayes)
 (results_Bayes <- summary(estim_Bayes))
 plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi)
-plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
-
-plot2compare(estim_Bayes, estim_Bayes_withoutprior, names = c('with prior', 'without prior'))
-
 print(estim_Bayes)
 \dontrun{
 pred.result <- pred(estim_Bayes)
@@ -293,29 +287,6 @@ estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'CIR', random 
 pred.result <- pred(estim_Bayes)
 }
 
-# for two random effects
-random <- c(1,2); sigma <- 0.1; param <- c(3, 0.5, 5, 0.2)
-
-sim <- mixedsde.sim(M = 20, T = 1, N = 100, model = 'OU', random = random,
-       density.phi = 'normalnormal', param = param, sigma = sigma, X0 = 0, op.plot = 1)
-
-# here: only 200 iterations for example - should be much more!
-estim_Bayes_withoutprior <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU',
-             random = random, estim.method = 'paramBayes', nMCMC = 100)
-plot(estim_Bayes_withoutprior, style = 'cred.int', true.phi = sim$phi, reduced = TRUE)
-
-prior <- list(m = param[c(1,3)], v = param[c(1,3)], alpha.omega = c(11,11),
-           beta.omega = param[c(2,4)]^2*10, alpha.sigma = 10, beta.sigma = sigma^2*9)
-estim_Bayes <- mixedsde.fit(times = sim$times, X = sim$X, model = 'OU', random = random,
-                estim.method = 'paramBayes', prior = prior, nMCMC = 100)
-outputBayes <- out(estim_Bayes)
-summary(outputBayes)
-summary(estim_Bayes)
-plot(estim_Bayes)
-plot(estim_Bayes, style = 'cred.int', true.phi = sim$phi)
-print(estim_Bayes)
-
-pred.result <- pred(estim_Bayes)
 
 
 # invariant case
