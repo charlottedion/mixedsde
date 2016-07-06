@@ -879,31 +879,51 @@ setMethod("summary", "Freq.fit", function(object) {
         if (dim(object@gridf)[1] == 1) {
             
             if (object@estim.fix == 1) {
-                print(matrix(c("BIC", object@bic, "AIC", object@aic), 2, 2, byrow = TRUE))
-                print(matrix(c("kurtosis", kurtosis(object@estimphi[1, ]), "skewness", skewness(object@estimphi[1, ])), 2, 2, byrow = TRUE))
-                print(matrix(c("sigma", sqrt(object@sigma2), "estim.fixed", object@estim.fixed, "empiric mean", mean(object@estimphi[1, 
-                  ]), "MLE mean", object@mu, "empiric sd", sd(object@estimphi[1, ]), "MLE sd", object@omega), 6, 2, byrow = TRUE))
+                print(matrix(c("sigma", round(sqrt(object@sigma2),6)), 1, 2, byrow = TRUE))
+                cat("\nRandom and fixed effects:\n")
+                
+                reff <- matrix(round(c(object@estim.fixed, mean(object@estimphi[1, ]), object@mu, sd(object@estimphi[1, ]), object@omega , kurtosis(object@estimphi[1, ]),
+                                 skewness(object@estimphi[1, ])),6), 7, 1, byrow = TRUE)
+                rownames(reff) <- c("estim.fixed", "empiric mean", "MLE mean", "empiric sd","MLE sd", "kurtosis", "skewness")
+                print(reff, quote = FALSE, right = TRUE)
+
+                print(matrix(c("BIC", round(object@bic,6), "AIC", round(object@aic,6)), 2, 2, byrow = TRUE))
+                return (invisible(list(reff)))
             }
             if (object@estim.fix == 0) {
-                print(matrix(c("BIC", object@bic, "AIC", object@aic), 2, 2, byrow = TRUE))
-                print(matrix(c("kurtosis", kurtosis(object@estimphi[1, ]), "skewness", skewness(object@estimphi[1, ])), 2, 2, byrow = TRUE))
-                print(matrix(c("sigma", sqrt(object@sigma2), "empiric mean", mean(object@estimphi[1, ]), "MLE mean", object@mu, "empiric sd", 
-                  sd(object@estimphi[1, ]), "MLE sd", object@omega), 5, 2, byrow = TRUE))
+              print(matrix(c("sigma", round(sqrt(object@sigma2),6)), 1, 2, byrow = TRUE))
+              cat("\nRandom effect:\n")
+              
+              reff <- matrix(round(c( mean(object@estimphi[1, ]), object@mu, sd(object@estimphi[1, ]), object@omega , kurtosis(object@estimphi[1, ]),
+                               skewness(object@estimphi[1, ])),6), 6, 1, byrow = TRUE)
+              rownames(reff) <- c( "empiric mean", "MLE mean", "empiric sd","MLE sd", "kurtosis", "skewness")
+              print(reff, quote = FALSE, right = TRUE)
+              
+              print(matrix(c("BIC", round(object@bic,6), "AIC", round(object@aic,6)), 2, 2, byrow = TRUE))
+              return (invisible(list(reff)))
             }
             
             
         }
         
         if (dim(object@gridf)[1] == 2) {
-            print(matrix(c("BIC", object@bic, "AIC", object@aic), 2, 2, byrow = TRUE))
-            print(matrix(c("sigma", sqrt(object@sigma2)), 1, 2, byrow = TRUE))
-            print(matrix(c("empiric mean 1", mean(object@estimphi[1, ]), "MLE mean 1", object@mu[1], "empiric sd 1", sd(object@estimphi[1, 
-                ]), "MLE sd 1", object@omega[1], "kurtosis 1", kurtosis(object@estimphi[1, ]), "skewness 1", skewness(object@estimphi[1, 
-                ])), 6, 2, byrow = TRUE))
-            print(matrix(c("empiric mean 2", mean(object@estimphi[2, ]), "MLE mean 2", object@mu[2], "empiric sd 2", sd(object@estimphi[2, 
-                ]), "MLE sd 2", object@omega[2], "kurtosis 2", kurtosis(object@estimphi[2, ]), "skewness 2", skewness(object@estimphi[2, 
-                ])), 6, 2, byrow = TRUE))
-            
+          
+          print(matrix(c("sigma", round(sqrt(object@sigma2),6)), 1, 2, byrow = TRUE))
+          cat("\nRandom effects:\n")
+          
+          reff1 <- matrix(round(c(mean(object@estimphi[1, ]), object@mu[1], sd(object@estimphi[1, ]), object@omega[1] , kurtosis(object@estimphi[1, ]),
+                           skewness(object@estimphi[1, ])),6), 6, 1, byrow = TRUE)
+          rownames(reff1) <- c( "empiric mean 1", "MLE mean 1", "empiric sd 1","MLE sd 1", "kurtosis 1", "skewness 1")
+          print(reff1, quote = FALSE, right = TRUE)
+          
+          reff2 <- matrix(round(c(mean(object@estimphi[2, ]), object@mu[2], sd(object@estimphi[2, ]), object@omega[2] , kurtosis(object@estimphi[2, ]),
+                            skewness(object@estimphi[2, ])),6), 6, 1, byrow = TRUE)
+          rownames(reff2) <- c( "empiric mean 2", "MLE mean 2", "empiric sd 2","MLE sd 2", "kurtosis 2", "skewness 2")
+          print(reff2, quote = FALSE, right = TRUE)
+          
+          
+          print(matrix(c("BIC", round(object@bic,6), "AIC", round(object@aic,6)), 2, 2, byrow = TRUE))
+          return (invisible(list(reff1, reff2)))
         }
     }
     
@@ -912,39 +932,61 @@ setMethod("summary", "Freq.fit", function(object) {
         if (dim(object@gridf)[1] == 1) {
             
             if (sum(object@cutoff) != 0) {
-                print(matrix(c("kurtosis", kurtosis(object@estimphi[1, ]), "skewness", skewness(object@estimphi[1])), 2, 2, byrow = TRUE))
-                print(matrix(c("sigma", sqrt(object@sigma2), "number of truncated values", length(object@cutoff) - sum(object@cutoff), 
-                  "empiric mean", mean(object@estimphi[1, ]), "empiric sd", sd(object@estimphi[1, ])), 4, 2, byrow = TRUE))
+                print(matrix(c("sigma", round(sqrt(object@sigma2),6), "number of truncated values", length(object@cutoff) - sum(object@cutoff)), 
+                           2, 2, byrow = TRUE))
+              
+                cat("\nRandom effect:\n")
+                reff <- matrix(round(c(mean(object@estimphi[1, ]), sd(object@estimphi[1, ]), kurtosis(object@estimphi[1, ]),
+                                 skewness(object@estimphi[1, ])),6), 4, 1, byrow = TRUE)
+                rownames(reff) <- c("empiric mean", "empiric sd", "kurtosis", "skewness")
+                print(reff, quote = FALSE, right = TRUE)
+                return (invisible(list(reff)))
             }
             if (sum(object@cutoff) == 0) {
-                print(matrix(c("kurtosis", kurtosis(object@estimphi[1, ]), "skewness", skewness(object@estimphi[1, ])), 2, 2, byrow = TRUE))
-                print(matrix(c("sigma", sqrt(object@sigma2), "empiric mean", mean(object@estimphi), "empiric sd", sd(object@estimphi)), 
-                  3, 2, byrow = TRUE))
+                print(matrix(c("sigma", round(sqrt(object@sigma2),6)), 1, 2, byrow = TRUE))
+              
+                cat("\nRandom effect:\n")
+                reff <- matrix(round(c(mean(object@estimphi[1, ]), sd(object@estimphi[1, ]), kurtosis(object@estimphi[1, ]),
+                                skewness(object@estimphi[1, ])),6), 4, 1, byrow = TRUE)
+                rownames(reff) <- c("empiric mean", "empiric sd", "kurtosis", "skewness")
+                print(reff, quote = FALSE, right = TRUE)
+                return (invisible(list(reff)))
             }
         }
         
         if (dim(object@gridf)[1] == 2) {
             if (sum(object@cutoff) != 0) {
-                print(matrix(c("sigma", sqrt(object@sigma2), "number of truncated values", length(object@cutoff) - sum(object@cutoff)), 
+                print(matrix(c("sigma", round(sqrt(object@sigma2),6), "number of truncated values", length(object@cutoff) - sum(object@cutoff)), 
                   2, 2, byrow = TRUE))
 
                 cat("\nRandom effects:\n")
-                reff1 <- matrix(c(mean(object@estimphi[1, ]), sd(object@estimphi[1, ]), kurtosis(object@estimphi[1, ]),
-                    skewness(object@estimphi[1, ])), 4, 1, byrow = TRUE)
+                reff1 <- matrix(round(c(mean(object@estimphi[1, ]), sd(object@estimphi[1, ]), kurtosis(object@estimphi[1, ]),
+                    skewness(object@estimphi[1, ])),6), 4, 1, byrow = TRUE)
                 rownames(reff1) <- c("empiric mean 1", "empiric sd 1", "kurtosis 1", "skewness 1")
                 print(reff1, quote = FALSE, right = TRUE)
-
-
-                print(matrix(c("empiric mean 2", mean(object@estimphi[2, ]), "empiric sd 2", sd(object@estimphi[2, ]), "kurtosis 2", kurtosis(object@estimphi[2, 
-                  ]), "skewness 2", skewness(object@estimphi[2, ])), 4, 2, byrow = TRUE), quote = FALSE, right = TRUE)
-                return(invisible(list(reff1)))
+                
+                reff2 <- matrix(round(c(mean(object@estimphi[2, ]), sd(object@estimphi[2, ]), kurtosis(object@estimphi[2, ]),
+                                  skewness(object@estimphi[2, ])),6), 4, 1, byrow = TRUE)
+                rownames(reff2) <- c("empiric mean 2", "empiric sd 2", "kurtosis 2", "skewness 2")
+                print(reff2, quote = FALSE, right = TRUE)
+                return (invisible(list(reff1, reff2)))
             }
+          
             if (sum(object@cutoff) == 0) {
-                print(matrix(c("sigma", sqrt(object@sigma2)), 1, 2, byrow = TRUE))
-                print(matrix(c("empiric mean 1", mean(object@estimphi[1, ]), "empiric sd 1", sd(object@estimphi[1, ]), "kurtosis 1", kurtosis(object@estimphi[1, 
-                  ]), "skewness 1", skewness(object@estimphi[1, ])), 4, 2, byrow = TRUE))
-                print(matrix(c("empiric mean 2", mean(object@estimphi[2, ]), "empiric sd 2", sd(object@estimphi[2, ]), "kurtosis 2", kurtosis(object@estimphi[1, 
-                  ]), "skewness 2", skewness(object@estimphi[2, ])), 4, 2, byrow = TRUE))
+              
+              print(matrix(c("sigma", round(sqrt(object@sigma2),6)), 1, 2, byrow = TRUE))
+              
+              cat("\nRandom effects:\n")
+              reff1 <- matrix(round(c(mean(object@estimphi[1, ]), sd(object@estimphi[1, ]), kurtosis(object@estimphi[1, ]),
+                                skewness(object@estimphi[1, ])),6), 4, 1, byrow = TRUE)
+              rownames(reff1) <- c("empiric mean 1", "empiric sd 1", "kurtosis 1", "skewness 1")
+              print(reff1, quote = FALSE, right = TRUE)
+              
+              reff2 <- matrix(round(c(mean(object@estimphi[2, ]), sd(object@estimphi[2, ]), kurtosis(object@estimphi[2, ]),
+                                skewness(object@estimphi[2, ])),6), 4, 1, byrow = TRUE)
+              rownames(reff2) <- c("empiric mean 2", "empiric sd 2", "kurtosis 2", "skewness 2")
+              print(reff2, quote = FALSE, right = TRUE)
+              return (invisible(list(reff1, reff2)))
             }
         }
     }
