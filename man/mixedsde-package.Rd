@@ -53,7 +53,7 @@ summary(estim)
 print(estim)
 \dontrun{
 plot(estim)
-validation <- valid(estim, numj=floor(runif(1,1,M)))
+validation <- valid(estim)
 }
 estim.method<-'paramML'
 estim_param <- mixedsde.fit(times= times, X= X, model= model, random= random, 

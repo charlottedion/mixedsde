@@ -47,15 +47,16 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
             BIChere <- ln(c(mu, omega)) + sum(-2 * fixed * Uf + fixed^2 * Vff) + log(length(estimphi)) * 2
             AIChere <- ln(c(mu, omega)) + sum(-2 * fixed * Uf + fixed^2 * Vff) + 2
         }
-
+        
         if (estim.fix == 1) {
             
             ln = function(param) {
-                likelihoodNormalestimfix(param[1], param[2], param[3], U, V, estimphi, random)  
+                likelihoodNormalestimfix(param[1], param[2], param[3], U, V, estimphi, random)
             }
             estimphi <- matrix(0, length(V), 2)
             for (j in 1:length(V)) {
-                estimphi[j, ] <- (1/det(V[[j]])) * matrix(c(V[[j]][2, 2], -V[[j]][1, 2], -V[[j]][1, 2], V[[j]][1, 1]), 2, 2) %*% U[, j]
+                estimphi[j, ] <- (1/det(V[[j]])) * matrix(c(V[[j]][2, 2], -V[[j]][1, 2], -V[[j]][1, 2], V[[j]][1, 
+                  1]), 2, 2) %*% U[, j]
             }
             estimphi <- t(estimphi)
             init.mu <- c(mean(estimphi[1, ]), mean(estimphi[2, ]))
@@ -64,7 +65,8 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
             res <- optim(c(init.mu, init.omega), fn = ln, method = "Nelder-Mead")
             
             fix <- (random == 1) + 1
-            mu <- c(res$par[random], res$par[fix]) * (random == 1) + c(res$par[fix], res$par[random]) * (random == 2)
+            mu <- c(res$par[random], res$par[fix]) * (random == 1) + c(res$par[fix], res$par[random]) * (random == 
+                2)
             omega <- abs(res$par[3])
             
             BIChere <- ln(c(mu, omega)) + log(length(V)) * 2 + log(length(V) * K)
@@ -84,7 +86,8 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
         
         estimphi <- matrix(0, length(V), 2)
         for (j in 1:length(V)) {
-            estimphi[j, ] <- (1/det(V[[j]])) * matrix(c(V[[j]][2, 2], -V[[j]][1, 2], -V[[j]][1, 2], V[[j]][1, 1]), 2, 2) %*% U[, j]
+            estimphi[j, ] <- (1/det(V[[j]])) * matrix(c(V[[j]][2, 2], -V[[j]][1, 2], -V[[j]][1, 2], V[[j]][1, 
+                1]), 2, 2) %*% U[, j]
         }
         estimphi <- t(estimphi)
         
@@ -100,4 +103,4 @@ EstParamNormal = function(U, V, K, random, estim.fix, fixed = 0) {
     }
     return(list(mu = mu, omega = omega, BIChere = BIChere, AIChere = AIChere))
 }
-
+ 

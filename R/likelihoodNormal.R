@@ -85,8 +85,8 @@ likelihoodNormalestimfix <- function(mu1, mu2, omega, U, V, estimphi, random) {
         Ur <- U[1, ] * (random == 1) + U[2, ] * (random == 2)
         Uf <- U[1, ] * (fix == 1) + U[2, ] * (fix == 2)
         
-        L <- sum(log(1 + Omega * Vrr)) + sum(Vrr/(1 + Omega * Vrr) * (muRandom - (Ur - psi * Vfr)/Vrr)^2 - (Ur - psi * Vfr)^2/Vrr - 2 * 
-            psi * Uf + Vff * psi^2)
+        L <- sum(log(1 + Omega * Vrr)) + sum(Vrr/(1 + Omega * Vrr) * (muRandom - (Ur - psi * Vfr)/Vrr)^2 - (Ur - 
+            psi * Vfr)^2/Vrr - 2 * psi * Uf + Vff * psi^2)
         
     }
     
@@ -98,4 +98,4 @@ likelihoodNormalestimfix <- function(mu1, mu2, omega, U, V, estimphi, random) {
 
 
 
-
+ 

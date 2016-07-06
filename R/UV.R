@@ -30,8 +30,8 @@ UV <- function(X, model, random, fixed, times) {
     
     M <- dim(X)[1]
     K <- dim(X)[2]
-    Xm <- X[, -K]  
-    delta <- diff(times)  
+    Xm <- X[, -K]
+    delta <- diff(times)
     Tend <- times[K]
     
     if (sum(random) > 2) {
@@ -71,7 +71,7 @@ UV <- function(X, model, random, fixed, times) {
                 bsig[[j]][1, ] <- 1/X[j, ]
                 
                 U[, j] = rowSums((bsig[[j]][, 1:(K - 1)] * matrix((X[j, 2:K] - X[j, 1:(K - 1)]), 2, K - 1, byrow = TRUE)))
-
+                
                 V[[j]] <- matrix(c(Int3[j], -Tend, -Tend, Int1[j]), 2, 2)
                 
             }
@@ -83,12 +83,12 @@ UV <- function(X, model, random, fixed, times) {
         V <- numeric(M)
         
         Int1 <- rowSums(Xm * matrix(delta, M, length(delta)))
-          
+        
         if (model == "OU") {
             bxj <- apply(X, c(1, 2), bx, fixed, random)
             
-             U <- rowSums(bxj[, 1:(K - 1)] * (X[ , 2:K] - X[ , 1:(K - 1)]))   + fixed * Int1
-             V <- bxj[ , 1:(K - 1)]^2 %*% delta
+            U <- rowSums(bxj[, 1:(K - 1)] * (X[, 2:K] - X[, 1:(K - 1)])) + fixed * Int1
+            V <- bxj[, 1:(K - 1)]^2 %*% delta
         }
         
         if (model == "CIR") {
@@ -107,7 +107,7 @@ UV <- function(X, model, random, fixed, times) {
         
         if (model == "OU") {
             Int1 <- rowSums(Xm * matrix(delta, M, length(delta)))
-           
+            
             U <- (X[, K] - X[, 1]) + fixed * Int1
             
             V <- rep(Tend, M)
@@ -116,7 +116,7 @@ UV <- function(X, model, random, fixed, times) {
         if (model == "CIR") {
             
             Int2 <- rowSums((1/Xm) * matrix(delta, M, length(delta)))
-
+            
             for (j in 1:M) {
                 U[j] <- sum((X[j, 2:K] - X[j, 1:(K - 1)]) * (1/X[j, 2:K])) + fixed * Tend
             }

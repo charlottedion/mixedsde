@@ -45,8 +45,8 @@ estim_param <- mixedsde.fit(times=times, X=X, model=model, random= random, estim
 print(estim); #valid(estim)
 print(estim_param); #plot(estim_param);  valid(estim_param)
 
-#test1 <- pred(estim, X,  estim.method= 'nonparam',times = times)
-#test2 <- pred(estim_param, X,estim.method= 'paramML', times = times) 
+#test1 <- pred(estim)
+#test2 <- pred(estim_param) 
 
 #- Other possible plots
 par(mfrow=c(1,2))
