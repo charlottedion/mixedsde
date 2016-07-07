@@ -90,6 +90,7 @@ If random = c(1,2), \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma \sqrt{X_
 }
 The nonparametric method estimates the density of the random effects with a kernel estimator (one-dimensional or two-dimensional density).
 The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects.
+Both methods use only the two first thirds of the data, and the last third is used for the prediction method, to avoid overfitting.
 }
 \examples{
 # Frequentist estimation
