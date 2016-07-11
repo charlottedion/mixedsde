@@ -69,7 +69,27 @@
 #'}
 #' The nonparametric method estimates the density of the random effects with a kernel estimator (one-dimensional or two-dimensional density).
 #' The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects.
-#' Both methods use only the two first thirds of the data, and the last third is used for the prediction method, to avoid overfitting. 
+#' 
+#' Validation method:
+#' # For a number of trajectory numj (fixed by the user or randomly chosen) this function simulates 
+#' # Mrep =100 (by default) new trajectories with the value of the estimated random effect. 
+#' # Then it plots on the left graph the Mrep new trajectories 
+#' #\eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)), k= 1, ... Mrep} with in red the true trajectory 
+#' # \eqn{(Xnumj(t1), ... Xnumj(tN))}. The right graph is a qq-plot of the quantiles of samples 
+#' # \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
+#' # for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function  
+#' # are: a matrix \code{Xnew} dimension Mrepx N+1, vector of quantiles \code{quantiles} length 
+#' # N and the number of the trajectory for the plot \code{numj} 
+#' 
+#' # Prediction method for the frequentist approach
+#' # This function uses the estimation of the density function to simulate a 
+#' # new sample of random effects according to this density. If \code{plot.pred =1} (default)
+#' # is plots on the top the predictive random effects versus the estimated random effects
+#' # from the data. On the bottom, the left graph is the true trajectories, on the right
+#' #the predictive trajectories and the empiric prediciton intervals at level 
+#' # \code{level=0.05} (defaut). The function return on a list the prediction of phi 
+#' # \code{phipred}, the prediction of X \code{Xpred}, and the indexes of the 
+#' # corresponding true trajectories \code{indexpred} 
 
 #' @examples
 #'# Frequentist estimation
@@ -99,15 +119,6 @@
 #' summary(estim)
 #' print(estim)
 #' # Validation 
-#' # For a number of trajectory numj (fixed by the user or randomly chosen) this function simulates 
-#' # Mrep =100 (by default) new trajectories with the value of the estimated random effect. 
-#' # Then it plots on the left graph the Mrep new trajectories 
-#' #\eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)), k= 1, ... Mrep} with in red the true trajectory 
-#' # \eqn{(Xnumj(t1), ... Xnumj(tN))}. The right graph is a qq-plot of the quantiles of samples 
-#' # \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
-#' # for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function  
-#' # are: a matrix \code{Xnew} dimension Mrepx N+1, vector of quantiles \code{quantiles} length 
-#' # N and the number of the trajectory for the plot \code{numj} 
 #' 
 #' validation <- valid(estim)
 #' 
@@ -119,16 +130,6 @@
 #' 
 #' #plot(estim_param)
 #' summary(estim_param)
-#' 
-#' # Prediction for the frequentist approach
-#' # This function uses the estimation of the density function to simulate a 
-#' # new sample of random effects according to this density. If \code{plot.pred =1} (default)
-#' # is plots on the top the predictive random effects versus the estimated random effects
-#' # from the data. On the bottom, the left graph is the true trajectories, on the right
-#' #the predictive trajectories and the empiric prediciton intervals at level 
-#' # \code{level=0.05} (defaut). The function return on a list the prediction of phi 
-#' # \code{phipred}, the prediction of X \code{Xpred}, and the indexes of the 
-#' # corresponding true trajectories \code{indexpred} 
 #' 
 #' # Not run
 #' \dontrun{
@@ -478,9 +479,9 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 cutoff <- apply(eigenvalues, 1, min) * (1/sigma2) > kap * sqrt(Tend)
                 estimphi.trunc <- estimphi * matrix(c(cutoff, cutoff), 2, dim(estimphi)[2], byrow = TRUE)
                 
-                # Kernel estimator of the density with two thirds of the data
-                MestimNP <- floor(dim(estimphi)[2] * 2/3)
-                estimf <- kde2d(estimphi[1, 1:MestimNP], estimphi[2, 1:MestimNP], n = length(gridf[1, ]), lims = c(min(gridf[1, 
+                # Kernel estimator of the density 
+                
+                estimf <- kde2d(estimphi[1, ], estimphi[2, ], n = length(gridf[1, ]), lims = c(min(gridf[1, 
                   ]), max(gridf[1, ]), min(gridf[2, ]), max(gridf[2, ])))$z
                 
                 if (sum(cutoff) >= 0.25 * Mindex2) {
@@ -509,10 +510,9 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 }
                 Usigma2 <- U/sigma2
                 
-                # Estimator of the density with two thirds of the data
-                MestimP <- floor(dim(estimphi)[2] * 2/3)
+                # Estimator of the density 
                 
-                res <- EstParamNormal(Usigma2[, 1:MestimP], Vsigma2[1:MestimP], K = K, random = random, estim.fix = 0)
+                res <- EstParamNormal(Usigma2, Vsigma2, K = K, random = random, estim.fix = 0)
                 
                 bic <- res$BIChere
                 aic <- res$AIChere
@@ -612,13 +612,12 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     gridf <- gridf
                   }
                   
-                  # Kernel estimator of the density from two thirds of the data
-                  MestimNP <- floor(length(estimphi) * 2/3)
-                  
-                  test <- density(estimphi[1:MestimNP], from = min(gridf), to = max(gridf), bw = "ucv", n = length(gridf))
+                  # Kernel estimator of the density 
+
+                  test <- density(estimphi, from = min(gridf), to = max(gridf), bw = "ucv", n = length(gridf))
                   
                   if (test$bw < 0.1) {
-                    estimf <- density(estimphi[1:MestimNP], from = min(gridf), to = max(gridf), n = length(gridf))$y
+                    estimf <- density(estimphi, from = min(gridf), to = max(gridf), n = length(gridf))$y
                   }
                   if (test$bw >= 0.1) {
                     estimf <- test$y
@@ -692,10 +691,9 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                 
                 if (estim.fix == 1) {
                   
-                  # Estimator of the density from two thirds of the data
-                  MestimP <- floor(dim(U12)[2] * 2/3)
-                  
-                  res <- EstParamNormal(U = Usigma212[, 1:MestimP], V = Vsigma212[1:MestimP], K = K, random = random, 
+                  # Estimator of the density
+
+                  res <- EstParamNormal(U = Usigma212, V = Vsigma212, K = K, random = random, 
                     estim.fix = 1)
                   bic <- res$BIChere
                   aic <- res$AIChere
@@ -724,10 +722,8 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     print("Be careful: estim.fix=0 and fixed=0 thus your fixed effect is 0 and it is not estimated")
                   }
                   
-                  # Estimator of the density from two thirds of the data
-                  MestimP <- floor(dim(U12)[2] * 2/3)
-                  
-                  res <- EstParamNormal(U = Usigma212[, 1:MestimP], V = Vsigma212[1:MestimP], K = K, random = random, 
+                  # Estimator of the density 
+                   res <- EstParamNormal(U = Usigma212, V = Vsigma212, K = K, random = random, 
                     estim.fix = 0, fixed = fixed)
                   bic <- res$BIChere
                   aic <- res$AIChere
@@ -2542,7 +2538,7 @@ setGeneric("pred", function(x, ...) {
 
 #' Prediction method for the Freq.fit class object
 #' 
-#' @description Frequentist prediction (obtain from the last third of the data, no used for the density estimation)
+#' @description Frequentist prediction 
 #' @param x Freq.fit class
 #' @param invariant 1 if the initial value is from the invariant distribution, default X0 is fixed from Xtrue
 #' @param level alpha for the predicion intervals, default 0.05
@@ -2557,15 +2553,14 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
     if (newwindow) {
         x11(width = 10)
     }
-    Mpred <- floor(dim(x@X)[1] * 2/3) + 1
-    Xtrue <- x@X[Mpred:dim(x@X)[1], ]
+  
+    Xtrue <- x@X
     timestrue <- x@times
     T <- timestrue[length(timestrue)]
     sig <- sqrt(x@sigma2)
     
     if (dim(x@gridf)[1] == 1) {
-        index <- intersect(x@index, Mpred:dim(x@X)[1])
-        # index <- x@index
+        index <- x@index
         M <- length(index)
         N <- dim(Xtrue)[2] - 1
         delta <- T/N
@@ -2719,8 +2714,8 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
     
     if (dim(x@gridf)[1] == 2) {
         
-        index <- intersect(x@index, Mpred:dim(x@X)[1])
-        # index <- x@index
+       
+        index <- x@index
         M <- length(index)
         N <- dim(Xtrue)[2] - 1
         delta <- T/N

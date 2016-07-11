@@ -90,7 +90,27 @@ If random = c(1,2), \eqn{dX_j(t)= (\alpha_j- \beta_j X_j(t))dt + \sigma \sqrt{X_
 }
 The nonparametric method estimates the density of the random effects with a kernel estimator (one-dimensional or two-dimensional density).
 The parametric method estimates the mean and standard deviation of the Gaussian distribution of the random effects.
-Both methods use only the two first thirds of the data, and the last third is used for the prediction method, to avoid overfitting.
+
+Validation method:
+# For a number of trajectory numj (fixed by the user or randomly chosen) this function simulates
+# Mrep =100 (by default) new trajectories with the value of the estimated random effect.
+# Then it plots on the left graph the Mrep new trajectories
+#\eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)), k= 1, ... Mrep} with in red the true trajectory
+# \eqn{(Xnumj(t1), ... Xnumj(tN))}. The right graph is a qq-plot of the quantiles of samples
+# \eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
+# for each time \eqn{ti} compared with the uniform quantiles. The outputs of the function
+# are: a matrix \code{Xnew} dimension Mrepx N+1, vector of quantiles \code{quantiles} length
+# N and the number of the trajectory for the plot \code{numj}
+
+# Prediction method for the frequentist approach
+# This function uses the estimation of the density function to simulate a
+# new sample of random effects according to this density. If \code{plot.pred =1} (default)
+# is plots on the top the predictive random effects versus the estimated random effects
+# from the data. On the bottom, the left graph is the true trajectories, on the right
+#the predictive trajectories and the empiric prediciton intervals at level
+# \code{level=0.05} (defaut). The function return on a list the prediction of phi
+# \code{phipred}, the prediction of X \code{Xpred}, and the indexes of the
+# corresponding true trajectories \code{indexpred}
 }
 \examples{
 # Frequentist estimation
@@ -120,15 +140,6 @@ plot(estim)}
 summary(estim)
 print(estim)
 # Validation
-# For a number of trajectory numj (fixed by the user or randomly chosen) this function simulates
-# Mrep =100 (by default) new trajectories with the value of the estimated random effect.
-# Then it plots on the left graph the Mrep new trajectories
-#\\eqn{(Xnumj^{k}(t1), ... Xnumj^{k}(tN)), k= 1, ... Mrep} with in red the true trajectory
-# \\eqn{(Xnumj(t1), ... Xnumj(tN))}. The right graph is a qq-plot of the quantiles of samples
-# \\eqn{(Xnumj^{1}(ti), ... Xnumj^{Mrep}(ti))}
-# for each time \\eqn{ti} compared with the uniform quantiles. The outputs of the function
-# are: a matrix \\code{Xnew} dimension Mrepx N+1, vector of quantiles \\code{quantiles} length
-# N and the number of the trajectory for the plot \\code{numj}
 
 validation <- valid(estim)
 
@@ -140,16 +151,6 @@ outputsP <- out(estim_param)
 
 #plot(estim_param)
 summary(estim_param)
-
-# Prediction for the frequentist approach
-# This function uses the estimation of the density function to simulate a
-# new sample of random effects according to this density. If \\code{plot.pred =1} (default)
-# is plots on the top the predictive random effects versus the estimated random effects
-# from the data. On the bottom, the left graph is the true trajectories, on the right
-#the predictive trajectories and the empiric prediciton intervals at level
-# \\code{level=0.05} (defaut). The function return on a list the prediction of phi
-# \\code{phipred}, the prediction of X \\code{Xpred}, and the indexes of the
-# corresponding true trajectories \\code{indexpred}
 
 # Not run
 \dontrun{

@@ -22,7 +22,7 @@
 \item{...}{optional plot parameters}
 }
 \description{
-Frequentist prediction (obtain from the last third of the data, no used for the density estimation)
+Frequentist prediction
 }
 \references{
 Dion, C., Hermann, S. and Samson, A. (2016). Mixedsde: a R package to fit mixed stochastic differential equations.
