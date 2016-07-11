@@ -21,7 +21,7 @@ License: \tab GLP-2, GLP-3\cr
 \author{
 Charlotte Dion, Simone Hermann, Adeline Samson
 
-Maintainer: Charlotte Dion <charlotte.dion@imag.fr>
+Maintainer: Charlotte Dion <charlotte.dion1@gmail.com>
 }
 \references{
 See Bidimensional random effect estimation in mixed stochastic differential model, C. Dion and V. Genon-Catalot, \emph{Stochastic Inference for Stochastic Processes 2015, Springer Netherlands} \bold{1--28}
