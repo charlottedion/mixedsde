@@ -307,7 +307,9 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
     
     
     if (is.matrix(X)) {
-        if (nrow(X) == length(times)) {
+      
+        if (nrow(X) == ncol(X)){warning("X is a square matrix, check that a line of X is a trajectory")}
+        if ((nrow(X) == length(times))&(nrow(X) != ncol(X))) {
             X <- t(X)
         } else {
             if (ncol(X) != length(times)) {
