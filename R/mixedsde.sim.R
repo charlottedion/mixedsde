@@ -107,7 +107,6 @@
 mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, param, sigma, t0 = 0, X0 = 0.01, 
     invariant = 0, delta = T/N, op.plot = 0, add.plot = FALSE) {
     
-    
     ## local sde.sim to sink undesired output away into a tempfile
     con <- file(tempfile(), open = "w")
     on.exit(close(con))

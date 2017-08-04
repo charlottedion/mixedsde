@@ -10,7 +10,7 @@
 #' @param estim.method estimation method: 'paramML' for a Gaussian parametric estimation by maximum likelihood, 'paramBayes' for a Gaussian parametric Bayesian estimation or 'nonparam' for a non-parametric estimation
 #' @param gridf if nonparametric estimation: grid of values on which the density is estimated, a matrix with two rows if two random effects; NULL by default and
 #' then grid is chosen as a function of the estimated values of the random effects. For the plots this grid is used.
-#' @param estim.fix default 0, 1 if random = 1 or 2, method = 'paramML' and an estimator of the fixed parameter is needed (to lead the nonparametric estimation after for example)
+#' @param estim.fix default 0, 1 if random = 1 or 2, method = 'paramML' then the fixed parameter is estimated
 #' @param prior if method = 'paramBayes', list of prior parameters: mean and variance of the Gaussian prior on the mean mu, shape and scale of the inverse Gamma prior for the variances omega, shape and scale of the inverse Gamma prior for sigma  
 #' @param nMCMC if method = 'paramBayes', number of iterations of the MCMC algorithm
 #' @return
