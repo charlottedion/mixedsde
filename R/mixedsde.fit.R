@@ -614,10 +614,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                   
                   # Kernel estimator of the density 
 
-                  test <- density(estimphi, from = min(gridf), to = max(gridf), bw = "ucv", n = length(gridf))
+                  test <- suppressMessages(density(estimphi, from = min(gridf), to = max(gridf), bw = "ucv", n = length(gridf)))
                   
                   if (test$bw < 0.1) {
-                    estimf <- density(estimphi, from = min(gridf), to = max(gridf), n = length(gridf))$y
+                    estimf <- suppressMessages(density(estimphi, from = min(gridf), to = max(gridf), n = length(gridf))$y)
                   }
                   if (test$bw >= 0.1) {
                     estimf <- test$y
@@ -635,10 +635,10 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
                     }
                     
                     # Kernel estimator from the truncated Aj
-                    test2 <- density(estimphi.trunc, from = min(gridf), bw = "ucv", to = max(gridf), n = length(gridf))
+                    test2 <- suppressMessages(density(estimphi.trunc, from = min(gridf), bw = "ucv", to = max(gridf), n = length(gridf)))
                     
                     if (test2$bw < 0.1) {
-                      estimf.trunc <- density(estimphi.trunc, from = min(gridf), to = max(gridf), n = length(gridf))$y
+                      estimf.trunc <- suppressMessages(density(estimphi.trunc, from = min(gridf), to = max(gridf), n = length(gridf))$y)
                       estimf.trunc <- matrix(estimf.trunc, 1, length(estimf.trunc), byrow = TRUE)
                       estimphi.trunc <- as.matrix(estimphi.trunc, 1, length(estimphi.trunc), byrow = TRUE)
                     }
