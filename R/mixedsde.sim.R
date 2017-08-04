@@ -167,10 +167,10 @@ mixedsde.sim <- function(M, T, N = 100, model, random, fixed = 0, density.phi, p
             for (j in 1:M) {
                 if (invariant == 1) {
                   X0 <- phi[1, j]/phi[2, j] + (sig/(sqrt(2 * phi[2, j]))) * rnorm(1)
-                  # suppressMessages(
+                   #suppressMessages(
                   X[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = delta, method = "EA", theta = c(phi[, j], 
                     sig), model = "OU")
-                  # )
+                  #)
                 }
                 if (invariant == 0) {
                   # suppressMessages(

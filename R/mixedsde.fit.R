@@ -2383,6 +2383,18 @@ setMethod(f = "valid", signature = "Bayes.fit", definition = function(x, Mrep = 
     }
     original.settings <- par(no.readonly = TRUE)
     
+    
+    ## local sde.sim to sink undesired output away into a tempfile
+    con <- file(tempfile(), open = "w")
+    on.exit(close(con))
+    sde.sim <- function(...) {
+      sink(con)
+      res <- sde::sde.sim(...)
+      sink(NULL)
+      res
+    }
+    
+    
     times <- round(x@times, 10)
     N <- length(times) - 1
     Xtrue <- x@X[-x@ind.4.prior, ]
@@ -2553,19 +2565,28 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
     if (newwindow) {
         x11(width = 10)
     }
-  
+   
+  ## local sde.sim to sink undesired output away into a tempfile
+  con <- file(tempfile(), open = "w")
+  on.exit(close(con))
+  sde.sim <- function(...) {
+    sink(con)
+    res <- sde::sde.sim(...)
+    sink(NULL)
+    res
+  }
     Xtrue <- x@X
     timestrue <- x@times
-    T <- timestrue[length(timestrue)]
+    Tend <- timestrue[length(timestrue)]
     sig <- sqrt(x@sigma2)
     
     if (dim(x@gridf)[1] == 1) {
         index <- x@index
         M <- length(index)
         N <- dim(Xtrue)[2] - 1
-        delta <- T/N
+        delta <- Tend/N
         Xpred <- matrix(0, M, N + 1)
-        times <- seq(0, T, by = delta)
+        times <- seq(0, Tend, by = delta)
         
         if (x@estim.fix == 1) {
             paramfixed <- x@estim.fixed
@@ -2591,12 +2612,12 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
                 indexpred <- 1:M
                 for (j in 1:M) {
                   if (invariant == FALSE) {
-                    Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(phipred[j], 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = Xtrue[j, 1], N = N, delta = Tend/N, method = "EA", theta = c(phipred[j], 
                       paramfixed, sig), model = "OU")
                   }
                   if (invariant == TRUE) {
                     X0 <- phipred[j]/paramfixed + (sig/(sqrt(2 * paramfixed))) * rnorm(1)
-                    Xpred[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = T/N, method = "EA", theta = c(phipred[j], 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = X0, N = N, delta = Tend/N, method = "EA", theta = c(phipred[j], 
                       paramfixed, sig), model = "OU")
                   }
                 }
@@ -2609,13 +2630,13 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
                 
                 for (j in 1:Mpred) {
                   if (invariant == 0) {
-                    Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = Xtrue[indexpred[j], 1], N = N, delta = Tend/N, method = "milstein", 
                       theta = c(phipred[j], paramfixed, sig), model = "CIR", sigma.x = expression(sig/(2 * sqrt(x))), 
                       sigma = expression(sig * sqrt(x)))
                   }
                   if (invariant == 1) {
                     X0 <- rgamma(1, 2 * phipred[j]/sig^2, scale = sig^2/(2 * paramfixed))
-                    Xpred[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = T/N, method = "milstein", theta = c(phipred[j], 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = X0, N = N, delta = Tend/N, method = "milstein", theta = c(phipred[j], 
                       paramfixed, sig), model = "CIR", sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
                       sqrt(x)))
                   }
@@ -2644,12 +2665,12 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
                 
                 for (j in 1:Mpred) {
                   if (invariant == 0) {
-                    Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(paramfixed, 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = Xtrue[j, 1], N = N, delta = Tend/N, method = "EA", theta = c(paramfixed, 
                       phipred[j], sig), model = "OU")
                   }
                   if (invariant == 1) {
                     X0 <- (sig/(sqrt(2 * phipred[j]))) * rnorm(1)
-                    Xpred[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = T/N, method = "EA", theta = c(paramfixed, 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = X0, N = N, delta = Tend/N, method = "EA", theta = c(paramfixed, 
                       phipred[j], sig), model = "OU")
                   }
                 }
@@ -2667,13 +2688,13 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
                     }
                     if (paramfixed != 0) {
                       X0 <- rgamma(1, 2 * paramfixed/sig^2, scale = sig^2/(2 * phipred[j]))
-                      Xpred[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = T/N, method = "milstein", theta = c(paramfixed, 
+                      Xpred[j, ] <- sde.sim(T = Tend, X0 = X0, N = N, delta = Tend/N, method = "milstein", theta = c(paramfixed, 
                         phipred[j], sig), model = "CIR", sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
                         sqrt(x)))
                     }
                   }
                   if (invariant == 0) {
-                    Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", 
+                    Xpred[j, ] <- sde.sim(T = Tend, X0 = Xtrue[indexpred[j], 1], N = N, delta = Tend/N, method = "milstein", 
                       theta = c(paramfixed, phipred[j], sig), model = "CIR", sigma.x = expression(sig/(2 * sqrt(x))), 
                       sigma = expression(sig * sqrt(x)))
                   }
@@ -2718,9 +2739,9 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
         index <- x@index
         M <- length(index)
         N <- dim(Xtrue)[2] - 1
-        delta <- T/N
+        delta <- Tend/N
         Xpred <- matrix(0, M, N + 1)
-        times <- seq(0, T, by = delta)
+        times <- seq(0, Tend, by = delta)
         
         phipred <- matrix(0, 2, M)
         
@@ -2758,12 +2779,12 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
             Xpred <- matrix(0, Mpred, N + 1)
             for (j in 1:Mpred) {
                 if (invariant == 0) {
-                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[j, 1], N = N, delta = T/N, method = "EA", theta = c(phipred[, 
+                  Xpred[j, ] <- sde.sim(T = Tend, X0 = Xtrue[j, 1], N = N, delta = Tend/N, method = "EA", theta = c(phipred[, 
                     j], sig), model = "OU")
                 }
                 if (invariant == 1) {
                   X0 <- phipred[1, j]/phipred[2, j] + (sig/(sqrt(2 * phipred[2, j]))) * rnorm(1)
-                  Xpred[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = T/N, method = "EA", theta = c(phipred[, 
+                  Xpred[j, ] <- sde.sim(T = Tend, X0 = X0, N = N, delta = Tend/N, method = "EA", theta = c(phipred[, 
                     j], sig), model = "OU")
                 }
             }
@@ -2776,13 +2797,13 @@ setMethod(f = "pred", signature = "Freq.fit", definition = function(x, invariant
             
             for (j in 1:Mpred) {
                 if (invariant == 0) {
-                  Xpred[j, ] <- sde.sim(T = T, X0 = Xtrue[indexpred[j], 1], N = N, delta = T/N, method = "milstein", 
+                  Xpred[j, ] <- sde.sim(T = Tend, X0 = Xtrue[indexpred[j], 1], N = N, delta = Tend/N, method = "milstein", 
                     theta = c(phipred[, j], sig), model = "CIR", sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
                       sqrt(x)))
                 }
                 if (invariant == 1) {
                   X0 <- rgamma(1, 2 * phipred[1, j]/sig^2, scale = sig^2/(2 * phipred[2, j]))
-                  Xpred[j, ] <- sde.sim(T = T, X0 = X0, N = N, delta = T/N, method = "milstein", theta = c(phipred[, 
+                  Xpred[j, ] <- sde.sim(T = Tend, X0 = X0, N = N, delta = Tend/N, method = "milstein", theta = c(phipred[, 
                     j], sig), model = "CIR", sigma.x = expression(sig/(2 * sqrt(x))), sigma = expression(sig * 
                     sqrt(x)))
                 }
@@ -2867,6 +2888,16 @@ setMethod(f = "pred", signature = "Bayes.fit", definition = function(x, invarian
         x11(width = 10)
     }
     original.settings <- par(no.readonly = TRUE)
+    
+    ## local sde.sim to sink undesired output away into a tempfile
+    con <- file(tempfile(), open = "w")
+    on.exit(close(con))
+    sde.sim <- function(...) {
+      sink(con)
+      res <- sde::sde.sim(...)
+      sink(NULL)
+      res
+    }
     
     if (missing(burnIn)) 
         burnIn <- x@burnIn
