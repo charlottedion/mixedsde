@@ -19,7 +19,7 @@ mixedsde.fit(times, X, model = c("OU", "CIR"), random, fixed = 0,
 
 \item{fixed}{fixed effect in the drift: value of the fixed effect when there is only one random effect and it is not estimated, 0 otherwise}
 
-\item{estim.fix}{default 0, 1 if random = 1 or 2, method = 'paramML' and an estimator of the fixed parameter is needed (to lead the nonparametric estimation after for example)}
+\item{estim.fix}{default 0, 1 if random = 1 or 2, method = 'paramML' then the fixed parameter is estimated}
 
 \item{estim.method}{estimation method: 'paramML' for a Gaussian parametric estimation by maximum likelihood, 'paramBayes' for a Gaussian parametric Bayesian estimation or 'nonparam' for a non-parametric estimation}
 

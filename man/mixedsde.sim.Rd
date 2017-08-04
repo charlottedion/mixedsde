@@ -130,6 +130,6 @@ This function mixedsde.sim is based on the package sde, function sde.sim. See Si
 Chapter 2
 }
 \seealso{
-\url{http://cran.r-project.org/package=sde}
+\url{https://cran.r-project.org/package=sde}
 }
 
