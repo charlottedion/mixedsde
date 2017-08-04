@@ -296,8 +296,14 @@
 
 mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, estim.fix = 0, estim.method = c("nonparam", 
     "paramML", "paramBayes"), gridf = NULL, prior, nMCMC = NULL) {
+  
     model <- match.arg(model)
     estim.method <- match.arg(estim.method)
+    
+    
+    if((model != 'OU')&(model != 'CIR')){stop("A model must be precised: OU or CIR")}
+    if((random != 1)&(random != 2)&(random !=c(1,2))){stop("random must be precised: 1 or 2 or c(1,2)")}
+    
     
     if (is.matrix(X)) {
         if (nrow(X) == length(times)) {
@@ -319,8 +325,8 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
             if (any(X < 0)) {
                 Xold <- X
                 indices <- sapply(1:M, function(i) any(X[i, ] < 0))
-                X <- X[!indices, ]
-                message("Attention: series ", indices, " are skipped for estimation because of negative values")
+                X <- X[!indices,  ]
+                message("Attention: series", indices, " are skipped for estimation because of negative values")
             }
         }
         
