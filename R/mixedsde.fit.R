@@ -302,7 +302,8 @@ mixedsde.fit <- function(times, X, model = c("OU", "CIR"), random, fixed = 0, es
     
     
     if((model != 'OU')&(model != 'CIR')){stop("A model must be precised: OU or CIR")}
-    if((random != 1)&(random != 2)&(random !=c(1,2))){stop("random must be precised: 1 or 2 or c(1,2)")}
+    if (length(random)==2){if (sum(random == c(1,2)) != 2) {stop("random must be precised: 1 or 2 or c(1,2)")} }
+    if (length(random)==1){if((random != 1)&(random != 2)){stop("random must be precised: 1 or 2 or c(1,2)")} }
     if((estim.method != 'nonparam')&(estim.method != 'paramML')&(estim.method !='paramBayes')){stop("estim.method must be precised: paramML or nonparam or paramBayes")}
     
     
